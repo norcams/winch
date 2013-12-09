@@ -65,4 +65,5 @@ The main thing to get across here is that most any editor you are comfortable wi
 [vagrant]:        http://www.vagrantup.com/
 [vagrant-guide]:  http://docs.vagrantup.com/v2/getting-started/index.html
 [puppet-style]:   http://docs.puppetlabs.com/guides/style_guide.html
-[geppetto]:       http://cloudsmith.github.io/geppetto/
+[geppetto]:       http://puppetlabs.github.io/geppetto/download.html
+
