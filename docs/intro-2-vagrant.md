@@ -25,9 +25,17 @@ This creates a `Vagrantfile` with the bare minimum settings needed. Open it up i
 
     vagrant up
 
-Next, ssh into it and play around a bit.
+When the boot process has completed you will be taken back to your command prompt. Next, ssh into it and play around a bit.
 
     vagrant ssh
 
 The `vagrant` user you will be logged in as has sudo rights so you are free to play around. As is common with Vagrant boxes Puppet (and even Chef) comes preinstalled, we will make use of this next. Another thing to notice, the `/vagrant` folder inside the VM is actually a mounted network share of your project folder. This makes it easy to edit files using tools on your host computer while they are _shared inside the VM_, part of what makes Vagrant so flexible.
 
+When you are finished playing around, if you do
+
+    vagrant destroy
+
+the VM you were playing with will be discarded. Have a look at the other commands that are available by doing `vagrant help`. Possibly the most important one is _provision_ which you might want to [read about as a concept][vagrant-provision] at vagrantup.com. Take note that Vagrant has a lot of different mechanisms for provisioning, it supports both Ansible, Chef and CFengine in addition to shell scripts.
+
+
+[vagrant-provision]:    http://docs.vagrantup.com/v2/provisioning/index.html
