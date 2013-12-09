@@ -1,0 +1,12 @@
+# Puppet modules to install
+# <git uri> <relative path> <commit sha/tag>
+https://github.com/puppetlabs/puppetlabs-stdlib stdlib 4.1.0
+https://github.com/puppetlabs/puppetlabs-concat concat 0.2.0
+# Keystone
+https://github.com/stackforge/puppet-keystone keystone 74bfe20e
+https://github.com/puppetlabs/puppetlabs-ntp ntp 2.0.1
+https://github.com/puppetlabs/puppetlabs-inifile inifile 1.0.0
+https://github.com/puppetlabs/puppetlabs-postgresql postgresql 80d44718
+https://github.com/puppetlabs/puppetlabs-mysql mysql 0.9.0
+https://github.com/puppetlabs/puppetlabs-firewall firewall 5e2b054c
+https://github.com/stackforge/puppet-openstack openstack 7b7531fa

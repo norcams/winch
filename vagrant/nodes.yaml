@@ -1,0 +1,27 @@
+node_defaults:
+    cpus: 1
+    memory: 1024
+    box: centos
+    networks:
+        - public
+        - api
+        - management
+        - data
+
+nodes:
+    - name: controller
+      cpus: 2
+      memory: 2048
+#    - name: storage
+#    - name: network
+#    - name: compute01
+
+networks:
+    public:     192.168.11
+    api:        192.168.22
+    management: 172.16.33
+    data:       172.16.44
+
+boxes:
+    centos: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
+

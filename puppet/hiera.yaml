@@ -1,0 +1,10 @@
+---
+:backends:
+    - yaml
+
+:yaml:
+    :datadir: hieradata
+:merge_behavior: deeper
+:hierarchy:
+    - common
+
