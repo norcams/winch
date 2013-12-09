@@ -29,7 +29,7 @@ When the boot process has completed you will be taken back to your command promp
 
     vagrant ssh
 
-The `vagrant` user you will be logged in as has sudo rights so you are free to play around. As is common with Vagrant boxes Puppet (and even Chef) comes preinstalled, we will make use of this next. Another thing to notice, the `/vagrant` folder inside the VM is actually a mounted network share of your project folder. This makes it easy to edit files using tools on your host computer while they are _shared inside the VM_, part of what makes Vagrant so flexible.
+The `vagrant` user you will be logged in as has sudo rights so you are free to play around. It can actually be quite fun to break the OS doing things you normally wouldn't. Another thing to notice, the `/vagrant` folder inside the VM is actually a mounted network share of your project folder. This makes it easy to edit files using tools on your host computer while they are _shared inside the VM_, part of what makes Vagrant so flexible.
 
 When you are finished playing around, if you do
 
