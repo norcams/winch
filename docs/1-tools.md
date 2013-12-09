@@ -1,10 +1,10 @@
-# Excercise 0: The setup
+# Tools of the trade
 
-This excercise sets up a computer so that it is possible to use it for Puppet code development.
+This explanins how to set up a computer with git, VirtualBox and Vagrant so that it is possible to use it for development.
 
 ## Requirements
 
-There are some minimal requirements before starting out.
+There are some requirements before starting out.
 
 * Basic knowledge of [git][git] and [command line tools][cli-thw]
 * A multi-core desktop or laptop computer running Linux or OSX with at least 4gb of RAM
@@ -44,33 +44,9 @@ Vagrant has in a short time become an important tool for a lot of different orga
 
 Point your browser at [www.vagrantup.com][vagrant] to get the latest installation package and install it. For now there is sadly no automatic way to update Vagrant. If you have an old version of Vagrant 1.0.x installed via RubyGems, please remove it prior to installing.
 
-## Vagrant up and running
-
-Vagrant uses base images - templates - as its source for quickly bringing up a new virtual machine. These base images are called _boxes_ in Vagrant. A box is added to Vagrant with `vagrant box add`. Open a command line and add the box we are going to use
-
-    vagrant box add centos6 http://bit.ly/143OOqN
-
-This might take a while to finish, the box is just shy of 500mb to download. While waiting for it to complete you could skim through the [getting started guide][vagrant-guide] - obviously skipping the commands - just to get a feel of what you are doing.
-
-After the add-command has completed we're ready to go. All VMs controlled by Vagrant must first be defined in a `Vagrantfile` so that will be the very first file of our project. Create an empty folder somewhere convenient for you to find, best place would probably be where you normally keep code or documents. Then initialize a Vagrantfile using the box name we defined above.
-
-    mkdir ~/code/myproject
-    cd ~/code/myproject
-    vagrant init centos6
-
-This creates a `Vagrantfile` with the bare minimum settings needed. To run your newly defined VM do
-
-    vagrant up
-
-Next, ssh into it and play around a bit.
-
-    vagrant ssh
-
-The `vagrant` user you will be logged in as has sudo rights so you are free to play around. As is common with Vagrant boxes Puppet (and even Chef) comes preinstalled, we will make use of this next. Another thing to notice, the `/vagrant` folder inside the VM is actually a mounted network share of your project folder. This makes it easy to edit files using tools on your host computer while they are _shared inside the VM_, part of what makes Vagrant so flexible.
-
 ## The $EDITOR checklist
 
-If you already have a text editor of choice it would be most effective to just use that for Puppet. Puppet is a simple language and an integrated syntax checker isn't strictly needed. Some even do without syntax coloring, but that I wouldn't recommmend. I have a short bullet list of points regarding editor setup which is based on my own experience and the [Puppet style guide][puppet-style]
+If you already have a text editor of choice it would be most effective to just use that. Puppet is a simple language and an integrated syntax checker isn't strictly needed. Some even do without syntax coloring, but that I wouldn't recommmend. I have a short bullet list of points regarding editor setup which is based on my own experience and the [Puppet style guide][puppet-style]
 
 * The Puppet community prefers two spaces, no tabs
 * Syntax coloring is helpful, consider using it
