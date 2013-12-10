@@ -1,4 +1,4 @@
 node default {
-  include ::grizzly::role::keystone_only
+  include ::grizzly::role::keystone_glance
 }
 
