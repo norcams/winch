@@ -1,0 +1,82 @@
+{
+  "project_page": "https://github.com/puppetlabs/puppetlabs-grizzly",
+  "license": "Apache License, Version 2.0",
+  "types": [
+
+  ],
+  "version": "1.0.0",
+  "description": "Using a hiera-based roles and profiles model, simplify OpenStack deployments.",
+  "checksums": {
+    "manifests/role/network.pp": "45e7c46ee64de87b0fa66355deba06bc",
+    "manifests/profile/quantum/router.pp": "f15b2bdb392309f8b1842a1303588b70",
+    "examples/vagrant/site.pp": "55725044760e60605bc864d5c4fbc2e5",
+    "manifests/role/storage.pp": "67ffc2b9245e51d51d7ddecb180ea7cb",
+    "manifests/profile/horizon.pp": "d35622b694c0a283f52fb782c1b37893",
+    "manifests/profile/glance/auth.pp": "c79f897d4da5135ed1eb9a8b1cfdee40",
+    "manifests/profile/glance/api.pp": "e230a92ed8d7b719ee105dcd78fa0e47",
+    "examples/vagrant/40_deploy_nodes.sh": "af0ea4be9a8416f37d9a164782b89a67",
+    "manifests/role.pp": "fc1b5dcee3d17cbb2488a6fffe7d8454",
+    "manifests/profile/rabbitmq.pp": "de6f6568ed34ba669e45bfd4068ad047",
+    "manifests/profile/cinder/common.pp": "74ffad335bfccecfee164a8d5cab1cc9",
+    "manifests/resources/user.pp": "af5f640138a83af66b17bfefbed0bda4",
+    "manifests/profile/quantum/common.pp": "7435f8e330b75ddc5c61e0c05ba44c1d",
+    "manifests/profile/nova/compute.pp": "bd9759e27d96e7f5890dec1b7dd5315d",
+    "manifests/profile/memcache.pp": "f4595853fb75af859d779e9528b0e432",
+    "manifests/profile/firewall/post.pp": "cc12f1ae12b281c3ea238cea3acfb87f",
+    "manifests/init.pp": "acd8fd6931024b92ece6c8c789b73b19",
+    "tests/init.pp": "478bea6b10da188eb842b9eba5a0b092",
+    "LICENSE": "7afbc0cdb22895b0544750c61bbebfa1",
+    "examples/vagrant/00_up.sh": "8ad480ab6eda1408fb4a37d494298c8b",
+    "examples/common.yaml": "943c1a089adfe5a750c79616589246e2",
+    "manifests/role/controller.pp": "3a1ce40b8a1a8bff1eefe1e63f61315c",
+    "manifests/profile/cinder/volume.pp": "a5520bd9b1e4c603ce93c870cca54f3d",
+    "examples/vagrant/30_deploy_control.sh": "121d25ea2c68cdd3f71ccba76158d578",
+    "examples/vagrant/20_setup_nodes.sh": "fed4cccd383ceb669cd4751f8b4113a5",
+    "manifests/profile/nova/common.pp": "d8343b0e21181ca81372461141f27b86",
+    "manifests/profile/firewall/puppet.pp": "9215ae196c9d03b895ed68381344b421",
+    "manifests/profile/auth_file.pp": "de36b2803cfe19a84278e7224edd1b4a",
+    "examples/vagrant/README.md": "75073335c6d47be03e467f1c533613d7",
+    "README.md": "b083bce17743a8bb07cd64a003aa565c",
+    "Modulefile": "44847147cabea40fe58ed3efb1b86fc6",
+    "manifests/role/compute.pp": "475a815aee48e29b207244c86b99b9fb",
+    "examples/vagrant/Vagrantfile": "a5e4fad9e5b5839af79d850c252c2fe3",
+    "manifests/profile/quantum/server.pp": "104062a57d1e0a88f56d1a400357b275",
+    "manifests/profile/keystone.pp": "d471793826a06f372acedf839abdbc32",
+    "manifests/profile/firewall/pre.pp": "c6b0e30f03435bc1020e404f4e1e9451",
+    "examples/vagrant/10_setup_master.sh": "c5762b7df965a888552bf53aeb4a361a",
+    "manifests/profile/quantum/agent.pp": "6cfd6e9b47b13b11e8a382f4d128233c",
+    "manifests/profile/nova/api.pp": "51523836b2528aefdb068fa4f11fbf8f",
+    "manifests/profile/glance/registry.pp": "bf177c2cf0445c4c542f9f8060e84756",
+    "manifests/profile/firewall.pp": "59797cf54cf2acc9155705f864b004ca",
+    "manifests/profile/cinder/api.pp": "8b1d9f933f3760c0b73ba0f18944d4f4",
+    "files/qemu.conf": "e00b425222d1e259ae879e1f1185b696",
+    "examples/RolesProfiles.pdf": "e25a5ceae546c34af67d411aa10cada5",
+    "examples/hiera.yaml": "f7b9265bcac274b0df2ec7c068f08518",
+    "spec/spec_helper.rb": "a55d1e6483344f8ec6963fcb2c220372",
+    "manifests/resources/tenant.pp": "c6d8ea42fa2de606a5b90b24471ba224",
+    "manifests/profile/mysql.pp": "d21dd2cde48d85be06e8bb5d0d25b043",
+    "manifests/profile/base.pp": "1fd867dd34186b10b8da0b92a4924b1f"
+  },
+  "source": "Chris Hoge",
+  "summary": "Simplified OpenStack Grizzly Deployment with Puppet.",
+  "author": "puppetlabs",
+  "name": "puppetlabs-grizzly",
+  "dependencies": [
+    {
+      "version_requirement": ">=2.1.0 <3.0.0",
+      "name": "puppetlabs/openstack"
+    },
+    {
+      "version_requirement": "0.8.0",
+      "name": "puppetlabs/apache"
+    },
+    {
+      "version_requirement": ">=2.0.0 <3.0.0",
+      "name": "puppetlabs/ntp"
+    },
+    {
+      "version_requirement": ">=0.0.4 <1.0.0",
+      "name": "puppetlabs/firewall"
+    }
+  ]
+}

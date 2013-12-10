@@ -1,0 +1,680 @@
+{
+  "source": "https://github.com/stackforge/puppet-neutron",
+  "description": "Puppet module to install and configure the OpenStack network service, Quantum",
+  "author": "Joe Topjian,Endre Karlson,Emilien Macchi,Dan Bode,Dmitry Ukov,Edgar Mangana,Robert Starmer,Ian Wells,Daneyon Hansen",
+  "dependencies": [
+    {
+      "version_requirement": ">=0.0.1 <1.0.0",
+      "name": "puppetlabs/vswitch"
+    },
+    {
+      "version_requirement": ">=1.0.0 <2.0.0",
+      "name": "puppetlabs/inifile"
+    },
+    {
+      "version_requirement": ">=0.6.1 <1.0.0",
+      "name": "puppetlabs/mysql"
+    },
+    {
+      "version_requirement": ">=2.3.0",
+      "name": "puppetlabs/stdlib"
+    },
+    {
+      "version_requirement": ">=2.2.0 <3.0.0",
+      "name": "puppetlabs/keystone"
+    },
+    {
+      "version_requirement": ">=2.2.0 <3.0.0",
+      "name": "puppetlabs/nova"
+    }
+  ],
+  "version": "2.2.0",
+  "license": "Apache License 2.0",
+  "project_page": "https://launchpad.net/puppet-neutron",
+  "types": [
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from api-paste.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_api_config"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from quantum.conf  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_config"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from dhcp_agent.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_dhcp_agent_config"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from l3_agent.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_l3_agent_config"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Symbolic name for the ovs bridge  Values can match `/.*/`.",
+          "name": "name"
+        },
+        {
+          "doc": "Name of the subnet that will use the bridge as gateway",
+          "name": "subnet_name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "    Quantum provider to manage quantum_l3_ovs_bridge type.\n\n    The provider ensures that the gateway ip of the subnet is\n    configured on the ovs bridge.\n\n\nRequired binaries: `/sbin/ip`.",
+          "name": "quantum"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_l3_ovs_bridge"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from lbaas_agent.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_lbaas_agent_config"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from metadata_agent.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_metadata_agent_config"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The unique id of the network",
+          "name": "id"
+        },
+        {
+          "doc": "The administrative status of the network  Values can match `/(t|T)rue/`, `/(f|F)alse/`.",
+          "name": "admin_state_up"
+        },
+        {
+          "doc": "Whether this network should be shared across all tenants or not  Values can match `/(t|T)rue/`, `/(f|F)alse/`.",
+          "name": "shared"
+        },
+        {
+          "doc": "A uuid identifying the tenant which will own the network.",
+          "name": "tenant_id"
+        },
+        {
+          "doc": "The physical mechanism by which the virtual network is realized.  Valid values are `flat`, `vlan`, `local`, `gre`.",
+          "name": "provider_network_type"
+        },
+        {
+          "doc": "      The name of the physical network over which the virtual network\n      is realized for flat and VLAN networks.\n  Values can match `/\\S+/`.",
+          "name": "provider_physical_network"
+        },
+        {
+          "doc": "Identifies an isolated segment on the physical network.",
+          "name": "provider_segmentation_id"
+        },
+        {
+          "doc": "Whether this router will route traffic to an external network  Values can match `/(t|T)rue/`, `/(f|F)alse/`.",
+          "name": "router_external"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Symbolic name for the network  Values can match `/.*/`.",
+          "name": "name"
+        },
+        {
+          "doc": "The name of the tenant which will own the network.",
+          "name": "tenant_name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "    Quantum provider to manage quantum_network type.\n\n    Assumes that the quantum service is configured on the same host.\n\n\nRequired binaries: `quantum`.",
+          "name": "quantum"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_network"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from cisco_plugins.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_plugin_cisco"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from credentials.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_plugin_cisco_credentials"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from plugins/cisco/db_conn.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_plugin_cisco_db_conn"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from plugins/cisco/l2network_plugin.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_plugin_cisco_l2network"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from linuxbridge_conf.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_plugin_linuxbridge"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The value of the setting to be defined.",
+          "name": "value"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Section/setting name to manage from ovs_quantum_plugin.ini  Values can match `/\\S+\\/\\S+/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "",
+          "name": "ini_setting"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_plugin_ovs"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The unique id of the router",
+          "name": "id"
+        },
+        {
+          "doc": "The administrative status of the router  Values can match `/(t|T)rue/`, `/(f|F)alse/`.",
+          "name": "admin_state_up"
+        },
+        {
+          "doc": "      External network that this router connects to for gateway services\n      (e.g., NAT).\n",
+          "name": "external_gateway_info"
+        },
+        {
+          "doc": "      The name of the external network that this router connects to\n      for gateway services (e.g. NAT).\n",
+          "name": "gateway_network_name"
+        },
+        {
+          "doc": "      The uuid of the external network that this router connects to\n      for gateway services (e.g. NAT).\n",
+          "name": "gateway_network_id"
+        },
+        {
+          "doc": "Whether the router is currently operational or not.",
+          "name": "status"
+        },
+        {
+          "doc": "A uuid identifying the tenant which will own the router.",
+          "name": "tenant_id"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Symbolic name for the router  Values can match `/.*/`.",
+          "name": "name"
+        },
+        {
+          "doc": "The name of the tenant which will own the router.",
+          "name": "tenant_name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "    Quantum provider to manage quantum_router type.\n\n    Assumes that the quantum service is configured on the same host.\n\n\nRequired binaries: `quantum`.",
+          "name": "quantum"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_router"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "",
+          "name": "id"
+        },
+        {
+          "doc": "",
+          "name": "router_name"
+        },
+        {
+          "doc": "",
+          "name": "subnet_name"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "  Values can match `/^\\S+:\\S+$/`.",
+          "name": "name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "    Quantum provider to manage quantum_router_interface type.\n\n    Assumes that the quantum service is configured on the same host.\n\n    It is not possible to manage an interface for the subnet used by\n    the gateway network, and such an interface will appear in the list\n    of resources ('puppet resource [type]').  Attempting to manage the\n    gateway interfae will result in an error.\n\n\n\nRequired binaries: `quantum`.",
+          "name": "quantum"
+        }
+      ],
+      "doc": "    This is currently used to model the creation of\n    quantum router interfaces.\n\n    Router interfaces are an association between a router and a\n    subnet.\n",
+      "name": "quantum_router_interface"
+    },
+    {
+      "properties": [
+        {
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`.",
+          "name": "ensure"
+        },
+        {
+          "doc": "The unique id of the subnet",
+          "name": "id"
+        },
+        {
+          "doc": "CIDR representing IP range for this subnet, based on IP version",
+          "name": "cidr"
+        },
+        {
+          "doc": "The IP version of the CIDR  Valid values are `4`, `6`.",
+          "name": "ip_version"
+        },
+        {
+          "doc": "Sub-ranges of cidr available for dynamic allocation to ports",
+          "name": "allocation_pools"
+        },
+        {
+          "doc": "The default gateway used by devices in this subnet",
+          "name": "gateway_ip"
+        },
+        {
+          "doc": "Whether DHCP is enabled for this subnet or not.  Values can match `/(t|T)rue/`, `/(f|F)alse/`.",
+          "name": "enable_dhcp"
+        },
+        {
+          "doc": "      Routes that should be used by devices with IPs from this subnet\n      (not including local subnet route).\n",
+          "name": "host_routes"
+        },
+        {
+          "doc": "DNS name servers used by hosts in this subnet.",
+          "name": "dns_nameservers"
+        },
+        {
+          "doc": "A uuid identifying the network this subnet is associated with.",
+          "name": "network_id"
+        },
+        {
+          "doc": "A uuid identifying the tenant which will own the subnet.",
+          "name": "tenant_id"
+        }
+      ],
+      "parameters": [
+        {
+          "doc": "Symbolic name for the subnet  Values can match `/.*/`.",
+          "name": "name"
+        },
+        {
+          "doc": "The name of the network this subnet is associated with.",
+          "name": "network_name"
+        },
+        {
+          "doc": "The name of the tenant which will own the subnet.",
+          "name": "tenant_name"
+        }
+      ],
+      "providers": [
+        {
+          "doc": "    Quantum provider to manage quantum_subnet type.\n\n    Assumes that the quantum service is configured on the same host.\n\n\nRequired binaries: `quantum`.",
+          "name": "quantum"
+        }
+      ],
+      "doc": "",
+      "name": "quantum_subnet"
+    }
+  ],
+  "summary": "Puppet module for OpenStack Quantum",
+  "checksums": {
+    "lib/puppet/type/quantum_plugin_linuxbridge.rb": "69964aedf9d2e22f506205e91cd66529",
+    "lib/puppet/provider/quantum_router/quantum.rb": "d158c2665920591991e7b37b073fe042",
+    "Gemfile": "a01e3f0d8ee43217838d92197f32f28f",
+    "lib/puppet/type/quantum_network.rb": "efccfa62b1440ef3b2a81fc88f8d438e",
+    "lib/puppet/type/quantum_plugin_cisco_db_conn.rb": "df22f19cc431ed99e088f26f5be41c4f",
+    "manifests/db/mysql/host_access.pp": "b35cb5b78e180586f399ec24aa06e68d",
+    "lib/puppet/type/quantum_plugin_cisco_credentials.rb": "772035d5892850814a275c1e36974838",
+    "manifests/agents/metadata.pp": "c68f2b86079a298590a631f74b3a94ee",
+    "examples/quantum.pp": "6da877932a487f792a9caf114a88e931",
+    "manifests/plugins/ovs/bridge.pp": "eaf0c4ef9bbe46074560af3db7e16636",
+    "lib/puppet/type/quantum_l3_agent_config.rb": "0d76b3062b8e309b46c8411d86ae83e4",
+    "examples/base_provision.pp": "c26e0ee8d595ba7e74ec59f91d1a114f",
+    "lib/puppet/type/quantum_l3_ovs_bridge.rb": "e01d32be43eef3fbf754cc48936fa826",
+    "README.md": "039aef2d9a6648f528fadc51a67bf2b5",
+    "lib/puppet/type/quantum_lbaas_agent_config.rb": "199599f7b5d2e6a661a60c6fa988c54b",
+    "spec/unit/provider/quantum_router_interface/quantum_spec.rb": "8f733a2a7458b8677b19321d69da5867",
+    "lib/puppet/provider/quantum_router_interface/quantum.rb": "2fc742fdcba56f37205b18ecaacef82e",
+    "lib/puppet/provider/quantum_plugin_cisco/ini_setting.rb": "dbd288320b06bfcb57a3d142b9c77796",
+    "lib/puppet/type/quantum_plugin_cisco.rb": "97525f3b1782cdd58fee0d24b368e29f",
+    "lib/puppet/provider/quantum_plugin_linuxbridge/ini_setting.rb": "db8df31bd02d1d6f9221a72e28a7a992",
+    "lib/puppet/type/quantum_subnet.rb": "24189138109317b33887f4203abc441f",
+    "spec/spec_helper.rb": "41d71ed92d01bb23d52397572e9b24bb",
+    "lib/puppet/provider/quantum_subnet/quantum.rb": "a1909b9ce8bdb17bfd68c97e0d42adcb",
+    "lib/puppet/type/quantum_plugin_cisco_l2network.rb": "24aea621467fa6aecd6e4a125dbf4436",
+    "Modulefile": "626606759993bb865cdcb7c680d9165b",
+    "manifests/plugins/linuxbridge.pp": "ef9478b845df7e74235678e089ee62b1",
+    "lib/puppet/provider/quantum_dhcp_agent_config/ini_setting.rb": "bc8949265fe94d4db612ffd5de5d25e2",
+    "spec/classes/quantum_agents_linuxbridge_spec.rb": "9de69f5e5e206208dda21d41371a1d7d",
+    "lib/puppet/provider/quantum_plugin_cisco_db_conn/ini_setting.rb": "a93b8736283e4e10fab0b78688ee7959",
+    "lib/puppet/provider/quantum_l3_agent_config/ini_setting.rb": "f7ba1817d5153459136bf13a0568e878",
+    "spec/unit/provider/quantum_l3_ovs_bridge/quantum_spec.rb": "058bbf8ca542a393d1d9274ae8df09be",
+    "spec/classes/quantum_db_mysql_spec.rb": "c8ad5e2851edeabfc8f0e58a02c7b6e9",
+    "spec/classes/quantum_quota_spec.rb": "89ab831bd73035e403bcb8d7c20dd832",
+    "spec/classes/quantum_plugins_ovs_spec.rb": "8715c289df27e2418fabca788727a3f2",
+    "lib/puppet/provider/quantum_metadata_agent_config/ini_setting.rb": "1f22b63b049de6c89870ddabc6ef35b0",
+    "manifests/agents/dhcp.pp": "21f142ac49d6cab22d1565f1ef879cf6",
+    "manifests/db/mysql.pp": "12a6952e20090e9a144112c54e7671bf",
+    "lib/puppet/type/quantum_router.rb": "c865a19a7d4f9130facd8977c9150ad8",
+    "lib/puppet/provider/quantum.rb": "9e6dbfd978e2d7f394e08c7897350984",
+    "examples/create_network.sh": "a10f62883e03ee22beb582518d0bfa4f",
+    "spec/classes/quantum_plugins_linuxbridge_spec.rb": "e02da9bb6e395a8499ca337d1da2ed21",
+    "manifests/agents/lbaas.pp": "daf83a14091b05fca41bd90021791978",
+    "spec/classes/quantum_keystone_auth_spec.rb": "6e5d4a82df3e17075caf7d55dc530fe0",
+    "spec/classes/quantum_client_spec.rb": "aaaf7ae60902568e1649700c76013f38",
+    "manifests/client.pp": "5201785daf0eb9970c35b9aaae8355c3",
+    "lib/puppet/type/quantum_config.rb": "473163f0365502def66c66e2c775581c",
+    "spec/classes/quantum_agents_dhcp_spec.rb": "b75a241980b9a8ed99f33500849d5b36",
+    "spec/unit/provider/quantum_router/quantum_spec.rb": "32d6249cfe5ee7b50b8cf297a684f120",
+    "spec/shared_examples.rb": "172c63c57efca8c741f297494ed9ef0f",
+    "spec/classes/quantum_agents_lbaas_spec.rb": "b0cc0da52973c7cfc2625a0d0810c535",
+    "manifests/init.pp": "e5f08eb660216538bb69f8dfae058f0d",
+    "lib/puppet/provider/quantum_config/ini_setting.rb": "5a711b4f575e8bfa30c1de8480b1f3df",
+    "lib/puppet/provider/quantum_api_config/ini_setting.rb": "3fd21af0925ff2b76d55ee2be684dbf5",
+    "lib/puppet/type/quantum_metadata_agent_config.rb": "774a5798690afdfaccf8fe16977513c2",
+    "LICENSE": "1dece7821bf3fd70fe1309eaa37d52a2",
+    "spec/classes/quantum_plugins_cisco_spec.rb": "6c9ec8db5e986a206ca3ad3d5f100619",
+    "manifests/server.pp": "df499fccadcdbbf259358c60c928413f",
+    "spec/classes/quantum_agents_ovs_spec.rb": "2b47a98d05b794e56ccd4e663dc386dd",
+    "spec/unit/provider/quantum_spec.rb": "f79aede36ffc0a0a868d213ad9e052da",
+    "lib/puppet/type/quantum_dhcp_agent_config.rb": "1978dd905db2137f09edde99eb3b5509",
+    "manifests/agents/l3.pp": "9c2ec4cc46cd80db193862062914f352",
+    "lib/puppet/type/quantum_plugin_ovs.rb": "b8b5e0defe753afac6f42d3dd67e1d59",
+    "spec/defines/quantum_db_mysql_host_access_spec.rb": "9b8cb33a5af592c1b6a8a96e0b9770b6",
+    "manifests/keystone/auth.pp": "f73a90b15e4587f6f52570d7c6e4c10f",
+    "manifests/plugins/ovs/port.pp": "8c2c649b509495ccb75181de032aeab3",
+    "manifests/agents/linuxbridge.pp": "c3d6f32854708ece6ea6fe9c28f1b220",
+    "lib/puppet/provider/quantum_network/quantum.rb": "7aafc9949a928e144fe61bbb724c1578",
+    "spec/classes/quantum_init_spec.rb": "e4358603499cad7b1aecb3dc18bf9213",
+    "manifests/params.pp": "724451731ec97cc7a92e6d67b74c0db5",
+    "spec/classes/quantum_agents_l3_spec.rb": "e818249efb802f39596980045cb7ce53",
+    "lib/puppet/type/quantum_api_config.rb": "1758ed41f5c329d8f6874ed4e43f94d5",
+    "Rakefile": "2ca4ff31c946a19edd44348fbfdc2aab",
+    "lib/puppet/provider/quantum_plugin_cisco_l2network/ini_setting.rb": "58e5e4f0c7c672dc666b8062b6f33657",
+    "lib/puppet/provider/quantum_lbaas_agent_config/ini_setting.rb": "241160eef839b71b743839ec88ebd840",
+    "manifests/plugins/ovs.pp": "b368050e9f4ddd6474bb469df4d9fbb9",
+    "manifests/plugins/cisco.pp": "aae744cf7ccdd737f518fa0c566b98eb",
+    "manifests/agents/ovs.pp": "52651c566965a02c20ebb9cd331576eb",
+    "spec/classes/quantum_agents_metadata_spec.rb": "85323b62758d93b27ad0189d36818597",
+    "lib/puppet/provider/quantum_plugin_ovs/ini_setting.rb": "6fa734d40ea5b71ad241040a7c72aa04",
+    "lib/puppet/provider/quantum_l3_ovs_bridge/quantum.rb": "af5aafe2ad0a1fe5c71e0d25ae62d970",
+    "spec/unit/provider/quantum_subnet/quantum_spec.rb": "40e559ad4361a132c03aa32e9a0b5fed",
+    "spec/unit/provider/quantum_network/quantum_spec.rb": "c92f9bc8b792e0cc1b1c172bf1b56a01",
+    "lib/puppet/type/quantum_router_interface.rb": "58a113f6582a876f9ea0c09bb4bcaf5a",
+    "spec/classes/quantum_server_spec.rb": "c69d34394b85d92a2bc98e861feb2cb4",
+    "manifests/quota.pp": "7a8e2942076c2af53ec85a40360902e9",
+    "lib/puppet/provider/quantum_plugin_cisco_credentials/ini_setting.rb": "e4936aa7fe7b236e266d9bf9c161379c"
+  },
+  "name": "puppetlabs-quantum"
+}

@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
             end
 
             box.vm.provision :shell, :path => "vagrant/install-puppet.sh"
-            box.vm.provision :shell, :inline => "cd /vagrant/puppet && ./install-modules.sh"
+            #box.vm.provision :shell, :inline => "cd /vagrant/puppet && ./install-modules.sh"
             box.vm.provision :puppet do |puppet|
                 puppet.manifests_path = "puppet/manifests"
                 puppet.module_path = [ "puppet/modules", "puppet/site" ]
