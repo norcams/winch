@@ -1,0 +1,33 @@
+[vagrant@controller ~]$ puppet module install puppetlabs-grizzly
+Notice: Preparing to install into /home/vagrant/.puppet/modules ...
+Notice: Created target directory /home/vagrant/.puppet/modules
+Notice: Downloading from https://forge.puppetlabs.com ...
+Notice: Installing -- do not interrupt ...
+/home/vagrant/.puppet/modules
+└─┬ puppetlabs-grizzly (v1.0.0)
+  ├─┬ puppetlabs-apache (v0.8.0)
+  │ ├── puppetlabs-stdlib (v4.1.0)
+  │ └── ripienaar-concat (v0.2.0)
+  ├── puppetlabs-firewall (v0.4.2)
+  ├── puppetlabs-ntp (v2.0.1)
+  └─┬ puppetlabs-openstack (v2.2.0)
+    ├─┬ puppetlabs-cinder (v2.2.0)
+    │ ├── dprince-qpid (v1.0.2)
+    │ ├── puppetlabs-inifile (v1.0.0)
+    │ ├── puppetlabs-mysql (v0.9.0)
+    │ └─┬ puppetlabs-rabbitmq (v2.1.0)
+    │   └── puppetlabs-apt (v1.4.0)
+    ├── puppetlabs-glance (v2.2.0)
+    ├─┬ puppetlabs-horizon (v2.2.0)
+    │ └── saz-memcached (v2.2.4)
+    ├── puppetlabs-keystone (v2.2.0)
+    ├─┬ puppetlabs-nova (v2.2.0)
+    │ └── duritong-sysctl (v0.0.2)
+    ├─┬ puppetlabs-quantum (v2.2.0)
+    │ └── puppetlabs-vswitch (v0.2.0)
+    └─┬ puppetlabs-swift (v2.2.1)
+      ├── puppetlabs-concat (v1.0.0)
+      ├── puppetlabs-rsync (v0.1.0)
+      ├── puppetlabs-xinetd (v1.2.0)
+      └── saz-ssh (v1.2.0)
+
