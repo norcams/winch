@@ -1,6 +1,6 @@
 node_defaults:
-    cpus: 1
-    memory: 1024
+    cpus: 2
+    memory: 2048
     box: centos
     networks:
         - public
@@ -10,11 +10,7 @@ node_defaults:
 
 nodes:
     - name: controller
-      cpus: 2
-      memory: 2048
-#    - name: storage
-#    - name: network
-#    - name: compute01
+    - name: compute
 
 networks:
     public:     192.168.11

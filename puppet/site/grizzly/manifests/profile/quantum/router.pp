@@ -39,7 +39,7 @@ class grizzly::profile::quantum::router {
     $external_device = hiera('grizzly::network::external::device')
     $external_network = hiera('grizzly::network::external')
     $external_ip = getvar("ipaddress_${external_device}")
-    $external_ip_subnet = regsubst($external_network, '^(\d+)\.(\d+)\.(\d+)\.(\d+)(/\d+)', "${external_ip}\5")
+    $external_ip_subnet = regsubst($external_network, '^(\d+)\.(\d+)\.(\d+)\.(\d+)(/\d+)', "${external_ip}\\5")
 
     exec { '/usr/bin/ovs-vsctl add-br br-ex': } ->
     exec { "/usr/bin/ovs-vsctl add-port br-ex ${external_device}": } ->

@@ -17,8 +17,8 @@ grizzly::network::data::device: 'eth4'
 
 grizzly::controller::address::api: '192.168.11.11'
 grizzly::controller::address::management: '172.16.33.11'
-grizzly::storage::address::api: '192.168.11.12'
-grizzly::storage::address::management: '172.16.33.12'
+grizzly::storage::address::api: '192.168.11.11'
+grizzly::storage::address::management: '172.16.33.11'
 
 ######## Database
 
