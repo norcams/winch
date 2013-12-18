@@ -11,19 +11,10 @@ winch
 Here's our current documentation. Feel free to fork, contribute,
 anything!
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
    intro_tools
    intro_vagrant
    intro_checkout
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
