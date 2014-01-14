@@ -6,9 +6,9 @@
 winch
 =====
 
-"winch is not cloud, hehe"
+*winch installs cloud hosts*
 
-Here's our current documentation. Feel free to fork, contribute,
+This is the `current documentation`_. Feel free to fork, contribute,
 anything!
 
 .. toctree::
@@ -18,3 +18,4 @@ anything!
    intro_vagrant
    intro_checkout
 
+.. _current documentation: https://winch.readthedocs.org/
