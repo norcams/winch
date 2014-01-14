@@ -10,8 +10,8 @@ Requirements
 -  A working installation of VirtualBox and Vagrant
 -  A decent internet connection to download a <1GB Vagrant box
 
-Vagrant
--------
+Basic concepts
+--------------
 
 Vagrant uses image templates as its source for quickly bringing up a new
 virtual machine. These base images are called *boxes* in Vagrant. A box
@@ -20,7 +20,7 @@ add the box we are going to use
 
 ::
 
-    vagrant box add centos http://bit.ly/1aNNghN
+    vagrant box add centos http://bit.ly/winch-centos-box
 
 This might take a while to finish, the box is around 500mb to download.
 While waiting for it to complete you could skim through the [getting
@@ -76,3 +76,10 @@ concept <http://docs.vagrantup.com/v2/provisioning/index.html>`_ at
 vagrantup.com. Take note that Vagrant has a lot of different mechanisms
 for provisioning, it supports both Ansible, Chef and CFengine in
 addition to shell scripts.
+
+Further reading
+===============
+
+The official `Vagrant documentation<http://docs.vagrantup.com/v2/>`_ is 
+quite detailed and will help with overcoming most issues.
+
