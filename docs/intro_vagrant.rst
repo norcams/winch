@@ -80,6 +80,8 @@ addition to shell scripts.
 Further reading
 ===============
 
-The official `Vagrant documentation<http://docs.vagrantup.com/v2/>`_ is 
-quite detailed and will help with overcoming most issues.
+The `official documentation`_ is quite detailed and will help with
+overcoming most issues.
+
+.. _official documentation: http://docs.vagrantup.com/v2/
 
