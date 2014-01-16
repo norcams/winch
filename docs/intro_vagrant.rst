@@ -78,7 +78,7 @@ for provisioning, it supports both Ansible, Chef and CFengine in
 addition to shell scripts.
 
 Further reading
-===============
+---------------
 
 The `official documentation`_ is quite detailed and will help with
 overcoming most issues.
