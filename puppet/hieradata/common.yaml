@@ -68,7 +68,7 @@ grizzly::cinder::volume_size: '4G'
 
 ######## Nova
 
-grizzly::nova::libvirt_type: 'kvm'
+grizzly::nova::libvirt_type: 'qemu'
 grizzly::nova::sql::password: 'li-hu-py'
 grizzly::nova::password: 'quuk-paj'
 grizzly::nova::verbose: 'True'
