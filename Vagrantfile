@@ -12,7 +12,7 @@ end
 Vagrant.configure("2") do |config|
     settings['nodes'].each_with_index do |node, i|
         config.vm.define node['name'] do |box|
-            box.vm.hostname = node['name']
+            box.vm.hostname = node['name'] + "." + node['domain']
             box.vm.box = node['box']
             box.vm.box_url = node['box_url']
 

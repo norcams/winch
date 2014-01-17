@@ -2,6 +2,7 @@ node_defaults:
     cpus: 2
     memory: 2048
     box: centos
+    domain: localdomain
     networks:
         - public
         - api
