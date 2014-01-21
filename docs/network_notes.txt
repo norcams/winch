@@ -1,0 +1,8 @@
+A good and detailed explanation of Neutron and its components:
+
+http://openstack.redhat.com/Networking_in_too_much_detail
+
+Rackspace private cloud blog post, good details on how to combine GRE-tunneled networks with physical networks, per compute host:
+
+http://www.yet.org/2013/07/rackspace-private-cloud-v4/index.html#neutronnetworking
+
