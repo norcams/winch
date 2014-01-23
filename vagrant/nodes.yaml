@@ -4,7 +4,7 @@ node_defaults:
     box: centos
     domain: localdomain
     networks:
-        - public
+        - external
         - api
         - management
         - data
