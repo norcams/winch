@@ -1,0 +1,64 @@
+"Site-spesfikk kode-sti"
+
+1. Vagrant kjører Puppet ved første boot eller hvis en kjører "provision"-kommando
+
+2. Puppet starter å lese kode fra "vagrant/puppet/vagrant.pp" (se opsjonene i Vagrantfile)
+
+3. Leser videre fra modulsti:
+
+node compute {
+  include ::grizzly::role::winch_compute
+}
+
+Leser inn klassen winch_compute i modulen grizzly
+
+4. I hver modul er den en mappe som heter "manifests", init.pp blir lastet som default når en leser inn en modul. I vårt tilfelle er det en eksplisitt kodesti slik at filen 
+
+puppet/site/grizzly/manifests/role/winch_compute.pp
+
+blir lest.
+
+5. Fila definerer to profiler:
+
+class grizzly::role::winch_compute inherits ::grizzly::role {
+  class { '::grizzly::profile::quantum::agent': } ->
+  class { '::grizzly::profile::nova::compute': }
+}
+
+"
+Inherits" betyr her at vi utvider "::grizzly::role" med mer funksjonalitet. Vi er interessert i basisfunksjonaliteten i ::grizzly::role
+
+6. puppet/site/grizzly/manifests/role.pp:
+
+class grizzly::role {
+  include grizzly::profile::base
+}
+
+7. puppet/site/grizzly/manifests/profile/base.pp:
+
+Dette er "basisprofilen" og inneholder linja
+
+class { '::ntp': }
+
+som laster modulen ntp uten parameter.
+
+8. Hvor er ntp-modulen da? module_path er et array ...
+
+puppet/modules/ntp/manifests/init.pp
+
+
+"Eksempel på modul-oppbygning"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
