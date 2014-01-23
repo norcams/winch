@@ -1,29 +1,29 @@
 grizzly::region: 'openstack'
 
 ######## Network
-grizzly::network::api: '192.168.11.0/24'
-grizzly::network::api::device: 'eth1'
+grizzly::network::external: '192.168.66.0/24'
+grizzly::network::external::device: 'eth1'
 
-grizzly::network::external: '192.168.22.0/24'
-grizzly::network::external::device: 'eth2'
+grizzly::network::api: '192.168.77.0/24'
+grizzly::network::api::device: 'eth2'
 
-grizzly::network::management: '172.16.33.0/24'
+grizzly::network::management: '172.16.88.0/24'
 grizzly::network::management::device: 'eth3'
 
-grizzly::network::data: '172.16.44.0/24'
+grizzly::network::data: '172.16.99.0/24'
 grizzly::network::data::device: 'eth4'
 
 ######## Fixed IPs (controller)
 
-grizzly::controller::address::api: '192.168.11.11'
-grizzly::controller::address::management: '172.16.33.11'
-grizzly::storage::address::api: '192.168.11.11'
-grizzly::storage::address::management: '172.16.33.11'
+grizzly::controller::address::api: '192.168.77.11'
+grizzly::controller::address::management: '172.16.88.11'
+grizzly::storage::address::api: '192.168.77.11'
+grizzly::storage::address::management: '172.16.88.11'
 
 ######## Database
 
 grizzly::mysql::root_password: 'spam-gak'
-grizzly::mysql::allowed_hosts: ['localhost', '127.0.0.1', '172.16.33.%']
+grizzly::mysql::allowed_hosts: ['localhost', '127.0.0.1', '172.16.88.%']
 
 ######## RabbitMQ
 
@@ -34,7 +34,7 @@ grizzly::rabbitmq::password: 'pose-vix'
 
 grizzly::keystone::admin_token: 'sosp-kyl'
 grizzly::keystone::sql::password: 'fuva-wax'
-grizzly::keystone::admin_email: 'chris.hoge@puppetlabs.com'
+grizzly::keystone::admin_email: 'nobody@example.com'
 grizzly::keystone::admin_password: 'fyby-tet'
 grizzly::keystone::verbose: 'True'
 grizzly::keystone::debug: 'True'
