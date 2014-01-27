@@ -19,6 +19,13 @@ class grizzly::profile::quantum::common {
   $sql_connection =
     "mysql://quantum:${sql_password}@${controller_management_address}/quantum"
 
+  # Make sure iproute is upgraded first, to get support for net namespaces
+  exec { 'yum_upgrade_iproute':
+    command => '/usr/bin/yum -y upgrade iproute',
+    unless => '/bin/rpm -q iproute | grep el6ost',
+  }
+  Exec['yum_upgrade_iproute'] -> Class['::quantum']
+
   class { '::quantum':
     rabbit_host        => $controller_management_address,
     rabbit_user        => hiera('grizzly::rabbitmq::user'),
