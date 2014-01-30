@@ -1,4 +1,3 @@
 #!/bin/bash
-export ENDPOINT=172.16.33.11
 export SERVICE_TOKEN=sosp-kyl
-export SERVICE_ENDPOINT=http://${ENDPOINT}:35357/v2.0
+export SERVICE_ENDPOINT=http://172.16.88.11:35357/v2.0
