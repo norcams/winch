@@ -1,6 +1,13 @@
 # post-firewall rules to reject remaining traffic
 class grizzly::profile::firewall::post {
 
+  firewall { '99997 - Accept all public network traffic':
+    proto  => 'all',
+    action => 'accept',
+    source => hiera('grizzly::network::external'),
+    before => undef,
+  }
+
   firewall { '99998 - Accept all management network traffic':
     proto  => 'all',
     action => 'accept',
