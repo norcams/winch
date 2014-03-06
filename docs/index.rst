@@ -17,5 +17,6 @@ anything!
    intro_tools
    intro_vagrant
    intro_checkout
+   learning_openstack
 
 .. _current documentation: https://winch.readthedocs.org/
