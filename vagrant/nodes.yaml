@@ -14,10 +14,10 @@ nodes:
     - name: compute
 
 networks:
-    external:   192.168.66
-    api:        192.168.77
-    management: 172.16.88
-    data:       172.16.99
+    api:        192.168.166
+    external:   192.168.177
+    management: 172.16.188
+    data:       172.16.199
 
 boxes:
     centos65: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.5_chef-provisionerless.box

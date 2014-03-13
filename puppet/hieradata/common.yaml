@@ -1,11 +1,11 @@
 havana::region: 'openstack'
 
 ######## Network
-havana::network::external: '192.168.166.0/24'
-havana::network::external::device: 'eth2'
-
-havana::network::api: '192.168.177.0/24'
+havana::network::api: '192.168.166.0/24'
 havana::network::api::device: 'eth1'
+
+havana::network::external: '192.168.177.0/24'
+havana::network::external::device: 'eth2'
 
 havana::network::management: '172.16.188.0/24'
 havana::network::management::device: 'eth3'
@@ -15,9 +15,9 @@ havana::network::data::device: 'eth4'
 
 ######## Fixed IPs (controller)
 
-havana::controller::address::api: '192.168.177.11'
+havana::controller::address::api: '192.168.166.11'
 havana::controller::address::management: '172.16.188.11'
-havana::storage::address::api: '192.168.177.11'
+havana::storage::address::api: '192.168.166.11'
 havana::storage::address::management: '172.16.188.11'
 
 ######## Database
