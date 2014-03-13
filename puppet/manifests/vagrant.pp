@@ -1,8 +1,8 @@
 node controller {
-  include ::grizzly::role::winch_controller
+  include ::havana::role::winch_controller
 }
 
 node compute {
-  include ::grizzly::role::winch_compute
+  include ::havana::role::winch_compute
 }
 
