@@ -11,6 +11,7 @@ class havana::role::winch_controller inherits ::havana::role {
   class { '::havana::profile::cinder::api': } ->
   class { '::havana::profile::nova::api': } ->
   class { '::havana::profile::neutron::server': } ->
+  class { '::havana::profile::neutron::router': } ->
   class { '::havana::profile::heat::api': } ->
   class { '::havana::profile::horizon': }
   class { '::havana::profile::auth_file': }
