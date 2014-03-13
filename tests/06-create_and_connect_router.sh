@@ -1,4 +1,4 @@
 #!/bin/bash -vx
-quantum router-create testrouter
-quantum router-gateway-set testrouter floatingnet
-quantum router-interface-add testrouter testsubnet
+neutron router-create testrouter
+neutron router-gateway-set testrouter floatingnet
+neutron router-interface-add testrouter testsubnet
