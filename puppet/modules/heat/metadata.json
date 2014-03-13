@@ -1,0 +1,85 @@
+{
+  "name": "puppetlabs-heat",
+  "version": "3.0.0",
+  "source": "https://github.com/stackforge/puppet-heat",
+  "author": "enovance",
+  "license": "Apache License, Version 2.0",
+  "summary": "Install/configure Openstack Heat",
+  "description": "Install/configure Openstack Heat",
+  "project_page": "https://launchpad.net/puppet-heat",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 3.2.0"
+    },
+    {
+      "name": "puppetlabs/inifile",
+      "version_requirement": ">= 1.0.0 <2.0.0"
+    },
+    {
+      "name": "puppetlabs/mysql",
+      "version_requirement": ">=0.6.1 <1.0.0"
+    }
+  ],
+  "types": [
+    {
+      "name": "heat_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from heat.conf  Values can match `/\\S+\\/\\S+/`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    }
+  ],
+  "checksums": {
+    "Gemfile": "a01e3f0d8ee43217838d92197f32f28f",
+    "LICENSE": "5335066555b14d832335aa4660d6c376",
+    "Modulefile": "944bfb379a2f643e5be51bd1ec5e1798",
+    "README.md": "7b4a619cdb38593d1f82039076206a42",
+    "Rakefile": "eedfabef802b352dd7b77f5eb59b3d6b",
+    "examples/site.pp": "8e2dfdf832d3a1e980126f6e447bea38",
+    "lib/puppet/provider/heat_config/ini_setting.rb": "698dda5d507334a0f2555a747ccd5d0f",
+    "lib/puppet/type/heat_config.rb": "d03d06107ec6fbb7a80cf86b238a9153",
+    "manifests/api-cfn.pp": "de285329e943c779145b2fb74977848c",
+    "manifests/api-cloudwatch.pp": "7940034a701196d399b53f18a5ecac64",
+    "manifests/api.pp": "c02999c21a4cd78200dac028b029d1e3",
+    "manifests/api_cfn.pp": "a1e7fd254e39665e705d5ee0704bd7bf",
+    "manifests/api_cloudwatch.pp": "1965f3b004451690f94b4c5e49df58b4",
+    "manifests/client.pp": "c2021d1f26e6f2df20c49b413b1ddf1d",
+    "manifests/db/mysql/host_access.pp": "d66f58e4206e854baeacfe2966500c80",
+    "manifests/db/mysql.pp": "ae5091965f6455b663cc0db504510ea9",
+    "manifests/engine.pp": "e85dc35bc6b879157e2ba79cea44c51d",
+    "manifests/init.pp": "59f1cb283a83d9483009ef6e70aae569",
+    "manifests/keystone/auth.pp": "760c3b0a23f16ec3ae7cee809cc7f88e",
+    "manifests/keystone/auth_cfn.pp": "dd56de3030f36a3ffe1a0bf3a1e4ba58",
+    "manifests/params.pp": "9bdbc6c294f14b39edd101cc39fd39f7",
+    "spec/classes/heat_api_cfn_spec.rb": "6260f41a2e023836fe79a4ebe365907e",
+    "spec/classes/heat_api_cloudwatch_spec.rb": "526f9f1ac6ae7550ef330ad21955676e",
+    "spec/classes/heat_api_spec.rb": "0014d903c4c68ef791845cbfc533c39d",
+    "spec/classes/heat_db_mysql_spec.rb": "8c5e2f5a5e1de1798d674c3b8e852c9a",
+    "spec/classes/heat_engine_spec.rb": "b5e7d24dcfcd0b14da425367640eec44",
+    "spec/classes/heat_init_spec.rb": "e7320028e80b9cbf01a12301e912b6fb",
+    "spec/classes/heat_keystone_auth_cfn_spec.rb": "4d301fa2eda406517ea7561a53323c93",
+    "spec/classes/heat_keystone_auth_spec.rb": "c798fa824add69535ef4448fe3656f17",
+    "spec/shared_examples.rb": "172c63c57efca8c741f297494ed9ef0f",
+    "spec/spec_helper.rb": "41d71ed92d01bb23d52397572e9b24bb"
+  }
+}

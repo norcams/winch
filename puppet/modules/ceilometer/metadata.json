@@ -1,0 +1,139 @@
+{
+  "name": "puppetlabs-ceilometer",
+  "version": "3.1.0",
+  "source": "https://github.com/stackforge/puppet-ceilometer",
+  "author": "enovance",
+  "license": "Apache License, Version 2.0",
+  "summary": "Install/configure Openstack Ceilometer",
+  "description": "Install/configure Openstack Ceilometer",
+  "project_page": "https://launchpad.net/puppet-ceilometer",
+  "dependencies": [
+    {
+      "name": "puppetlabs/keystone",
+      "version_requirement": ">=3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 3.2.0"
+    },
+    {
+      "name": "puppetlabs/inifile",
+      "version_requirement": ">=1.0.0 <2.0.0"
+    },
+    {
+      "name": "puppetlabs/mysql",
+      "version_requirement": ">=0.6.1 <1.0.0"
+    }
+  ],
+  "types": [
+    {
+      "name": "ceilometer_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from ceilometer.conf  Values can match `/\\S+\\/\\S+/`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "file_line_after",
+      "doc": "    Ensures that a given line is contained within a file.  The implementation\n    matches the full line, including whitespace at the beginning and end.  If\n    the line is not contained in the given file, Puppet will add the line to\n    ensure the desired state.  Multiple resources may be declared to manage\n    multiple lines in the same file.\n\n    Example:\n\n        file_line_after { 'sudo_rule':\n          path => '/etc/sudoers',\n          line => '%sudo ALL=(ALL) ALL',\n        }\n        file_line_after { 'sudo_rule_nopw':\n          path => '/etc/sudoers',\n          line => '%sudonopw ALL=(ALL) NOPASSWD: ALL',\n        }\n\n    In this example, Puppet will ensure both of the specified lines are\n    contained in the file /etc/sudoers.\n\n",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "An arbitrary name used as the identity of the resource."
+        },
+        {
+          "name": "match",
+          "doc": "An optional regular expression to run against existing lines in the file;\\nif a match is found, we replace that line rather than adding a new line."
+        },
+        {
+          "name": "multiple",
+          "doc": "An optional value to determine if match can change multiple lines.  Valid values are `true`, `false`."
+        },
+        {
+          "name": "after",
+          "doc": "An optional value used to specify the line after which we will add any new lines. (Existing lines are added in place)"
+        },
+        {
+          "name": "line",
+          "doc": "The line to be appended to the file located by the path parameter."
+        },
+        {
+          "name": "path",
+          "doc": "The file Puppet will ensure contains the line specified by the line parameter."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ruby",
+          "doc": ""
+        }
+      ]
+    }
+  ],
+  "checksums": {
+    "Gemfile": "a01e3f0d8ee43217838d92197f32f28f",
+    "LICENSE": "5335066555b14d832335aa4660d6c376",
+    "Modulefile": "524c5501a60bad9534a3f96870ddb97f",
+    "README.md": "44c78df1460da56761d4eb5860bed907",
+    "Rakefile": "2ca4ff31c946a19edd44348fbfdc2aab",
+    "examples/site.pp": "64024583acfe8e2189755a6b7342e212",
+    "lib/puppet/provider/ceilometer_config/ini_setting.rb": "5989aeeb160a4f63852632d61076def9",
+    "lib/puppet/provider/file_line_after/ruby.rb": "399f1633869133c87f19b2359703797f",
+    "lib/puppet/type/ceilometer_config.rb": "1e4182cb2180c42926a97ddc2ca5aba7",
+    "lib/puppet/type/file_line_after.rb": "005c849db2d28e88bdb2b1a7038d420e",
+    "manifests/agent/auth.pp": "b1d624db831f4158d47d2dec7ac4921e",
+    "manifests/agent/central.pp": "e057ca4c1bf77a8d6599e1caddb62e3f",
+    "manifests/agent/compute.pp": "85220de631d504a831457e5233c4c326",
+    "manifests/alarm/evaluator.pp": "779dd02637a005d83d445b4680e3bcfe",
+    "manifests/alarm/notifier.pp": "bfdc9267112338f623bf3a89efcf9d77",
+    "manifests/api.pp": "864dff928ac1fd091096c941a23e5866",
+    "manifests/client.pp": "beef542731da85890910bf5140a3c2fc",
+    "manifests/collector.pp": "a2251ed594f80ebc61ae5521ded07f71",
+    "manifests/db/mysql/host_access.pp": "fc4a7197ca61e3b21a33e2fe3c635896",
+    "manifests/db/mysql.pp": "bc95e09d26db18658f8293b171072aa0",
+    "manifests/db.pp": "2464691fbf5086717a581bc02df533c8",
+    "manifests/expirer.pp": "b0bef909b478f7f41c05c0d7ebd1be00",
+    "manifests/init.pp": "3553aed0b8268770b3ce5d4ec021e28c",
+    "manifests/keystone/auth.pp": "39be0a5e99559020672a58272988d00a",
+    "manifests/params.pp": "bc56195d60f127d7aa1a270eec06e80b",
+    "spec/classes/ceilometer_agent_auth_spec.rb": "9fad7ba613181c47a5696cbaf394b4f7",
+    "spec/classes/ceilometer_agent_central_spec.rb": "2f6a94b41ed454409fa54f8d314d6e20",
+    "spec/classes/ceilometer_agent_compute_spec.rb": "d2efa4cba09494d24e789305903dab8d",
+    "spec/classes/ceilometer_alarm_evaluator_spec.rb": "d38059cd2d78dae5f1bfe644ff961db6",
+    "spec/classes/ceilometer_alarm_notifier_spec.rb": "db244495fa05f59204155d760a50d3b0",
+    "spec/classes/ceilometer_api_spec.rb": "f9b25cf93bfa65a8cedff716a879e6b6",
+    "spec/classes/ceilometer_client_spec.rb": "ba97546e61726908a88e3464badc1895",
+    "spec/classes/ceilometer_collector_spec.rb": "f35ac8b4da866ea00650305b9de5f0c0",
+    "spec/classes/ceilometer_db_mysql_spec.rb": "b868ae0788f00e89eb6291a1f1228fc5",
+    "spec/classes/ceilometer_db_spec.rb": "7db1394540d85b935017af5355f3529f",
+    "spec/classes/ceilometer_expirer_spec.rb": "56c42f79a651a8603726e68a419478cd",
+    "spec/classes/ceilometer_init_spec.rb": "225fd20ed1380bfe16db96b5a234e994",
+    "spec/classes/ceilometer_keystone_auth_spec.rb": "1fb27c9943a2bf6b1a6436cc663c6d0f",
+    "spec/spec_helper.rb": "49ca7b82b3865b34d1edd5200d46aa31"
+  }
+}

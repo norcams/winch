@@ -1,0 +1,102 @@
+havana::region: 'openstack'
+
+######## Network
+havana::network::api: '192.168.11.0/24'
+havana::network::api::device: 'eth1'
+
+havana::network::external: '192.168.22.0/24'
+havana::network::external::device: 'eth2'
+
+havana::network::management: '172.16.33.0/24'
+havana::network::management::device: 'eth3'
+
+havana::network::data: '172.16.44.0/24'
+havana::network::data::device: 'eth4'
+
+######## Fixed IPs (controller)
+
+havana::controller::address::api: '192.168.11.4'
+havana::controller::address::management: '172.16.33.4'
+havana::storage::address::api: '192.168.11.5'
+havana::storage::address::management: '172.16.33.5'
+
+######## Database
+
+havana::mysql::root_password: 'spam-gak'
+havana::mysql::service_password: 'fuva-wax'
+havana::mysql::allowed_hosts: ['localhost', '127.0.0.1', '172.16.33.%']
+
+######## RabbitMQ
+
+havana::rabbitmq::user: 'openstack'
+havana::rabbitmq::password: 'pose-vix'
+
+######## Keystone
+
+havana::keystone::admin_token: 'sosp-kyl'
+havana::keystone::admin_email: 'chris.hoge@puppetlabs.com'
+havana::keystone::admin_password: 'fyby-tet'
+havana::keystone::verbose: 'True'
+havana::keystone::debug: 'True'
+
+havana::tenants:
+    "test":
+        description: "Test tenant"
+
+havana::users:
+    "test":
+        password: "abc123"
+        tenant: "test"
+        email: "test@example.com"
+        admin: true
+
+######## Glance
+
+havana::glance::password: 'na-mu-va'
+havana::glance::verbose: 'True'
+havana::glance::debug: 'True'
+
+######## Cinder
+
+havana::cinder::password: 'zi-co-se'
+havana::cinder::verbose: 'True'
+havana::cinder::debug: 'True'
+
+havana::cinder::volume_size: '4G'
+
+######## Swift
+
+havana::swift::password: 'dexc-flo'
+havana::swift::hash_suffix: 'pop-bang'
+
+######## Nova
+
+havana::nova::libvirt_type: 'kvm'
+havana::nova::password: 'quuk-paj'
+havana::nova::verbose: 'True'
+havana::nova::debug: 'True'
+
+######## Neutron
+
+havana::neutron::password: 'whi-rtuz'
+havana::neutron::shared_secret: 'by-sa-bo'
+havana::neutron::verbose: 'True'
+havana::neutron::debug: 'True'
+
+######## Ceilometer
+havana::ceilometer::mongo::password: 'whi-truz'
+havana::ceilometer::password: 'whi-truz'
+havana::ceilometer::meteringsecret: 'ceilometersecretkey'
+havana::ceilometer::verbose: 'True'
+havana::ceilometer::debug: 'True'
+
+######## Heat
+havana::heat::password: 'zap-bang'
+havana::heat::encryption_key: 'heatsecretkey'
+havana::heat::verbose: 'True'
+havana::heat::debug: 'True'
+
+
+######## Horizon
+
+havana::horizon::secret_key: 'whu-ghuk'

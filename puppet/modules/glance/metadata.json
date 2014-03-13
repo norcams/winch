@@ -1,0 +1,268 @@
+{
+  "name": "puppetlabs-glance",
+  "version": "3.0.0",
+  "source": "https://github.com/stackforge/puppet-glance",
+  "author": "Puppet Labs",
+  "license": "Apache License 2.0",
+  "summary": "Puppet Labs Glance Module",
+  "description": "Puppet module to install and configure the Openstack Glance image service",
+  "project_page": "https://launchpad.net/puppet-openstack",
+  "dependencies": [
+    {
+      "name": "puppetlabs/inifile",
+      "version_requirement": ">=1.0.0 <2.0.0"
+    },
+    {
+      "name": "puppetlabs/keystone",
+      "version_requirement": ">=3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/mysql",
+      "version_requirement": ">=0.6.1 <1.0.0"
+    },
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 2.5.0"
+    }
+  ],
+  "types": [
+    {
+      "name": "glance_api_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from glance-api.conf  Values can match `/\\S+\\/\\S+/`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "glance_api_paste_ini",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from glance-api-paste.ini  Values can match `/\\S+\\/\\S+/`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "glance_cache_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from glance-cache.conf  Values can match `/\\S+\\/\\S+/`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "glance_image",
+      "doc": "    This allows manifests to declare an image to be\n    stored in glance.\n\n    glance_image { \"Ubuntu 12.04 cloudimg amd64\":\n      ensure           => present,\n      name             => \"Ubuntu 12.04 cloudimg amd64\"\n      is_public        => yes,\n      container_format => ovf,\n      disk_format      => 'qcow2',\n      source           => 'http://uec-images.ubuntu.com/releases/precise/release/ubuntu-12.04-server-cloudimg-amd64-disk1.img'\n    }\n\n    Known problems / limitations:\n      * All images are managed by the glance service. \n        This means that since users are unable to manage their own images via this type,\n        is_public is really of no use. You can probably hide images this way but that's all.\n      * As glance image names do not have to be unique, you must ensure that your glance \n        repository does not have any duplicate names prior to using this.\n      * Ensure this is run on the same server as the glance-api service.\n\n",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "id",
+          "doc": "The unique id of the image"
+        },
+        {
+          "name": "location",
+          "doc": "The permanent location of the image. Optional  Values can match `/\\S+/`."
+        },
+        {
+          "name": "is_public",
+          "doc": "Whether the image is public or not. Default true  Values can match `/(y|Y)es/`, `/(n|N)o/`."
+        },
+        {
+          "name": "container_format",
+          "doc": "The format of the container  Valid values are `ami`, `ari`, `aki`, `bare`, `ovf`."
+        },
+        {
+          "name": "disk_format",
+          "doc": "The format of the disk  Valid values are `ami`, `ari`, `aki`, `vhd`, `vmd`, `raw`, `qcow2`, `vdi`, `iso`."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "The image name  Values can match `/.*/`."
+        },
+        {
+          "name": "source",
+          "doc": "The source of the image to import from  Values can match `/\\S+/`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "glance",
+          "doc": "    Glance provider to manage glance_image type.\n\n    Assumes that the glance-api service is on the same host and is working.\n\n\nRequired binaries: `glance`."
+        }
+      ]
+    },
+    {
+      "name": "glance_registry_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from glance-registry.conf  Values can match `/\\S+\\/\\S+/`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "glance_registry_paste_ini",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from glance-registry-paste.ini  Values can match `/\\S+\\/\\S+/`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    }
+  ],
+  "checksums": {
+    "Gemfile": "a01e3f0d8ee43217838d92197f32f28f",
+    "LICENSE": "0e5ccf641e613489e66aa98271dbe798",
+    "Modulefile": "1a4e5cc9d125d90c112a77c8e01d6793",
+    "README.md": "c9649b44bb2646af09e153b3a9fed8aa",
+    "Rakefile": "2ca4ff31c946a19edd44348fbfdc2aab",
+    "ext/glance.rb": "d18e56aa4ec3c74d709927d74e413eb0",
+    "ext/glance.sh": "d4a51eea6741cadfcc699daf376e3528",
+    "lib/puppet/provider/glance.rb": "06b45886540e9605200cf4b5f6c2558e",
+    "lib/puppet/provider/glance_api_config/ini_setting.rb": "6f5af831ae0c2550c3c3f7b52b103e6d",
+    "lib/puppet/provider/glance_api_paste_ini/ini_setting.rb": "94023412cb02989c38e191d699b9b3b5",
+    "lib/puppet/provider/glance_cache_config/ini_setting.rb": "44b67f634c27a4e7eef7101e24a3d9d3",
+    "lib/puppet/provider/glance_image/glance.rb": "08ad142e819d61769f64a2d63d6b9fbb",
+    "lib/puppet/provider/glance_registry_config/ini_setting.rb": "a4b09634d752a27179a32726efda2005",
+    "lib/puppet/provider/glance_registry_paste_ini/ini_setting.rb": "c3992b977d0964f15e3f9bc59eab94d5",
+    "lib/puppet/type/glance_api_config.rb": "284936c45073555368909fd964bd53ba",
+    "lib/puppet/type/glance_api_paste_ini.rb": "0ef24e1b33c87b4da2bde3a14c0581ed",
+    "lib/puppet/type/glance_cache_config.rb": "35dcc2e309c507d8136e23ab9b92b3b6",
+    "lib/puppet/type/glance_image.rb": "8a3be7522cbff7300e73d78386a24d85",
+    "lib/puppet/type/glance_registry_config.rb": "cc329a5deee1a0f6937fa5d1f0c2c249",
+    "lib/puppet/type/glance_registry_paste_ini.rb": "033ed21e753bff8e5c7cbd6d775b330d",
+    "manifests/api.pp": "4b7815eb1b77a769cd2b9cf9a60e645e",
+    "manifests/backend/cinder.pp": "affbb857e7bad873cb6a35af77fc8dd9",
+    "manifests/backend/file.pp": "42c0f2690f57989efd4e372492507703",
+    "manifests/backend/rbd.pp": "45afd1168d6ef3cda234a208f1b400ce",
+    "manifests/backend/swift.pp": "9c00dc10ecce13e6f0be7332e6790e1f",
+    "manifests/cache/cleaner.pp": "76b943bcd641a4dfc26fa150db441c43",
+    "manifests/cache/pruner.pp": "65bd5d96144c550265ded36ddbacbeb4",
+    "manifests/client.pp": "74fdf61db253937ceff8e84794d07b60",
+    "manifests/db/mysql/host_access.pp": "0918330dd9c4c40e6e930d151c9a855a",
+    "manifests/db/mysql.pp": "96c675bd4a6a5bfcd4e76980eb543f64",
+    "manifests/db/postgresql.pp": "cea3216111a730d89196ecdaec0f1be9",
+    "manifests/init.pp": "3694bd957e2a3f79c14f753933c4fe7a",
+    "manifests/keystone/auth.pp": "3d74fda798bff60abadb92af77de0aca",
+    "manifests/notify/qpid.pp": "e7b7df0de0e92071fe045c3038b392c7",
+    "manifests/notify/rabbitmq.pp": "20228b7ca26e14c18d387f51f956ac9f",
+    "manifests/params.pp": "0efd75f377d8928e2086b2c46986755f",
+    "manifests/registry.pp": "c354baf30fca46e4c174ba82a7c32635",
+    "spec/classes/glance_api_spec.rb": "c40e7b96b2794e3a42d5038544358cc0",
+    "spec/classes/glance_backend_cinder_spec.rb": "6e3605bf3cf62a8370526429a5894423",
+    "spec/classes/glance_backend_file_spec.rb": "bbd26b84b3f098f3b091c53f0a9e3d23",
+    "spec/classes/glance_backend_rbd_spec.rb": "1d173080e6099bf59aace307016114ba",
+    "spec/classes/glance_backend_swift_spec.rb": "87c33bf913e4f2f2448e192bd9375349",
+    "spec/classes/glance_cache_cleaner_spec.rb": "3ba563a34d0b47b8556387217a477f01",
+    "spec/classes/glance_cache_pruner_spec.rb": "f40db7b998f571d63df5d9bb1d9aa311",
+    "spec/classes/glance_client_spec.rb": "c244f8cb20583b5738641785d5bc7405",
+    "spec/classes/glance_db_mysql_spec.rb": "b47fe13342fecb64d86e35348bed5a6c",
+    "spec/classes/glance_db_postgresql_spec.rb": "35d461fbdfbb39c3dbbce60cd36b4a2b",
+    "spec/classes/glance_keystone_auth_spec.rb": "60f04f793420d86c9c373d7344a28575",
+    "spec/classes/glance_notify_qpid_spec.rb": "96d327b7dc3521f277f03b5a96c5839b",
+    "spec/classes/glance_notify_rabbitmq_spec.rb": "896bba395684a1ff41b084284686efc1",
+    "spec/classes/glance_registry_spec.rb": "af1c25da75fee9e98c5d3bd5b77b9bb0",
+    "spec/classes/glance_spec.rb": "aef754450834bcf18f8855644c6446e4",
+    "spec/shared_examples.rb": "172c63c57efca8c741f297494ed9ef0f",
+    "spec/spec.opts": "a600ded995d948e393fbe2320ba8e51c",
+    "spec/spec_helper.rb": "1d9a0ed080a66070ae5b45738113e1a3",
+    "spec/unit/provider/glance_spec.rb": "60d638722c8cee6bba34cf2fcc97faf1",
+    "tests/api.pp": "1628c0a94db35bf37659412190600189",
+    "tests/init.pp": "0df45b7489688f7cfde9231466305ffe",
+    "tests/registry.pp": "af5a7e7f542d9ec04d6925d6b7107e11",
+    "tests/site.pp": "180f23cc1ba29ebf40e0466513306105"
+  }
+}

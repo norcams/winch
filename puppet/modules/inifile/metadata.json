@@ -1,0 +1,233 @@
+{
+  "name": "puppetlabs-inifile",
+  "version": "1.0.3",
+  "source": "git://github.com/puppetlabs/puppetlabs-inifile.git",
+  "author": "Puppetlabs",
+  "license": "Apache",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-inifile",
+  "summary": "Resource types for managing settings in INI files",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "5",
+        "6"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "5",
+        "6"
+      ]
+    },
+    {
+      "operatingsystem": "OracleLinux",
+      "operatingsystemrelease": [
+        "5",
+        "6"
+      ]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [
+        "5",
+        "6"
+      ]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "11 SP1"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "10.04",
+        "12.04"
+      ]
+    },
+    {
+      "operatingsystem": "Solaris",
+      "operatingsystemrelease": [
+        "10",
+        "11"
+      ]
+    },
+    {
+      "operatingsystem": "Windows",
+      "operatingsystemrelease": [
+        "Server 2003 R2",
+        "Server 2008 R2",
+        "Server 2012",
+        "Server 2012 R2"
+      ]
+    },
+    {
+      "operatingsystem": "AIX",
+      "operatingsystemrelease": [
+        "5.3",
+        "6.1",
+        "7.1"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": "3.2.x"
+    },
+    {
+      "name": "puppet",
+      "version_requirement": "3.x"
+    }
+  ],
+  "dependencies": [
+
+  ],
+  "description": "Resource types for managing settings in INI files",
+  "types": [
+    {
+      "name": "ini_setting",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.\n\nValid values are `present`, `absent`. "
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined.\n\n"
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "An arbitrary name used as the identity of the resource.\n\n"
+        },
+        {
+          "name": "section",
+          "doc": "The name of the section in the ini file in which the setting should be defined.\n\n"
+        },
+        {
+          "name": "setting",
+          "doc": "The name of the setting to be defined.\n\n"
+        },
+        {
+          "name": "path",
+          "doc": "The ini file Puppet will ensure contains the specified setting.\n\n"
+        },
+        {
+          "name": "key_val_separator",
+          "doc": "The separator string to use between each setting name and value. Defaults to \" = \", but you could use this to override e.g. whether or not the separator should include whitespace.\n\n"
+        }
+      ],
+      "providers": [
+        {
+          "name": "ruby",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "ini_subsetting",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.\n\nValid values are `present`, `absent`. "
+        },
+        {
+          "name": "value",
+          "doc": "The value of the subsetting to be defined.\n\n"
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "An arbitrary name used as the identity of the resource.\n\n"
+        },
+        {
+          "name": "section",
+          "doc": "The name of the section in the ini file in which the setting should be defined.\n\n"
+        },
+        {
+          "name": "setting",
+          "doc": "The name of the setting to be defined.\n\n"
+        },
+        {
+          "name": "subsetting",
+          "doc": "The name of the subsetting to be defined.\n\n"
+        },
+        {
+          "name": "subsetting_separator",
+          "doc": "The separator string between subsettings. Defaults to \" \"\n\n"
+        },
+        {
+          "name": "path",
+          "doc": "The ini file Puppet will ensure contains the specified setting.\n\n"
+        },
+        {
+          "name": "key_val_separator",
+          "doc": "The separator string to use between each setting name and value. Defaults to \" = \", but you could use this to override e.g. whether or not the separator should include whitespace.\n\n"
+        }
+      ],
+      "providers": [
+        {
+          "name": "ruby",
+          "doc": ""
+        }
+      ]
+    }
+  ],
+  "checksums": {
+    "CHANGELOG.md": "6e759464455945a7a45dea017666e01d",
+    "Gemfile": "00c91adda4d74e934467643591c97330",
+    "LICENSE": "519b25a3992e0598a9855e4ccd7f66a1",
+    "Modulefile": "dc906ce943bff3bdd8fd57b17c0855bd",
+    "README.markdown": "376ff34fcc24a9ca3e5509f74b4c5cbf",
+    "Rakefile": "0254db5d3fc38c67a2c160d7296a24f8",
+    "lib/puppet/provider/ini_setting/ruby.rb": "19174eb75e2efa2f1e5935cd694ee87a",
+    "lib/puppet/provider/ini_subsetting/ruby.rb": "99991c9d3ccf54c2aa1fcacf491d0cfc",
+    "lib/puppet/type/ini_setting.rb": "afcd3f28b946b08db1b48fb189e6d8cf",
+    "lib/puppet/type/ini_subsetting.rb": "b4e6a659f461bcd274dcdf1b1c39db65",
+    "lib/puppet/util/external_iterator.rb": "69ad1eb930ca6d8d6b6faea343b4a22e",
+    "lib/puppet/util/ini_file/section.rb": "77757399ed9b9ce352ddcc8b8f9273c4",
+    "lib/puppet/util/ini_file.rb": "bb3353d53997c51e0e71cf3e965b906e",
+    "lib/puppet/util/setting_value.rb": "a9db550b94d66164b8643612dbf7cbb2",
+    "spec/acceptance/ini_setting_spec.rb": "7ed24dd87433e49c908f7e212ab81396",
+    "spec/acceptance/ini_subsetting_spec.rb": "7da917d776d90e33daf752ed5fceb648",
+    "spec/acceptance/nodesets/centos-510-x64.yml": "5698f7e61292730c603e03f64fe19359",
+    "spec/acceptance/nodesets/centos-64-x64-pe.yml": "ec075d95760df3d4702abea1ce0a829b",
+    "spec/acceptance/nodesets/centos-64-x64.yml": "9cde7b5d2ab6a42366d2344c264d6bdc",
+    "spec/acceptance/nodesets/debian-607-x64.yml": "d566bf76f534e2af7c9a4605316d232c",
+    "spec/acceptance/nodesets/debian-73-x64.yml": "ba5a75e27644c48ad8f3564fb6d372a7",
+    "spec/acceptance/nodesets/default.yml": "9cde7b5d2ab6a42366d2344c264d6bdc",
+    "spec/acceptance/nodesets/fedora-18-x64.yml": "acc126fa764c39a3b1df36e9224a21d9",
+    "spec/acceptance/nodesets/sles-11sp1-x64.yml": "fa0046bd89c1ab4ba9521ad79db234cd",
+    "spec/acceptance/nodesets/ubuntu-server-10044-x64.yml": "dc0da2d2449f66c8fdae16593811504f",
+    "spec/acceptance/nodesets/ubuntu-server-12042-x64.yml": "78a3ee42652e26119d90aa62586565b2",
+    "spec/classes/inherit_test1_spec.rb": "56bbfd63e770b180abc3fd7e331de2fb",
+    "spec/fixtures/modules/inherit_ini_setting/lib/puppet/provider/inherit_ini_setting/ini_setting.rb": "15949e27a64f4768a65fc01ca8d0c90d",
+    "spec/fixtures/modules/inherit_ini_setting/lib/puppet/type/inherit_ini_setting.rb": "90f25ea0e389688a0df74f23a5ad18e7",
+    "spec/fixtures/modules/inherit_test1/manifests/init.pp": "ece5099a0da66d65a05055d22485756c",
+    "spec/spec_helper.rb": "1b09547c3e8324897a9e13ea5a78916c",
+    "spec/spec_helper_acceptance.rb": "d669a1bb5368f455ab11a20582eb906a",
+    "spec/unit/puppet/provider/ini_setting/inheritance_spec.rb": "bbe2fb9d6805ae8cae85271e48f646b3",
+    "spec/unit/puppet/provider/ini_setting/ruby_spec.rb": "df2b5d6b093faf3391cf29ca7c918503",
+    "spec/unit/puppet/provider/ini_subsetting/ruby_spec.rb": "b05cf15a5830feb249ad7177f7d966ca",
+    "spec/unit/puppet/util/external_iterator_spec.rb": "35cc6e56e0064e496e9151dd778f751f",
+    "spec/unit/puppet/util/ini_file_spec.rb": "61cce56f6a65f7d9905ce7c9a10fdd4a",
+    "spec/unit/puppet/util/setting_value_spec.rb": "64db9b766063db958e73e713a3e584fa",
+    "tests/ini_setting.pp": "9c8a9d2c453901cedb106cada253f1f6",
+    "tests/ini_subsetting.pp": "71c82234fa8bb8cb442ff01436ce2cf3"
+  }
+}

@@ -1,0 +1,556 @@
+{
+  "name": "puppetlabs-swift",
+  "version": "3.0.0",
+  "source": "https://github.com/stackforge/puppet-swift",
+  "author": "Puppet Labs",
+  "license": "Apache License 2.0",
+  "summary": "Puppet Labs Swift Module",
+  "description": "Puppet module to install and configure the OpenStack Swift object storage service",
+  "project_page": "https://launchpad.net/puppet-openstack",
+  "dependencies": [
+    {
+      "name": "puppetlabs/inifile",
+      "version_requirement": ">=1.0.0 <2.0.0"
+    },
+    {
+      "name": "puppetlabs/keystone",
+      "version_requirement": ">=3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/mysql",
+      "version_requirement": ">=0.6.1 <1.0.0"
+    },
+    {
+      "name": "puppetlabs/rsync",
+      "version_requirement": ">=0.2.0 <1.0.0"
+    },
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">=2.3.0"
+    },
+    {
+      "name": "puppetlabs/xinetd",
+      "version_requirement": ">=1.0.1 <2.0.0"
+    },
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": ">=1.0.0 <2.0.0"
+    },
+    {
+      "name": "saz/memcached",
+      "version_requirement": ">=2.0.2 <3.0.0"
+    },
+    {
+      "name": "saz/ssh",
+      "version_requirement": ">=1.0.2 <2.0.0"
+    }
+  ],
+  "types": [
+    {
+      "name": "ring_account_device",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "zone",
+          "doc": ""
+        },
+        {
+          "name": "weight",
+          "doc": ""
+        },
+        {
+          "name": "meta",
+          "doc": ""
+        },
+        {
+          "name": "id",
+          "doc": ""
+        },
+        {
+          "name": "partitions",
+          "doc": ""
+        },
+        {
+          "name": "balance",
+          "doc": ""
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": ""
+        }
+      ],
+      "providers": [
+        {
+          "name": "swift_ring_builder",
+          "doc": "Required binaries: `swift-ring-builder`."
+        }
+      ]
+    },
+    {
+      "name": "ring_container_device",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "zone",
+          "doc": ""
+        },
+        {
+          "name": "weight",
+          "doc": ""
+        },
+        {
+          "name": "meta",
+          "doc": ""
+        },
+        {
+          "name": "id",
+          "doc": ""
+        },
+        {
+          "name": "partitions",
+          "doc": ""
+        },
+        {
+          "name": "balance",
+          "doc": ""
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": ""
+        }
+      ],
+      "providers": [
+        {
+          "name": "swift_ring_builder",
+          "doc": "Required binaries: `swift-ring-builder`."
+        }
+      ]
+    },
+    {
+      "name": "ring_object_device",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "zone",
+          "doc": ""
+        },
+        {
+          "name": "weight",
+          "doc": ""
+        },
+        {
+          "name": "meta",
+          "doc": ""
+        },
+        {
+          "name": "id",
+          "doc": ""
+        },
+        {
+          "name": "partitions",
+          "doc": ""
+        },
+        {
+          "name": "balance",
+          "doc": ""
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": ""
+        }
+      ],
+      "providers": [
+        {
+          "name": "swift_ring_builder",
+          "doc": "Required binaries: `swift-ring-builder`."
+        }
+      ]
+    },
+    {
+      "name": "swift_account_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from /etc/swift/account-server.conf  Values can match `/\\S+\\/\\S+/`."
+        },
+        {
+          "name": "secret",
+          "doc": "Whether to hide the value from Puppet logs. Defaults to `false`.  Valid values are `true`, `false`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "swift_bench_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from /etc/swift/swift-bench.conf  Values can match `/\\S+\\/\\S+/`."
+        },
+        {
+          "name": "secret",
+          "doc": "Whether to hide the value from Puppet logs. Defaults to `false`.  Valid values are `true`, `false`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "swift_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from /etc/swift/swift.conf  Values can match `/\\S+\\/\\S+/`."
+        },
+        {
+          "name": "secret",
+          "doc": "Whether to hide the value from Puppet logs. Defaults to `false`.  Valid values are `true`, `false`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "swift_container_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from /etc/swift/container-server.conf  Values can match `/\\S+\\/\\S+/`."
+        },
+        {
+          "name": "secret",
+          "doc": "Whether to hide the value from Puppet logs. Defaults to `false`.  Valid values are `true`, `false`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "swift_dispersion_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from /etc/swift/dispersion.conf  Values can match `/\\S+\\/\\S+/`."
+        },
+        {
+          "name": "secret",
+          "doc": "Whether to hide the value from Puppet logs. Defaults to `false`.  Valid values are `true`, `false`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "swift_object_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from /etc/swift/object-server.conf  Values can match `/\\S+\\/\\S+/`."
+        },
+        {
+          "name": "secret",
+          "doc": "Whether to hide the value from Puppet logs. Defaults to `false`.  Valid values are `true`, `false`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    },
+    {
+      "name": "swift_proxy_config",
+      "doc": "",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "The basic property that the resource should be in.  Valid values are `present`, `absent`."
+        },
+        {
+          "name": "value",
+          "doc": "The value of the setting to be defined."
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "doc": "Section/setting name to manage from /etc/swift/proxy-server.conf  Values can match `/\\S+\\/\\S+/`."
+        },
+        {
+          "name": "secret",
+          "doc": "Whether to hide the value from Puppet logs. Defaults to `false`.  Valid values are `true`, `false`."
+        }
+      ],
+      "providers": [
+        {
+          "name": "ini_setting",
+          "doc": ""
+        }
+      ]
+    }
+  ],
+  "checksums": {
+    "Gemfile": "a01e3f0d8ee43217838d92197f32f28f",
+    "LICENSE": "71032619ad456285e57bef465a6c5a26",
+    "Modulefile": "ca19d2d6a4cd3be8daa2051ba87d9872",
+    "README.md": "604a906209f458d373fa6f4585586e69",
+    "Rakefile": "97a92e16d71c1b5fe450f07f16c9d1ef",
+    "ext/swift.rb": "e51c6522d0e7421d0058ffbcaf591e84",
+    "ext/swift_keystone_test.rb": "f5abf86ec0a5a5164c36b550d6d2a77e",
+    "files/swift-account.conf.upstart": "0bee476e9e3992548857cb02dfc56b11",
+    "files/swift-container-sync.conf.upstart": "75e55aaf32b26e0a9ea54b1bff6a7238",
+    "files/swift-container.conf.upstart": "571635902aa8bf2ed638147ae125bc52",
+    "files/swift-object.conf.upstart": "2cb75b9d8934e6f5b602a0ecdf32bbdd",
+    "files/swift_tester.rb": "f99bba1129af0a8e214b31eb0224924b",
+    "lib/puppet/provider/ring_account_device/swift_ring_builder.rb": "2a07483d2a537f0ec98bc5fcc1ae9f09",
+    "lib/puppet/provider/ring_container_device/swift_ring_builder.rb": "21cc35dc75f2e6e7217d089476af0821",
+    "lib/puppet/provider/ring_object_device/swift_ring_builder.rb": "80511be8cbfd976f8eea0e055e532828",
+    "lib/puppet/provider/swift_account_config/ini_setting.rb": "2b3d5bcc9f60702f7ff42a26b3618e58",
+    "lib/puppet/provider/swift_bench_config/ini_setting.rb": "e8fba6e3ce7290eb416c054de93fdc1c",
+    "lib/puppet/provider/swift_config/ini_setting.rb": "9479ddbfe7192306f13f63c2e5127069",
+    "lib/puppet/provider/swift_container_config/ini_setting.rb": "4d5a42a0868a5ce45761b167be4f96a6",
+    "lib/puppet/provider/swift_dispersion_config/ini_setting.rb": "e495a0429ddb9bb340d28519d0254c22",
+    "lib/puppet/provider/swift_object_config/ini_setting.rb": "478e6118966d0f87379b41a2f58970fe",
+    "lib/puppet/provider/swift_proxy_config/ini_setting.rb": "12d814c2cab116454801ca220edddd84",
+    "lib/puppet/provider/swift_ring_builder.rb": "739f3de2867b2c5d2417b76941b2e4a7",
+    "lib/puppet/type/ring_account_device.rb": "9c51c78ef08bfbf40d69700e802f5fc3",
+    "lib/puppet/type/ring_container_device.rb": "e44335de1cd8475d37633f3b640c8682",
+    "lib/puppet/type/ring_object_device.rb": "8e53168c08e6173fa37825779686c87d",
+    "lib/puppet/type/swift_account_config.rb": "db147a58160a2562af5210a13619dd3e",
+    "lib/puppet/type/swift_bench_config.rb": "4b8f04bfe61018d5f2e4eccc704d0437",
+    "lib/puppet/type/swift_config.rb": "eb145cc09da9af7136a5be18b0d1576d",
+    "lib/puppet/type/swift_container_config.rb": "b7f2fb2d3f5423fd2a7064c6fae64147",
+    "lib/puppet/type/swift_dispersion_config.rb": "13450658bdca10a03cf518c1a4f97726",
+    "lib/puppet/type/swift_object_config.rb": "bba385548eefe30b65037f960c6711f4",
+    "lib/puppet/type/swift_proxy_config.rb": "103cbb39219baa19a0c5e3a5b71bb259",
+    "manifests/auth_file.pp": "1b0a211310a99155a40b0ee04750632d",
+    "manifests/bench.pp": "6f4467c271bf37577ca6c83a34aa0097",
+    "manifests/dispersion.pp": "763837afbca1f6cc646b288ec8fded42",
+    "manifests/init.pp": "1bc7b28c245e0661930803e8ab901d29",
+    "manifests/keystone/auth.pp": "480405ac4ec808592ba7e2bc7b1b2cde",
+    "manifests/keystone/dispersion.pp": "465d8a3f159defd23e8e3a318517f84f",
+    "manifests/params.pp": "1686a71743d71e7a69c7297c04fc23a9",
+    "manifests/proxy/account_quotas.pp": "3dcf274aebeb48201fedda18eac7ce7f",
+    "manifests/proxy/authtoken.pp": "cb205775210cab953e68c15b2317e713",
+    "manifests/proxy/bulk.pp": "085852c15c6e891b04052d52ded996fd",
+    "manifests/proxy/cache.pp": "4ba72e651ae1b032bfc58ca1c40147a1",
+    "manifests/proxy/catch_errors.pp": "ff3ebc10c73b8ff0e918159e7c7e4b2d",
+    "manifests/proxy/ceilometer.pp": "c9366068f2b840ee2d0f7b2b51e93b8b",
+    "manifests/proxy/container_quotas.pp": "68089a822a6969f98b91e5d66b01ebe8",
+    "manifests/proxy/formpost.pp": "a4d64cf06daad82c48f9773fc3d16b09",
+    "manifests/proxy/healthcheck.pp": "0a5bad19f5e1b06846d6d3ea04489fa3",
+    "manifests/proxy/keystone.pp": "268a6eb1b4e62075f3dc6c412a79410d",
+    "manifests/proxy/proxy-logging.pp": "88c10f1382f321c66d9997a25a58f2ae",
+    "manifests/proxy/proxy_logging.pp": "c8139ff044b436cc3c004e31781546a9",
+    "manifests/proxy/ratelimit.pp": "c35d1541acf3d542e7c60ed4671d6af9",
+    "manifests/proxy/s3token.pp": "e73a90ceaab725027c94fde381ef8d57",
+    "manifests/proxy/staticweb.pp": "4188715f7b5cb18770d97f9165cf0aaf",
+    "manifests/proxy/swauth.pp": "ee4927ea0000cab4a0c4c1f78db1b543",
+    "manifests/proxy/swift3.pp": "71e188e9532364de90cc5c403c87c88c",
+    "manifests/proxy/tempauth.pp": "dfd5fbb6e0a21d9608463bc8ae95f2d5",
+    "manifests/proxy/tempurl.pp": "70ba32c13645a0084e4fbda8b6017eb6",
+    "manifests/proxy.pp": "fd7bc34a6446f931ca608d11f16a9996",
+    "manifests/ringbuilder/create.pp": "69c95c3a42133eca53d9c08fdb6aad66",
+    "manifests/ringbuilder/rebalance.pp": "cfe7cabc92ebe058ec72f0ada699ea56",
+    "manifests/ringbuilder.pp": "e751c9bb9144596abf8c55a6ca91a326",
+    "manifests/ringserver.pp": "a6a5001e405d07683a0bcad32fdbd6bc",
+    "manifests/ringsync.pp": "37a618c358fd3af3011141dd3d11d8fd",
+    "manifests/storage/account.pp": "693641c2ba07a3ddd774c693d79ffd64",
+    "manifests/storage/all.pp": "f706cc371f1fa44d064a4b8c6b6f3cf1",
+    "manifests/storage/container.pp": "a020c1ed96f41fd3bf8df24aef509dc7",
+    "manifests/storage/disk.pp": "62471e331e33bd6498ab440e7ab09deb",
+    "manifests/storage/ext4.pp": "42b510148979282c5ad24af2235d4651",
+    "manifests/storage/filter/healthcheck.pp": "36ec4e48a26e7f08a81235fea62670f1",
+    "manifests/storage/filter/recon.pp": "9f70c4040d7d3276309ea484474d0d6d",
+    "manifests/storage/generic.pp": "47cee3d6bc4343cf81a152d9fd6ed08c",
+    "manifests/storage/loopback.pp": "c2d257ca4eac63b944057cc70e1db1bd",
+    "manifests/storage/mount.pp": "97f90d455f233312f55c02b30fca7e3b",
+    "manifests/storage/node.pp": "4ec18253bb27b58448cac4f52661f713",
+    "manifests/storage/object.pp": "0af8b92f753647c9fc931a0b518bf45a",
+    "manifests/storage/server.pp": "528c787a15329e5dc2030ad075a294ba",
+    "manifests/storage/xfs.pp": "208d2ba95e0cb302862ba39aa42365f0",
+    "manifests/storage.pp": "effb26359873973abefa7807307700ef",
+    "manifests/test_file.pp": "b8928e0ee53e5a0beee0b034b14642b7",
+    "manifests/xfs.pp": "135d9affee2cf8f183a67a4970b3a5e3",
+    "spec/classes/swift_bench_spec.rb": "a4562011768a8edd79a59127111c433f",
+    "spec/classes/swift_dispersion_spec.rb": "aa322469136dcae370341de3e023866f",
+    "spec/classes/swift_keystone_auth_spec.rb": "a8876a9ffb12a9dfb9101267593f9a6e",
+    "spec/classes/swift_keystone_dispersion_spec.rb": "70133aedbe560d4807fbd3289c8d9915",
+    "spec/classes/swift_proxy_account_quotas_spec.rb": "cbb6bb11e3ee8c621358228d47bfda5f",
+    "spec/classes/swift_proxy_authtoken_spec.rb": "e69feefa1a454d1ca70e1bb312d4673b",
+    "spec/classes/swift_proxy_bulk_spec.rb": "e7dfac31c79ae48ae9762409bd5e7dd1",
+    "spec/classes/swift_proxy_cache_spec.rb": "ff0225bcf7f1a5aee19f26e17df2dc91",
+    "spec/classes/swift_proxy_catch_errors_spec.rb": "553595d58d2919c574774a1315815885",
+    "spec/classes/swift_proxy_ceilometer_spec.rb": "a89881d4b7aed876cf97a2eefbe967bc",
+    "spec/classes/swift_proxy_container_quotas_spec.rb": "2ed63d17eededa19f0072c7cfd8478d2",
+    "spec/classes/swift_proxy_formpost_spec.rb": "3a9ebba5f51deef43602ae07476a1f62",
+    "spec/classes/swift_proxy_healthcheck_spec.rb": "6319b5d86de95071a8833bc135cd22f3",
+    "spec/classes/swift_proxy_keystone_spec.rb": "910746b20cb0f842488e6706b48b691c",
+    "spec/classes/swift_proxy_ratelimit_spec.rb": "6eb854f57d9c94414102bed26976880a",
+    "spec/classes/swift_proxy_s3token_spec.rb": "75d6fe7122e55bef6613160a82e95985",
+    "spec/classes/swift_proxy_spec.rb": "ef44900eb9907155615e88b93e9683fe",
+    "spec/classes/swift_proxy_staticweb_spec.rb": "5ad410126b2a9d2ee3f9c2371356b2be",
+    "spec/classes/swift_proxy_swauth_spec.rb": "9440fddcb731920fa4a436031a501673",
+    "spec/classes/swift_proxy_swift3_spec.rb": "a024a2c8c8473c8523b08d5c3893de24",
+    "spec/classes/swift_proxy_tempurl_spec.rb": "080483f31b9be86b996b4f52a9a79ff1",
+    "spec/classes/swift_ringbuilder_spec.rb": "35bb6d65add323c249a345d53c3eb791",
+    "spec/classes/swift_spec.rb": "cd1c9cf8766a1d041b2b121b31552a28",
+    "spec/classes/swift_storage_account_spec.rb": "5f2bc80518df5323ec75e7db9c78ae9b",
+    "spec/classes/swift_storage_all_spec.rb": "4d69dd5448f2751535e28eedc986dfe3",
+    "spec/classes/swift_storage_container_spec.rb": "9096ae2e560960ce7fd9884651a6cb29",
+    "spec/classes/swift_storage_object_spec.rb": "a4523543e8e01bde9bef66be9fdcca0f",
+    "spec/classes/swift_storage_spec.rb": "5bcd0a145ba9a111116feaadec15031b",
+    "spec/classes/swift_test_file_spec.rb": "39d9b4526bc8221323d09648f3e52fd5",
+    "spec/classes/swift_xfs_spec.rb": "889866cdc6599641b9df6acd5f02bf81",
+    "spec/defines/swift_ringbuilder_create_spec.rb": "9f889572cf59ecacd5496167159a83e8",
+    "spec/defines/swift_ringbuilder_rebalance_spec.rb": "21c5e9ea0a85c07a8198f54cdf38d260",
+    "spec/defines/swift_storage_disk_spec.rb": "337cca7ac9ef67379f8ba40deda24855",
+    "spec/defines/swift_storage_filter_healthcheck_spec.rb": "502443d546d0eb322eb35c4d26bd2eb8",
+    "spec/defines/swift_storage_filter_recon_spec.rb": "66b94809140729618a594c54a6f64675",
+    "spec/defines/swift_storage_generic_spec.rb": "143902b34ec43e911b60cb9be4dc2917",
+    "spec/defines/swift_storage_loopback_spec.rb": "0fe36c82bf7042676dd3549f3d5268f8",
+    "spec/defines/swift_storage_mount_spec.rb": "61b7a0ec8b9fd1b3181c161e0fd62f96",
+    "spec/defines/swift_storage_node_spec.rb": "34d72d475ca61cdd07689b30109ce873",
+    "spec/defines/swift_storage_server_spec.rb": "c6aa1e73aefb621ec4f2e4aa4d6fd4c2",
+    "spec/defines/swift_storage_xfs_spec.rb": "22bfbdbeeb25a3489d040c2d29751d75",
+    "spec/spec.opts": "a600ded995d948e393fbe2320ba8e51c",
+    "spec/spec_helper.rb": "0db89c9a486df193c0e40095422e19dc",
+    "spec/unit/puppet/provider/swift_ring_builder_spec.rb": "18c98f30bc53b149dd4b3795f16dd6ed",
+    "spec/unit/puppet/type/ring_account_device_spec.rb": "55f24f37e3b1ca9fb3c0b94bc7d45b27",
+    "spec/unit/puppet/type/ring_container_device_spec.rb": "a7fcd6a4d9d0315475fc998f580fbcd8",
+    "spec/unit/puppet/type/ring_object_device_spec.rb": "7df95329bf92d3f3c2f97a2b5eadcdd4",
+    "templates/account-server.conf.erb": "475de254623aebec76fd27f54ab3e8c7",
+    "templates/container-server.conf.erb": "83b48a40c6f47bbe9d8ef0d2975f7fe4",
+    "templates/object-server.conf.erb": "5f217fa0139862a2012a1c57769dbf84",
+    "templates/proxy/account_quotas.conf.erb": "02b6e76d43b345ea66403989d74c3ff9",
+    "templates/proxy/authtoken.conf.erb": "86745b3a7199c00466dea7c979e013c8",
+    "templates/proxy/bulk.conf.erb": "16b1ac543efffdfd01efde66e21dbc5f",
+    "templates/proxy/cache.conf.erb": "d8047bed0ad3281216ff48c04b42305a",
+    "templates/proxy/catch_errors.conf.erb": "a6199f60fed26eb9bbbbc8f1357b2599",
+    "templates/proxy/ceilometer.conf.erb": "cc8b4c7a583a226c43b1ddcff4718959",
+    "templates/proxy/container_quotas.conf.erb": "81b1a0c6fa8fde57e456f00be4048b71",
+    "templates/proxy/formpost.conf.erb": "5f7ff8b059ec81b895d9df33942c2b7f",
+    "templates/proxy/healthcheck.conf.erb": "4c8cd2d18bcd82e4052642d0d45fe6f0",
+    "templates/proxy/keystone.conf.erb": "e59b49752fb29d8cb43e8805c4449a29",
+    "templates/proxy/proxy-logging.conf.erb": "9598aa5079664e893e048ac4a681f71f",
+    "templates/proxy/ratelimit.conf.erb": "ad768076bfb099768803d487cc0f1381",
+    "templates/proxy/s3token.conf.erb": "532ce8b3c6b625b149ce379b165186d0",
+    "templates/proxy/staticweb.conf.erb": "c00ba1287d860e8a04a30c5913821e7f",
+    "templates/proxy/swauth.conf.erb": "9c44e5c34c1c7e0256ee55f3346623e6",
+    "templates/proxy/swift3.conf.erb": "b7647882aedeb2ee8bed5e515a823c0d",
+    "templates/proxy/tempauth.conf.erb": "64e8d2de63c741973d8e0fae9adc5918",
+    "templates/proxy/tempurl.conf.erb": "957e09199678c49631a6614c357c389d",
+    "templates/proxy-server.conf.erb": "68d098a976f3a6b04220f0a1e70fc47d",
+    "templates/recon.conf.erb": "5b418c7262debe210e63ee4117fa11b3",
+    "templates/rsyncd.conf.erb": "21798feea81d0197dbe3ff3f918e4f9e",
+    "templates/swift_keystone_test.erb": "3f8d5ceea2796abf46a6c78a1d8b34c3",
+    "tests/all.pp": "de57bf0828152945c0537585818834fb",
+    "tests/site.pp": "dc51e0727c2cd0cb8f6615add40e9867"
+  }
+}

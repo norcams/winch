@@ -1,0 +1,44 @@
+{
+  "name": "puppetlabs-rsync",
+  "version": "0.2.0",
+  "source": "https://github.com/puppetlabs/puppetlabs-rsync",
+  "author": "Puppet Labs",
+  "license": "Apache License 2.0",
+  "summary": "Puppet module to install and configure rsync",
+  "description": "UNKNOWN",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-rsync",
+  "dependencies": [
+    {
+      "name": "puppetlabs/xinetd",
+      "version_requirement": ">= 1.1.0"
+    }
+  ],
+  "types": [
+
+  ],
+  "checksums": {
+    "CHANGELOG": "b3d9cd6d5e7a9f34100d2442669f72df",
+    "Gemfile": "e59d1d9c9f2dde8aab449482becd16f6",
+    "LICENSE": "e3e34d634794abb05335e3aa2f8c3b4d",
+    "Modulefile": "032ce95ebf69e48eca3afd3e4f99a481",
+    "README.markdown": "3081410623b342ebdac32e4baf98d3c5",
+    "Rakefile": "f37e6131fe7de9a49b09d31596f5fbf1",
+    "files/motd": "5dac68892a7bfe2b903f5184fac86e7a",
+    "manifests/get.pp": "1027048a5da3a155eaf53cb9a17f29e3",
+    "manifests/init.pp": "4907650d8a4dd5b2eb8697e6757c5027",
+    "manifests/repo.pp": "6b74ab9b11938410ca1487d1515c8327",
+    "manifests/server/module.pp": "d073ac3b6718a9b30cfbb0a56ff20a8e",
+    "manifests/server.pp": "64002fd3d17037c082e8581662cd7d75",
+    "spec/classes/server_spec.rb": "83256a915a43595f7b48871b758f782a",
+    "spec/defines/get_spec.rb": "dad238bc031bf389d958f2c07a7d8877",
+    "spec/defines/server_module_spec.rb": "4fd49a949c73193ccdc85faeacb8601d",
+    "spec/fixtures/manifests/site.pp": "d41d8cd98f00b204e9800998ecf8427e",
+    "spec/spec.opts": "a600ded995d948e393fbe2320ba8e51c",
+    "spec/spec_helper.rb": "0db89c9a486df193c0e40095422e19dc",
+    "templates/header.erb": "171468033ce0cddc1e09a211232fe244",
+    "templates/module.erb": "0b555a4fbd381ac2264e3cfbbe78f162",
+    "tests/init.pp": "a9dc362412bf683f279d928ef1123928",
+    "tests/repo.pp": "c8ff162e8e6d11b9a2834ed62353558e",
+    "tests/server_with_motd.pp": "653c7785493968a329a6e22f7f4d0fc4"
+  }
+}

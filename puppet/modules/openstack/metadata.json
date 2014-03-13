@@ -1,0 +1,113 @@
+{
+  "name": "puppetlabs-openstack",
+  "version": "3.0.0",
+  "source": "https://github.com/stackforge/puppet-openstack",
+  "author": "Puppet Labs",
+  "license": "Apache License 2.0",
+  "summary": "Puppet Labs Openstack Module targeted for Grizzly",
+  "description": "Puppet module that pulls together all the individual components of Openstack, resulting is a complete and functional stack.",
+  "project_page": "https://github.com/stackforge/puppet-openstack",
+  "dependencies": [
+    {
+      "name": "puppetlabs/glance",
+      "version_requirement": ">= 3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/horizon",
+      "version_requirement": ">= 3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/keystone",
+      "version_requirement": ">= 3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/nova",
+      "version_requirement": ">= 3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/cinder",
+      "version_requirement": ">= 3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/swift",
+      "version_requirement": ">= 3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/neutron",
+      "version_requirement": ">= 3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/ceilometer",
+      "version_requirement": ">= 3.0.0 <4.0.0"
+    },
+    {
+      "name": "puppetlabs/heat",
+      "version_requirement": ">= 3.0.0 <4.0.0"
+    }
+  ],
+  "types": [
+
+  ],
+  "checksums": {
+    "Gemfile": "a01e3f0d8ee43217838d92197f32f28f",
+    "LICENSE": "0e5ccf641e613489e66aa98271dbe798",
+    "Modulefile": "abc9ca593f7ebce2d05274fda6f528ce",
+    "Puppetfile": "6e8a9275c680dc964e2ecf2cfe01d2c5",
+    "README.md": "d3c37c032816f817f7ddfb34878c3556",
+    "Rakefile": "97a92e16d71c1b5fe450f07f16c9d1ef",
+    "files/RPM-GPG-KEY-EPEL-6": "eb8749ea67992fd622176442c986b788",
+    "files/RPM-GPG-KEY-RDO-Grizzly": "fe8f62d0bbc747d0f8357de0c52e8e1b",
+    "files/RPM-GPG-KEY-RDO-Havana": "6db2a99bc27b6c4db817211aa22ba064",
+    "manifests/all.pp": "aff79f9a4e8aec6b7c684d9e5db53a36",
+    "manifests/auth_file.pp": "78c772a785d9ecc8a3a6f17309aaf96e",
+    "manifests/cinder/all.pp": "ddb3b6994a12e5b11d7ab5cb5e92243c",
+    "manifests/cinder/controller.pp": "a1d9128ac7d67b4a1543377eab3d5fcb",
+    "manifests/cinder/storage.pp": "9ad4229d34ad13334b1988457b110df6",
+    "manifests/client.pp": "968f9e308f8fa0095f8770a11f75bade",
+    "manifests/compute.pp": "296b4578b31c448069cb86ed176196a0",
+    "manifests/controller.pp": "e2e0ea5980181fc83a918450960e6990",
+    "manifests/db/mysql.pp": "fbc50571b5e31a5c42ca8edcb0448cbb",
+    "manifests/glance.pp": "8fbe5643c0fce640536ded58f68c0c13",
+    "manifests/horizon.pp": "af98bd5725c6b1dd8eec6ed00c29c37a",
+    "manifests/keystone.pp": "ed282e5874cb37f5dfd3ac671ac71824",
+    "manifests/neutron.pp": "1d9b6cfa9e7507b70eec619c75d87a12",
+    "manifests/nova/controller.pp": "217386811a7240cb3bd85613bcbcb34d",
+    "manifests/provision.pp": "e07de854f216caabdac7782d2eb9f9fa",
+    "manifests/repo/epel.pp": "421fe275ab332b9dc85b06a3f764db82",
+    "manifests/repo/rdo.pp": "c6dd210ec4f02befcd0139528024ca02",
+    "manifests/repo/uca.pp": "e63d3526011cb2274fa09444615cb86e",
+    "manifests/repo/yum_refresh.pp": "7da30aa48752655510411a835eec7f17",
+    "manifests/repo.pp": "8d3eb0c7385cfef428fdbf13777d52e3",
+    "manifests/swift/device_endpoint.pp": "c979b23bedcdad0aac5408cfa5cae5e6",
+    "manifests/swift/proxy.pp": "ce356c410018d33f7e34e00ad2e1e419",
+    "manifests/swift/storage-node.pp": "85fce5a91ed8863f41927432ad2caad9",
+    "manifests/test_file.pp": "c1f40b8566a72ef5b5ba3a4f94c42f22",
+    "spec/classes/openstack_all_spec.rb": "58a5a7ca1deb98d58fc7db4f6fa68991",
+    "spec/classes/openstack_auth_file_spec.rb": "7d6f6c123797b8b40d9caf222778ad8e",
+    "spec/classes/openstack_cinder_all_spec.rb": "50017c6bfba301313c4f55172d0715eb",
+    "spec/classes/openstack_cinder_controller_spec.rb": "954742b0ffd0fe8c20cd5915bcd4bff1",
+    "spec/classes/openstack_cinder_storage_spec.rb": "8e7b15dd44500d2ba43673efd2b84b49",
+    "spec/classes/openstack_client_spec.rb": "f26906dc8a66e6c9f17beb6749ce30cc",
+    "spec/classes/openstack_compute_spec.rb": "25775329a17712429ac166e61de3516e",
+    "spec/classes/openstack_controller_spec.rb": "b68455e54fb3d71368d12531c0b49fcb",
+    "spec/classes/openstack_glance_spec.rb": "e744917b81164bc4f0913061d7c7fe46",
+    "spec/classes/openstack_horizon_spec.rb": "61e2782e69319f477880dd78caab0cdb",
+    "spec/classes/openstack_keystone_spec.rb": "2ec41ffec9aff7a9285f07d89ed41bbf",
+    "spec/classes/openstack_neutron_spec.rb": "82eed6ef413243c8b582ce205aee7180",
+    "spec/classes/openstack_nova_controller_spec.rb": "21159e2e1277cb1256de3aaf3e37fa9b",
+    "spec/classes/openstack_provision_spec.rb": "112b1baefd7650411163e0fbcba2c090",
+    "spec/classes/openstack_repo_spec.rb": "fdb79ffe2561b46fbf648d3e64843310",
+    "spec/classes/openstack_repo_uca_spec.rb": "f2da7d2ece7c8f7b77810606eb569c25",
+    "spec/classes/openstack_swift_storage-node.rb": "2e34513f57eddaa12418aab57c1d5888",
+    "spec/classes/openstack_test_file_spec.rb": "bd6b86d0d4f4c318923d6f6da060e66a",
+    "spec/spec_helper.rb": "0db89c9a486df193c0e40095422e19dc",
+    "templates/openrc.erb": "44d6f02b6ba46428c3205c0e5cbdb28b",
+    "templates/test_nova.sh.erb": "0ba933478e1ca2dd0d8f35005b1c869e",
+    "tests/all.pp": "58ac2cf8fd4883f2d9f8c214f097d6a8",
+    "tests/auth_file.pp": "7cc8322bf8b72b94587ba3235d2e578a",
+    "tests/cloudcontroller.pp": "ab79d5f259655eb224c9d809e5f648cb",
+    "tests/compute.pp": "cf089b9de948b80554e731b670d9928e",
+    "tests/site.pp": "6944ac829dbdf0cac153625a71930b43",
+    "tests/testfile.pp": "e9d402008798664c4d89a9503bf924be"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "saz-memcached",
+  "version": "2.4.0",
+  "summary": "UNKNOWN",
+  "author": "saz",
+  "description": "Manage memcached via Puppet",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": "\u003e\u003d 3.2.0"
+    },
+    {
+      "name": "puppetlabs/firewall",
+      "version_requirement": "\u003e\u003d 0.1.0"
+    }
+  ],
+  "types": [],
+  "checksums": {
+    ".bundle/config": "7f1c988748783d2a8d455376eed1470c",
+    ".fixtures.yml": "fbb26108d09c3609330fdd8d06913e33",
+    ".travis.yml": "5f36bcfb0e52c73a3005366261916fc1",
+    "Gemfile": "6992d521994d948eb6e48acd733a07bf",
+    "Gemfile.lock": "20c2610e7684d99c05ad8294e4668ec3",
+    "LICENSE": "d42ad7f00d233260ac2fba922b7fd83c",
+    "Modulefile": "4322aa65f4d1949ac7d94540b3822dc3",
+    "README-DEVELOPER": "d45048731ddb158a56a1b26293fb5dbf",
+    "README.md": "42a75e0ff318fbf5b696b641e31a3101",
+    "Rakefile": "8ff6a0f7db638421d1742c5d365d0266",
+    "lib/puppet/parser/functions/memcached_max_memory.rb": "edc87a9d229013298027a075e3eb8795",
+    "manifests/init.pp": "a3b4b3d0e542618c4a6b4886234eb1b1",
+    "manifests/params.pp": "fc71986251dd19ff5806a89f2297d7fd",
+    "spec/classes/memcached_spec.rb": "0b1a010763461cb33e1e468f531a4859",
+    "spec/spec.opts": "a600ded995d948e393fbe2320ba8e51c",
+    "spec/spec_helper.rb": "3ea886dd135e120afa31e0aab12e85b0",
+    "templates/memcached.conf.erb": "825467c9581dcdfdad8cc2816d78cb1a",
+    "templates/memcached_sysconfig.erb": "739a743ad70d580e20a8e14a2f36bb5e",
+    "tests/init.pp": "e798f4999ba392f3c0fce0d5290c263f"
+  },
+  "source": "git://github.com/saz/puppet-memcached.git",
+  "project_page": "https://github.com/saz/puppet-memcached",
+  "license": "Apache License, Version 2.0"
+}
