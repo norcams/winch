@@ -1,49 +1,49 @@
-grizzly::region: 'openstack'
+havana::region: 'openstack'
 
 ######## Network
-grizzly::network::external: '192.168.66.0/24'
-grizzly::network::external::device: 'eth1'
+havana::network::external: '192.168.166.0/24'
+havana::network::external::device: 'eth2'
 
-grizzly::network::api: '192.168.77.0/24'
-grizzly::network::api::device: 'eth2'
+havana::network::api: '192.168.177.0/24'
+havana::network::api::device: 'eth1'
 
-grizzly::network::management: '172.16.88.0/24'
-grizzly::network::management::device: 'eth3'
+havana::network::management: '172.16.188.0/24'
+havana::network::management::device: 'eth3'
 
-grizzly::network::data: '172.16.99.0/24'
-grizzly::network::data::device: 'eth4'
+havana::network::data: '172.16.199.0/24'
+havana::network::data::device: 'eth4'
 
 ######## Fixed IPs (controller)
 
-grizzly::controller::address::api: '192.168.77.11'
-grizzly::controller::address::management: '172.16.88.11'
-grizzly::storage::address::api: '192.168.77.11'
-grizzly::storage::address::management: '172.16.88.11'
+havana::controller::address::api: '192.168.177.11'
+havana::controller::address::management: '172.16.188.11'
+havana::storage::address::api: '192.168.177.11'
+havana::storage::address::management: '172.16.188.11'
 
 ######## Database
 
-grizzly::mysql::root_password: 'spam-gak'
-grizzly::mysql::allowed_hosts: ['localhost', '127.0.0.1', '172.16.88.%']
+havana::mysql::root_password: 'spam-gak'
+havana::mysql::service_password: 'fuva-wax'
+havana::mysql::allowed_hosts: ['localhost', '127.0.0.1', '172.16.188.%']
 
 ######## RabbitMQ
 
-grizzly::rabbitmq::user: 'openstack'
-grizzly::rabbitmq::password: 'pose-vix'
+havana::rabbitmq::user: 'openstack'
+havana::rabbitmq::password: 'pose-vix'
 
 ######## Keystone
 
-grizzly::keystone::admin_token: 'sosp-kyl'
-grizzly::keystone::sql::password: 'fuva-wax'
-grizzly::keystone::admin_email: 'nobody@example.com'
-grizzly::keystone::admin_password: 'fyby-tet'
-grizzly::keystone::verbose: 'True'
-grizzly::keystone::debug: 'True'
+havana::keystone::admin_token: 'sosp-kyl'
+havana::keystone::admin_email: 'nobody@example.com'
+havana::keystone::admin_password: 'fyby-tet'
+havana::keystone::verbose: 'True'
+havana::keystone::debug: 'True'
 
-grizzly::tenants:
+havana::tenants:
     "test":
         description: "Test tenant"
 
-grizzly::users:
+havana::users:
     "test":
         password: "abc123"
         tenant: "test"
@@ -52,36 +52,51 @@ grizzly::users:
 
 ######## Glance
 
-grizzly::glance::sql::password: 'bo-xy-hi'
-grizzly::glance::password: 'na-mu-va'
-grizzly::glance::verbose: 'True'
-grizzly::glance::debug: 'True'
+havana::glance::password: 'na-mu-va'
+havana::glance::verbose: 'True'
+havana::glance::debug: 'True'
 
 ######## Cinder
 
-grizzly::cinder::sql::password: 'meto-jag'
-grizzly::cinder::password: 'zi-co-se'
-grizzly::cinder::verbose: 'True'
-grizzly::cinder::debug: 'True'
+havana::cinder::password: 'zi-co-se'
+havana::cinder::verbose: 'True'
+havana::cinder::debug: 'True'
 
-grizzly::cinder::volume_size: '4G'
+havana::cinder::volume_size: '4G'
+
+######## Swift
+
+havana::swift::password: 'dexc-flo'
+havana::swift::hash_suffix: 'pop-bang'
 
 ######## Nova
 
-grizzly::nova::libvirt_type: 'qemu'
-grizzly::nova::sql::password: 'li-hu-py'
-grizzly::nova::password: 'quuk-paj'
-grizzly::nova::verbose: 'True'
-grizzly::nova::debug: 'True'
+havana::nova::libvirt_type: 'kvm'
+havana::nova::password: 'quuk-paj'
+havana::nova::verbose: 'True'
+havana::nova::debug: 'True'
 
-######## Quantum
+######## Neutron
 
-grizzly::quantum::sql::password: 'spal-nyp'
-grizzly::quantum::password: 'whi-rtuz'
-grizzly::quantum::shared_secret: 'by-sa-bo'
-grizzly::quantum::verbose: 'True'
-grizzly::quantum::debug: 'True'
+havana::neutron::password: 'whi-rtuz'
+havana::neutron::shared_secret: 'by-sa-bo'
+havana::neutron::verbose: 'True'
+havana::neutron::debug: 'True'
+
+######## Ceilometer
+havana::ceilometer::mongo::password: 'whi-truz'
+havana::ceilometer::password: 'whi-truz'
+havana::ceilometer::meteringsecret: 'ceilometersecretkey'
+havana::ceilometer::verbose: 'True'
+havana::ceilometer::debug: 'True'
+
+######## Heat
+havana::heat::password: 'zap-bang'
+havana::heat::encryption_key: 'heatsecretkey'
+havana::heat::verbose: 'True'
+havana::heat::debug: 'True'
+
 
 ######## Horizon
 
-grizzly::horizon::secret_key: 'whu-ghuk'
+havana::horizon::secret_key: 'whu-ghuk'
