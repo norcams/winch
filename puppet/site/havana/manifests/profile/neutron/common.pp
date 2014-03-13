@@ -8,6 +8,13 @@ class havana::profile::neutron::common {
   $data_device = hiera('havana::network::data::device')
   $data_address = getvar("ipaddress_${data_device}")
 
+  # Make sure iproute is upgraded to get support for net namespaces
+  exec { 'yum_upgrade_iproute':
+    command => '/usr/bin/yum -y upgrade iproute',
+    unless => '/bin/rpm -q iproute | grep el6ost',
+  }
+  Exec['yum_upgrade_iproute'] -> Class['::neutron']
+
   class { '::neutron':
     rabbit_host        => $controller_management_address,
     rabbit_user        => hiera('havana::rabbitmq::user'),
