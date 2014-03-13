@@ -71,7 +71,7 @@ havana::swift::hash_suffix: 'pop-bang'
 
 ######## Nova
 
-havana::nova::libvirt_type: 'kvm'
+havana::nova::libvirt_type: 'qemu'
 havana::nova::password: 'quuk-paj'
 havana::nova::verbose: 'True'
 havana::nova::debug: 'True'
