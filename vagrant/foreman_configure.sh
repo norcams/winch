@@ -1,11 +1,11 @@
 #!/bin/bash
 hammer proxy create --name "controller" \
-  --url "https://controller.vagrant.local:8443"
+  --url "https://controller.winch.local:8443"
 hammer proxy info --name "controller"
 
 # Create a domain named vagrant.local and associate it with DNS on proxy id 1
-hammer domain create --name "vagrant.local" --dns-id 1
-hammer domain info --name "vagrant.local"
+hammer domain create --name "winch.local" --dns-id 1
+hammer domain info --name "winch.local"
 
 hammer subnet create --name "vagrant" \
   --network "172.16.88.0" \
