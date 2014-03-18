@@ -10,16 +10,16 @@ sudo foreman-installer \
   --foreman-proxy-tftp=true \
   --foreman-proxy-dhcp=true \
   --foreman-proxy-dhcp-interface=eth3 \
-  --foreman-proxy-dhcp-gateway="172.16.88.11" \
-  --foreman-proxy-dhcp-range="172.16.88.100 172.16.88.200" \
-  --foreman-proxy-dhcp-nameservers="172.16.88.11" \
-  --foreman-proxy-foreman-base-url="https://controller.vagrant.local" \
+  --foreman-proxy-dhcp-gateway="172.16.188.11" \
+  --foreman-proxy-dhcp-range="172.16.188.100 172.16.188.200" \
+  --foreman-proxy-dhcp-nameservers="172.16.188.11" \
+  --foreman-proxy-foreman-base-url="https://controller.winch.local" \
   --foreman-proxy-oauth-consumer-key="JWxktz8OtcbtIy" \
   --foreman-proxy-oauth-consumer-secret="RTNcT3Jat1FBiA" \
   --foreman-proxy-dns=true \
   --foreman-proxy-dns-interface=eth3 \
-  --foreman-proxy-dns-zone="vagrant.local" \
-  --foreman-proxy-dns-reverse="88.16.172.in-addr.arpa"
+  --foreman-proxy-dns-zone="winch.local" \
+  --foreman-proxy-dns-reverse="188.16.172.in-addr.arpa"
 #    --foreman-proxy-dns           Use DNS (default: false)
 #    --foreman-proxy-dns-forwarders  DNS forwarders (default: [])
 #    --foreman-proxy-dns-interface  DNS interface (default: "eth0")

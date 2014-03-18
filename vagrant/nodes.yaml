@@ -2,7 +2,7 @@ node_defaults:
     cpus: 2
     memory: 2048
     box: centos65
-    domain: localdomain
+    domain: winch.local
     networks:
         - api
         - external
