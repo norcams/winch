@@ -15,10 +15,10 @@ havana::network::data::device: 'eth4'
 
 ######## Fixed IPs (controller)
 
-havana::controller::address::api: '192.168.166.11'
-havana::controller::address::management: '172.16.188.11'
-havana::storage::address::api: '192.168.166.11'
-havana::storage::address::management: '172.16.188.11'
+havana::controller::address::api: '192.168.166.12'
+havana::controller::address::management: '172.16.188.12'
+havana::storage::address::api: '192.168.166.12'
+havana::storage::address::management: '172.16.188.12'
 
 ######## Database
 
