@@ -1,17 +1,17 @@
 #!/bin/bash
-hammer proxy create --name "controller" \
+hammer proxy create --name "installer" \
   --url "https://installer.winch.local:8443"
-hammer proxy info --name "controller"
+hammer proxy info --name "installer"
 
 # Create a domain named vagrant.local and associate it with DNS on proxy id 1
 hammer domain create --name "winch.local" --dns-id 1
 hammer domain info --name "winch.local"
 
 hammer subnet create --name "vagrant" \
-  --network "172.16.88.0" \
+  --network "172.16.188.0" \
   --mask "255.255.255.0" \
-  --gateway "172.16.88.11" \
-  --dns-primary "172.16.88.11"
+  --gateway "172.16.188.11" \
+  --dns-primary "172.16.188.11"
 hammer subnet update --name "vagrant" \
   --domain-ids 1 --dhcp-id 1 --tftp-id 1 --dns-id 1
 hammer subnet info --name "vagrant"
