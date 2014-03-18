@@ -1,6 +1,6 @@
 #!/bin/bash
 hammer proxy create --name "controller" \
-  --url "https://controller.winch.local:8443"
+  --url "https://installer.winch.local:8443"
 hammer proxy info --name "controller"
 
 # Create a domain named vagrant.local and associate it with DNS on proxy id 1
