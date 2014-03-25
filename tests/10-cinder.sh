@@ -1,4 +1,4 @@
-echo CINDER TEST - copy and paste :-)
+echo "CINDER TEST - copy and paste :-)"
 echo
 echo sudo vgdisplay
 echo sudo losetup -a
