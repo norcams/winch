@@ -2,4 +2,7 @@
 .vagrant
 *~
 *.swp
+*.img
+*.pem
 puppet/modules/
+docs/_*/
