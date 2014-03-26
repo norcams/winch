@@ -6,7 +6,8 @@ This will document what deployment scenarios we are working to support, sorted b
 Vagrant: controller and compute
 -------------------------------
 
-This is the simplest deployment scenario that will allow an instance to boot. 
+This is the simplest deployment scenario that will allow an instance to boot. Checking out
+the project and then running 'vagrant up'  
 
 Vagrant: management, controller and compute
 -------------------------------------------

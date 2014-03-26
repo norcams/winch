@@ -21,6 +21,20 @@ your local computer.
 Project folder structure
 ------------------------
 
+::
+
+    .
+    ├── Vagrantfile
+    ├── docs
+    ├── puppet
+    │   ├── hieradata
+    │   ├── manifests
+    │   ├── modules
+    │   └── site
+    ├── tests
+    └── vagrant
+
+
 Vagrantfile
 ~~~~~~~~~~~
 
