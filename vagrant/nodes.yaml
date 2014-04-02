@@ -10,7 +10,7 @@ node_defaults:
         - data
 
 nodes:
-    - name: installer
+    - name: console
     - name: controller
     - name: compute
 
