@@ -13,7 +13,7 @@ sudo foreman-installer \
   --foreman-proxy-dhcp-gateway="172.16.188.11" \
   --foreman-proxy-dhcp-range="172.16.188.100 172.16.188.200" \
   --foreman-proxy-dhcp-nameservers="172.16.188.11" \
-  --foreman-proxy-foreman-base-url="https://controller.winch.local" \
+  --foreman-proxy-foreman-base-url="https://console.winch.local" \
   --foreman-proxy-oauth-consumer-key="JWxktz8OtcbtIy" \
   --foreman-proxy-oauth-consumer-secret="RTNcT3Jat1FBiA" \
   --foreman-proxy-dns=true \
