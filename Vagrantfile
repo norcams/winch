@@ -16,9 +16,10 @@ Vagrant.configure("2") do |config|
             box.vm.box = node['box']
             box.vm.box_url = node['box_url']
 
-            node['networks'].each do |net|
-                ip = settings['networks'][net] + ".#{i+11}"
-                box.vm.network :private_network, ip: ip
+            node['networks'].each do |n|
+                ip = settings['networks'][n]['net'] + ".#{i+11}"
+                auto_config = settings['networks'][n]['auto_config']
+                box.vm.network :private_network, ip: ip, auto_config: auto_config
             end
 
             box.vm.provider :virtualbox do |vb|
