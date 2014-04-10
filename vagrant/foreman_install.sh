@@ -9,15 +9,15 @@ sudo foreman-installer \
   --foreman-proxy-puppetca=true \
   --foreman-proxy-tftp=true \
   --foreman-proxy-dhcp=true \
-  --foreman-proxy-dhcp-interface=eth3 \
+  --foreman-proxy-dhcp-interface=eth1 \
   --foreman-proxy-dhcp-gateway="172.16.188.11" \
   --foreman-proxy-dhcp-range="172.16.188.100 172.16.188.200" \
   --foreman-proxy-dhcp-nameservers="172.16.188.11" \
-  --foreman-proxy-foreman-base-url="https://console.winch.local" \
+  --foreman-proxy-foreman-base-url="https://manager.winch.local" \
   --foreman-proxy-oauth-consumer-key="JWxktz8OtcbtIy" \
   --foreman-proxy-oauth-consumer-secret="RTNcT3Jat1FBiA" \
   --foreman-proxy-dns=true \
-  --foreman-proxy-dns-interface=eth3 \
+  --foreman-proxy-dns-interface=eth1 \
   --foreman-proxy-dns-zone="winch.local" \
   --foreman-proxy-dns-reverse="188.16.172.in-addr.arpa"
 #    --foreman-proxy-dns           Use DNS (default: false)
