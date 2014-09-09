@@ -31,7 +31,8 @@ Vagrant.configure("2") do |config|
                 vb.customize ["modifyvm", :id, "--name", node['name']]
             end
 
-            box.vm.provision :shell, :path => "vagrant/install-puppet.sh"
+            #box.vm.provision :shell, :path => "vagrant/install-puppet.sh"
+            box.vm.provision :shell, :path => "vagrant/install-puppetlabsrepo.sh"
             box.vm.provision :shell, :path => "vagrant/virbr0-fix.sh"
             box.vm.provision :puppet do |puppet|
                 puppet.manifests_path = "puppet/manifests"
