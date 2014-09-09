@@ -15,18 +15,18 @@ nodes:
     - name: compute
 
 networks:
+    api:
+      net:         192.168.11
+      auto_config: true
+    external:
+      net:         192.168.22
+      auto_config: true
     management:
-      net:         172.16.188
+      net:         172.16.33
       auto_config: true
     data:
-      net:         172.16.199
-      auto_config: false
-    api:
-      net:         192.168.166
-      auto_config: false
-    external:
-      net:         192.168.177
-      auto_config: false
+      net:         172.16.44
+      auto_config: true
 
 boxes:
     centos65: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.5_chef-provisionerless.box
