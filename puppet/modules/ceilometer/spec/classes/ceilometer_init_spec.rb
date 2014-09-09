@@ -37,6 +37,7 @@ describe 'ceilometer' do
     context 'with rabbit_host parameter' do
       before { params.merge!( rabbit_params ) }
       it_configures 'a ceilometer base installation'
+      it_configures 'rabbit with SSL support'
       it_configures 'rabbit without HA support (with backward compatibility)'
     end
 
@@ -44,12 +45,14 @@ describe 'ceilometer' do
       context 'with one server' do
         before { params.merge!( rabbit_params ).merge!( :rabbit_hosts => ['127.0.0.1:5672'] ) }
         it_configures 'a ceilometer base installation'
+        it_configures 'rabbit with SSL support'
         it_configures 'rabbit without HA support (without backward compatibility)'
       end
 
       context 'with multiple servers' do
         before { params.merge!( rabbit_params ).merge!( :rabbit_hosts => ['rabbit1:5672', 'rabbit2:5672'] ) }
         it_configures 'a ceilometer base installation'
+        it_configures 'rabbit with SSL support'
         it_configures 'rabbit with HA support'
       end
     end
@@ -109,7 +112,7 @@ describe 'ceilometer' do
     end
 
     it 'configures required metering_secret' do
-      should contain_ceilometer_config('DEFAULT/metering_secret').with_value('metering-s3cr3t')
+      should contain_ceilometer_config('publisher/metering_secret').with_value('metering-s3cr3t')
     end
 
     context 'without the required metering_secret' do
@@ -117,10 +120,23 @@ describe 'ceilometer' do
       it { expect { should raise_error(Puppet::Error) } }
     end
 
-    it 'configures logging, debug and verbosity' do
+    it 'configures debug and verbosity' do
       should contain_ceilometer_config('DEFAULT/debug').with_value( params[:debug] )
-      should contain_ceilometer_config('DEFAULT/log_dir').with_value( params[:log_dir] )
       should contain_ceilometer_config('DEFAULT/verbose').with_value( params[:verbose] )
+    end
+
+    it 'configures logging directory by default' do
+      should contain_ceilometer_config('DEFAULT/log_dir').with_value( params[:log_dir] )
+    end
+
+    context 'with logging directory disabled' do
+      before { params.merge!( :log_dir => false) }
+
+      it { should contain_ceilometer_config('DEFAULT/log_dir').with_ensure('absent') }
+    end
+
+    it 'configures notification_topics' do
+      should contain_ceilometer_config('DEFAULT/notification_topics').with_value('notifications')
     end
 
     it 'configures syslog to be disabled by default' do
@@ -144,12 +160,12 @@ describe 'ceilometer' do
       it { should contain_ceilometer_config('DEFAULT/syslog_log_facility').with_value('LOG_LOCAL0') }
     end
 
-    it 'fixes a bad value in ceilometer (glance_control_exchange)' do
-      should contain_ceilometer_config('DEFAULT/glance_control_exchange').with_value('glance')
-    end
+    context 'with overriden notification_topics parameter' do
+      before { params.merge!( :notification_topics => ['notifications', 'custom']) }
 
-    it 'configures notification_topics' do
-      should contain_ceilometer_config('DEFAULT/notification_topics').with_value('notifications')
+      it 'configures notification_topics' do
+        should contain_ceilometer_config('DEFAULT/notification_topics').with_value('notifications,custom')
+      end
     end
   end
 
@@ -193,6 +209,45 @@ describe 'ceilometer' do
     it { should contain_ceilometer_config('DEFAULT/rabbit_port').with_ensure('absent') }
     it { should contain_ceilometer_config('DEFAULT/rabbit_hosts').with_value( params[:rabbit_hosts].join(',') ) }
     it { should contain_ceilometer_config('DEFAULT/rabbit_ha_queues').with_value('true') }
+  end
+
+  shared_examples_for 'rabbit with SSL support' do
+    context "with default parameters" do
+      it { should contain_ceilometer_config('DEFAULT/rabbit_use_ssl').with_value('false') }
+      it { should contain_ceilometer_config('DEFAULT/kombu_ssl_ca_certs').with_ensure('absent') }
+      it { should contain_ceilometer_config('DEFAULT/kombu_ssl_certfile').with_ensure('absent') }
+      it { should contain_ceilometer_config('DEFAULT/kombu_ssl_keyfile').with_ensure('absent') }
+      it { should contain_ceilometer_config('DEFAULT/kombu_ssl_version').with_ensure('absent') }
+    end
+
+    context "with SSL enabled" do
+      before { params.merge!( :rabbit_use_ssl => 'true' ) }
+      it { should contain_ceilometer_config('DEFAULT/rabbit_use_ssl').with_value('true') }
+      it { should contain_ceilometer_config('DEFAULT/kombu_ssl_ca_certs').with_ensure('absent') }
+      it { should contain_ceilometer_config('DEFAULT/kombu_ssl_certfile').with_ensure('absent') }
+      it { should contain_ceilometer_config('DEFAULT/kombu_ssl_keyfile').with_ensure('absent') }
+      it { should contain_ceilometer_config('DEFAULT/kombu_ssl_version').with_value('SSLv3') }
+
+      context "with ca_certs" do
+        before { params.merge!( :kombu_ssl_ca_certs => '/path/to/ca.crt' ) }
+        it { should contain_ceilometer_config('DEFAULT/kombu_ssl_ca_certs').with_value('/path/to/ca.crt') }
+      end
+
+      context "with certfile" do
+        before { params.merge!( :kombu_ssl_certfile => '/path/to/cert.crt' ) }
+        it { should contain_ceilometer_config('DEFAULT/kombu_ssl_certfile').with_value('/path/to/cert.crt') }
+      end
+
+      context "with keyfile" do
+        before { params.merge!( :kombu_ssl_keyfile => '/path/to/cert.key' ) }
+        it { should contain_ceilometer_config('DEFAULT/kombu_ssl_keyfile').with_value('/path/to/cert.key') }
+      end
+
+      context "with version" do
+        before { params.merge!( :kombu_ssl_version => 'TLSv1' ) }
+        it { should contain_ceilometer_config('DEFAULT/kombu_ssl_version').with_value('TLSv1') }
+      end
+    end
   end
 
   shared_examples_for 'qpid support' do

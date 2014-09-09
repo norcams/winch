@@ -1,4 +1,3 @@
-#! /usr/bin/env ruby -S rspec
 require 'spec_helper'
 
 describe Puppet::Parser::Functions.function(:get_module_path) do

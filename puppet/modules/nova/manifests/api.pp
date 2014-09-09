@@ -1,51 +1,141 @@
+# == Class: nova::api
 #
-# installs and configures nova api service
+# Setup and configure the Nova API endpoint
 #
-# * admin_password
-# * enabled
-# * ensure_package
-# * auth_strategy
-# * auth_host
-# * auth_port
-# * auth_protocol
-# * auth_admin_prefix: path part of the auth url. Optional.
-#     This allow admin auth URIs like http://auth_host:35357/keystone/admin.
-#     (where '/keystone' is the admin prefix)
-#     Defaults to false for empty. If defined, should be a string with a leading '/' and no trailing '/'.
-# * admin_tenant_name
-# * admin_user
-# * enabled_apis
-# * use_forwarded_for:
-#     Treat X-Forwarded-For as the canonical remote address. Only
-#     enable this if you have a sanitizing proxy. (boolean value)
-#     (Optional). Defaults to false.
-# * neutron_metadata_proxy_shared_secret
-# * ratelimit
-# * ratelimit_factory
+# === Parameters
+#
+# [*admin_password*]
+#   (required) The password to set for the nova admin user in keystone
+#
+# [*enabled*]
+#   (optional) Whether the nova api service will be run
+#   Defaults to false
+#
+# [*manage_service*]
+#   (optional) Whether to start/stop the service
+#   Defaults to true
+#
+# [*ensure_package*]
+#   (optional) Whether the nova api package will be installed
+#   Defaults to 'present'
+#
+# [*auth_strategy*]
+#   (DEPRECATED) Does nothing and will be removed in Icehouse
+#   Defaults to false
+#
+# [*auth_host*]
+#   (optional) The IP of the server running keystone
+#   Defaults to '127.0.0.1'
+#
+# [*auth_port*]
+#   (optional) The port to use when authenticating against Keystone
+#   Defaults to 35357
+#
+# [*auth_protocol*]
+#   (optional) The protocol to use when authenticating against Keystone
+#   Defaults to 'http'
+#
+# [*auth_uri*]
+#   (optional) The uri of a Keystone service to authenticate against
+#   Defaults to false
+#
+# [*auth_admin_prefix*]
+#   (optional) Prefix to prepend at the beginning of the keystone path
+#   Defaults to false
+#
+# [*auth_version*]
+#   (optional) API version of the admin Identity API endpoint
+#   for example, use 'v3.0' for the keystone version 3.0 api
+#   Defaults to false
+#
+# [*admin_tenant_name*]
+#   (optional) The name of the tenant to create in keystone for use by the nova services
+#   Defaults to 'services'
+#
+# [*admin_user*]
+#   (optional) The name of the user to create in keystone for use by the nova services
+#   Defaults to 'nova'
+#
+# [*api_bind_address*]
+#   (optional) IP address for nova-api server to listen
+#   Defaults to '0.0.0.0'
+#
+# [*metadata_listen*]
+#   (optional) IP address  for metadata server to listen
+#   Defaults to '0.0.0.0'
+#
+# [*enabled_apis*]
+#   (optional) A comma separated list of apis to enable
+#   Defaults to 'ec2,osapi_compute,metadata'
+#
+# [*volume_api_class*]
+#   (optional) The name of the class that nova will use to access volumes. Cinder is the only option.
+#   Defaults to 'nova.volume.cinder.API'
+#
+# [*use_forwarded_for*]
+#   (optional) Treat X-Forwarded-For as the canonical remote address. Only
+#   enable this if you have a sanitizing proxy.
+#   Defaults to false
+#
+# [*osapi_compute_workers*]
+#   (optional) Number of workers for OpenStack API service
+#   Defaults to $::processorcount
+#
+# [*metadata_workers*]
+#   (optional) Number of workers for metadata service
+#   Defaults to $::processorcount
+#
+# [*conductor_workers*]
+#   (optional) Number of workers for OpenStack Conductor service
+#   Defaults to $::processorcount
+#
+# [*sync_db*]
+#   (optional) Run nova-manage db sync on api nodes after installing the package.
+#   Defaults to true
+#
+# [*neutron_metadata_proxy_shared_secret*]
+#   (optional) Shared secret to validate proxies Neutron metadata requests
+#   Defaults to undef
+#
+# [*ratelimits*]
+#   (optional) A string that is a semicolon-separated list of 5-tuples.
+#   See http://docs.openstack.org/trunk/config-reference/content/configuring-compute-API.html
+#   Example: '(POST, "*", .*, 10, MINUTE);(POST, "*/servers", ^/servers, 50, DAY);(PUT, "*", .*, 10, MINUTE)'
+#   Defaults to undef
+#
+# [*ratelimits_factory*]
+#   (optional) The rate limiting factory to use
+#   Defaults to 'nova.api.openstack.compute.limits:RateLimitingMiddleware.factory'
 #
 class nova::api(
   $admin_password,
-  $enabled           = false,
-  $ensure_package    = 'present',
-  $auth_strategy     = undef,
-  $auth_host         = '127.0.0.1',
-  $auth_port         = 35357,
-  $auth_protocol     = 'http',
-  $auth_uri          = false,
-  $auth_admin_prefix = false,
-  $admin_tenant_name = 'services',
-  $admin_user        = 'nova',
-  $api_bind_address  = '0.0.0.0',
-  $metadata_listen   = '0.0.0.0',
-  $enabled_apis      = 'ec2,osapi_compute,metadata',
-  $volume_api_class  = 'nova.volume.cinder.API',
-  $use_forwarded_for = false,
-  $workers           = $::processorcount,
-  $sync_db           = true,
+  $enabled               = false,
+  $manage_service        = true,
+  $ensure_package        = 'present',
+  $auth_strategy         = undef,
+  $auth_host             = '127.0.0.1',
+  $auth_port             = 35357,
+  $auth_protocol         = 'http',
+  $auth_uri              = false,
+  $auth_admin_prefix     = false,
+  $auth_version          = false,
+  $admin_tenant_name     = 'services',
+  $admin_user            = 'nova',
+  $api_bind_address      = '0.0.0.0',
+  $metadata_listen       = '0.0.0.0',
+  $enabled_apis          = 'ec2,osapi_compute,metadata',
+  $volume_api_class      = 'nova.volume.cinder.API',
+  $use_forwarded_for     = false,
+  $osapi_compute_workers = $::processorcount,
+  $metadata_workers      = $::processorcount,
+  $conductor_workers     = $::processorcount,
+  $sync_db               = true,
   $neutron_metadata_proxy_shared_secret = undef,
-  $ratelimits        = undef,
-  $ratelimits_factory =
-    'nova.api.openstack.compute.limits:RateLimitingMiddleware.factory'
+  $ratelimits            = undef,
+  $ratelimits_factory    =
+    'nova.api.openstack.compute.limits:RateLimitingMiddleware.factory',
+  # DEPRECATED PARAMETER
+  $workers               = undef,
 ) {
 
   include nova::params
@@ -57,14 +147,23 @@ class nova::api(
   Package<| title == 'nova-common' |> -> Class['nova::api']
 
   Nova_paste_api_ini<| |> ~> Exec['post-nova_config']
+
   Nova_paste_api_ini<| |> ~> Service['nova-api']
 
   if $auth_strategy {
-    warning('Parameter auth_strategy is not used in class nova::api and going to be deprecated.')
+    warning('The auth_strategy parameter is deprecated and has no effect.')
+  }
+
+  if $workers {
+    warning('The workers parameter is deprecated, use osapi_compute_workers instead.')
+    $osapi_compute_workers_real = $workers
+  } else {
+    $osapi_compute_workers_real = $osapi_compute_workers
   }
 
   nova::generic_service { 'api':
     enabled        => $enabled,
+    manage_service => $manage_service,
     ensure_package => $ensure_package,
     package_name   => $::nova::params::api_package_name,
     service_name   => $::nova::params::api_service_name,
@@ -78,7 +177,9 @@ class nova::api(
     'DEFAULT/osapi_compute_listen':  value => $api_bind_address;
     'DEFAULT/metadata_listen':       value => $metadata_listen;
     'DEFAULT/osapi_volume_listen':   value => $api_bind_address;
-    'DEFAULT/osapi_compute_workers': value => $workers;
+    'DEFAULT/osapi_compute_workers': value => $osapi_compute_workers_real;
+    'DEFAULT/metadata_workers':      value => $metadata_workers;
+    'conductor/workers':             value => $conductor_workers;
     'DEFAULT/use_forwarded_for':     value => $use_forwarded_for;
   }
 
@@ -99,6 +200,12 @@ class nova::api(
     nova_config { 'keystone_authtoken/auth_uri': value => $auth_uri; }
   } else {
     nova_config { 'keystone_authtoken/auth_uri': value => "${auth_protocol}://${auth_host}:5000/"; }
+  }
+
+  if $auth_version {
+    nova_config { 'keystone_authtoken/auth_version': value => $auth_version; }
+  } else {
+    nova_config { 'keystone_authtoken/auth_version': ensure => absent; }
   }
 
   nova_config {

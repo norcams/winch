@@ -13,13 +13,14 @@
 # Sample Usage:
 #
 class apache (
-  $service_name         = $apache::params::service_name,
+  $apache_name          = $::apache::params::apache_name,
+  $service_name         = $::apache::params::service_name,
   $default_mods         = true,
   $default_vhost        = true,
   $default_confd_files  = true,
   $default_ssl_vhost    = false,
-  $default_ssl_cert     = $apache::params::default_ssl_cert,
-  $default_ssl_key      = $apache::params::default_ssl_key,
+  $default_ssl_cert     = $::apache::params::default_ssl_cert,
+  $default_ssl_key      = $::apache::params::default_ssl_key,
   $default_ssl_chain    = undef,
   $default_ssl_ca       = undef,
   $default_ssl_crl_path = undef,
@@ -28,45 +29,49 @@ class apache (
   $service_enable       = true,
   $service_ensure       = 'running',
   $purge_configs        = true,
-  $purge_vdir           = false,
+  $purge_vhost_dir      = undef,
   $serveradmin          = 'root@localhost',
   $sendfile             = 'On',
   $error_documents      = false,
   $timeout              = '120',
-  $httpd_dir            = $apache::params::httpd_dir,
-  $server_root          = $apache::params::server_root,
-  $confd_dir            = $apache::params::confd_dir,
-  $vhost_dir            = $apache::params::vhost_dir,
-  $vhost_enable_dir     = $apache::params::vhost_enable_dir,
-  $mod_dir              = $apache::params::mod_dir,
-  $mod_enable_dir       = $apache::params::mod_enable_dir,
-  $mpm_module           = $apache::params::mpm_module,
-  $conf_template        = $apache::params::conf_template,
-  $servername           = $apache::params::servername,
+  $httpd_dir            = $::apache::params::httpd_dir,
+  $server_root          = $::apache::params::server_root,
+  $conf_dir             = $::apache::params::conf_dir,
+  $confd_dir            = $::apache::params::confd_dir,
+  $vhost_dir            = $::apache::params::vhost_dir,
+  $vhost_enable_dir     = $::apache::params::vhost_enable_dir,
+  $mod_dir              = $::apache::params::mod_dir,
+  $mod_enable_dir       = $::apache::params::mod_enable_dir,
+  $mpm_module           = $::apache::params::mpm_module,
+  $conf_template        = $::apache::params::conf_template,
+  $servername           = $::apache::params::servername,
   $manage_user          = true,
   $manage_group         = true,
-  $user                 = $apache::params::user,
-  $group                = $apache::params::group,
-  $keepalive            = $apache::params::keepalive,
-  $keepalive_timeout    = $apache::params::keepalive_timeout,
-  $logroot              = $apache::params::logroot,
-  $log_level            = $apache::params::log_level,
-  $ports_file           = $apache::params::ports_file,
+  $user                 = $::apache::params::user,
+  $group                = $::apache::params::group,
+  $keepalive            = $::apache::params::keepalive,
+  $keepalive_timeout    = $::apache::params::keepalive_timeout,
+  $max_keepalive_requests = $apache::params::max_keepalive_requests,
+  $logroot              = $::apache::params::logroot,
+  $logroot_mode         = $::apache::params::logroot_mode,
+  $log_level            = $::apache::params::log_level,
+  $log_formats          = {},
+  $ports_file           = $::apache::params::ports_file,
+  $apache_version       = $::apache::version::default,
   $server_tokens        = 'OS',
   $server_signature     = 'On',
   $trace_enable         = 'On',
   $package_ensure       = 'installed',
-) inherits apache::params {
-
+) inherits ::apache::params {
   validate_bool($default_vhost)
   validate_bool($default_ssl_vhost)
   validate_bool($default_confd_files)
   # true/false is sufficient for both ensure and enable
   validate_bool($service_enable)
 
-  $valid_mpms_re = $::osfamily ? {
-    'FreeBSD' => '(event|itk|peruser|prefork|worker)',
-    default   => '(itk|prefork|worker)'
+  $valid_mpms_re = $apache_version ? {
+    '2.4'   => '(event|itk|peruser|prefork|worker)',
+    default => '(event|itk|prefork|worker)'
   }
 
   if $mpm_module {
@@ -81,7 +86,7 @@ class apache (
   if $::osfamily != 'FreeBSD' {
     package { 'httpd':
       ensure => $package_ensure,
-      name   => $apache::params::apache_name,
+      name   => $apache_name,
       notify => Class['Apache::Service'],
     }
   }
@@ -110,18 +115,17 @@ class apache (
   validate_re($log_level, $valid_log_level_re,
   "Log level '${log_level}' is not one of the supported Apache HTTP Server log levels.")
 
-  class { 'apache::service':
+  class { '::apache::service':
     service_name   => $service_name,
     service_enable => $service_enable,
     service_ensure => $service_ensure,
   }
 
-  # Deprecated backwards-compatibility
-  if $purge_vdir {
-    warning('Class[\'apache\'] parameter purge_vdir is deprecated in favor of purge_configs')
-    $purge_confd = $purge_vdir
+  # Set purge vhostd appropriately
+  if $purge_vhost_dir == undef {
+    $_purge_vhost_dir = $purge_configs
   } else {
-    $purge_confd = $purge_configs
+    $_purge_vhost_dir = $purge_vhost_dir
   }
 
   Exec {
@@ -135,7 +139,7 @@ class apache (
   file { $confd_dir:
     ensure  => directory,
     recurse => true,
-    purge   => $purge_confd,
+    purge   => $purge_configs,
     notify  => Class['Apache::Service'],
     require => Package['httpd'],
   }
@@ -181,7 +185,7 @@ class apache (
     file { $vhost_dir:
       ensure  => directory,
       recurse => true,
-      purge   => $purge_configs,
+      purge   => $_purge_vhost_dir,
       notify  => Class['Apache::Service'],
       require => Package['httpd'],
     }
@@ -196,7 +200,7 @@ class apache (
     file { $vhost_enable_dir:
       ensure  => directory,
       recurse => true,
-      purge   => $purge_configs,
+      purge   => $_purge_vhost_dir,
       notify  => Class['Apache::Service'],
       require => Package['httpd'],
     }
@@ -206,17 +210,18 @@ class apache (
 
   concat { $ports_file:
     owner   => 'root',
-    group   => $apache::params::root_group,
+    group   => $::apache::params::root_group,
     mode    => '0644',
     notify  => Class['Apache::Service'],
     require => Package['httpd'],
   }
   concat::fragment { 'Apache ports header':
+    ensure  => present,
     target  => $ports_file,
     content => template('apache/ports_header.erb')
   }
 
-  if $apache::params::conf_dir and $apache::params::conf_file {
+  if $::apache::conf_dir and $::apache::params::conf_file {
     case $::osfamily {
       'debian': {
         $docroot              = '/var/www'
@@ -268,11 +273,12 @@ class apache (
     # - $apxs_workaround
     # - $keepalive
     # - $keepalive_timeout
+    # - $max_keepalive_requests
     # - $server_root
     # - $server_tokens
     # - $server_signature
     # - $trace_enable
-    file { "${apache::params::conf_dir}/${apache::params::conf_file}":
+    file { "${::apache::conf_dir}/${::apache::params::conf_file}":
       ensure  => file,
       content => template($conf_template),
       notify  => Class['Apache::Service'],
@@ -282,20 +288,20 @@ class apache (
     # preserve back-wards compatibility to the times when default_mods was
     # only a boolean value. Now it can be an array (too)
     if is_array($default_mods) {
-      class { 'apache::default_mods':
+      class { '::apache::default_mods':
         all  => false,
         mods => $default_mods,
       }
     } else {
-      class { 'apache::default_mods':
+      class { '::apache::default_mods':
         all => $default_mods,
       }
     }
-    class { 'apache::default_confd_files':
+    class { '::apache::default_confd_files':
       all => $default_confd_files
     }
     if $mpm_module {
-      class { "apache::mod::${mpm_module}": }
+      class { "::apache::mod::${mpm_module}": }
     }
 
     $default_vhost_ensure = $default_vhost ? {
@@ -307,7 +313,7 @@ class apache (
       false => 'absent'
     }
 
-    apache::vhost { 'default':
+    ::apache::vhost { 'default':
       ensure          => $default_vhost_ensure,
       port            => 80,
       docroot         => $docroot,
@@ -316,12 +322,13 @@ class apache (
       access_log_file => $access_log_file,
       priority        => '15',
       ip              => $ip,
+      logroot_mode    => $logroot_mode,
     }
     $ssl_access_log_file = $::osfamily ? {
       'freebsd' => $access_log_file,
       default   => "ssl_${access_log_file}",
     }
-    apache::vhost { 'default-ssl':
+    ::apache::vhost { 'default-ssl':
       ensure          => $default_ssl_vhost_ensure,
       port            => 443,
       ssl             => true,
@@ -331,6 +338,7 @@ class apache (
       access_log_file => $ssl_access_log_file,
       priority        => '15',
       ip              => $ip,
+      logroot_mode    => $logroot_mode,
     }
   }
 }

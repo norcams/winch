@@ -1,6 +1,8 @@
 keystone
 =======
 
+4.0.0 - 2014.1.0 - Icehouse
+
 #### Table of Contents
 
 1. [Overview - What is the keystone module?](#overview)
@@ -90,7 +92,7 @@ These two will seldom be used outside openstack related classes, like nova or ci
 
 ```puppet
 # Setup the nova keystone service
-keystone_service { 'nova'
+keystone_service { 'nova':
   ensure      => present,
   type        => 'compute',
   description => 'Openstack Compute Service',
@@ -146,6 +148,8 @@ Limitations
 
 * If you've setup Openstack using previous versions of this module you need to be aware that it used UUID as the dedault to the token_format parameter but now defaults to PKI.  If you're using this module to manage a Grizzly Openstack deployment that was set up using a development release of the modules or are attempting an upgrade from Folsom then you'll need to make sure you set the token_format to UUID at classification time.
 
+* The Keystone Openstack service depends on a sqlalchemy database. If you are using puppetlabs-mysql to achieve this, there is a parameter called mysql_module that can be used to swap between the two supported versions: 0.9 and 2.2. This is needed because the puppetlabs-mysql module was rewritten and the custom type names have changed between versions.
+
 Development
 -----------
 
@@ -160,6 +164,46 @@ Contributors
 
 Release Notes
 -------------
+
+**4.1.0**
+
+* Added token flushing with cron.
+* Updated database api for consistency with other projects.
+* Fixed admin_token with secret parameter.
+* Fixed deprecated catalog driver.
+
+**4.0.0**
+
+* Stable Icehouse release.
+* Added template_file parameter to specify catalog.
+* Added keystone::config to handle additional custom options.
+* Added notification parameters.
+* Added support for puppetlabs-mysql 2.2 and greater.
+* Fixed deprecated sql section header in keystone.conf.
+* Fixed deprecated bind_host parameter.
+* Fixed example for native type keystone_service.
+* Fixed LDAP module bugs.
+* Fixed variable for host_access dependency.
+* Reduced default token duration to one hour.
+
+**3.2.0**
+
+* Added ability to configure any catalog driver.
+* Ensures log_file is absent when using syslog.
+
+**3.1.1**
+
+* Fixed inconsistent variable for mysql allowed hosts.
+
+**3.1.0**
+
+* Added ability to disable pki_setup.
+* Load tenant un-lazily if needed.
+* Add log_dir param, with option to disable.
+* Updated endpoint argument.
+* Added support to enable SSL.
+* Removes setting of Keystone endpoint by default.
+* Relaxed regex when keystone refuses connections.
 
 **3.0.0**
 

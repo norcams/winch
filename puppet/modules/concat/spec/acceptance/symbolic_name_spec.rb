@@ -1,11 +1,9 @@
 require 'spec_helper_acceptance'
 
-describe 'symbolic name', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
-  basedir = default.tmpdir('concat')
+describe 'symbolic name' do
   pp = <<-EOS
-    include concat::setup
     concat { 'not_abs_path':
-      path => '#{basedir}/file',
+      path => '/tmp/concat/file',
     }
 
     concat::fragment { '1':
@@ -26,7 +24,7 @@ describe 'symbolic name', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfami
     expect(apply_manifest(pp, :catch_changes => true).stderr).to eq("")
   end
 
-  describe file("#{basedir}/file") do
+  describe file('/tmp/concat/file') do
     it { should be_file }
     it { should contain '1' }
     it { should contain '2' }

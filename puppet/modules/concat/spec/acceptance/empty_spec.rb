@@ -1,11 +1,11 @@
 require 'spec_helper_acceptance'
 
-describe 'concat force empty parameter', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
-  basedir = default.tmpdir('concat')
+describe 'concat force empty parameter' do
   context 'should run successfully' do
     pp = <<-EOS
-      include concat::setup
-      concat { '#{basedir}/file':
+      concat { '/tmp/concat/file':
+        owner => root,
+        group => root,
         mode  => '0644',
         force => true,
       }
@@ -16,7 +16,7 @@ describe 'concat force empty parameter', :unless => UNSUPPORTED_PLATFORMS.includ
       expect(apply_manifest(pp, :catch_changes => true).stderr).to eq("")
     end
 
-    describe file("#{basedir}/file") do
+    describe file('/tmp/concat/file') do
       it { should be_file }
       it { should_not contain '1\n2' }
     end

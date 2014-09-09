@@ -2,6 +2,7 @@ Puppet::Type.type(:firewall).provide :ip6tables, :parent => :iptables, :source =
   @doc = "Ip6tables type provider"
 
   has_feature :iptables
+  has_feature :connection_limiting
   has_feature :hop_limiting
   has_feature :rate_limiting
   has_feature :recent_limiting
@@ -26,6 +27,16 @@ Puppet::Type.type(:firewall).provide :ip6tables, :parent => :iptables, :source =
     :ip6tables_save => 'ip6tables-save',
   })
 
+  confine :kernel => :linux
+
+  def initialize(*args)
+    if Facter.fact('ip6tables_version').value.match /1\.3\.\d/
+      raise ArgumentError, 'The ip6tables provider is not supported on version 1.3 of iptables'
+    else
+      super
+    end
+  end
+
   def self.iptables(*args)
     ip6tables(*args)
   end
@@ -37,43 +48,50 @@ Puppet::Type.type(:firewall).provide :ip6tables, :parent => :iptables, :source =
   @protocol = "IPv6"
 
   @resource_map = {
-    :burst => "--limit-burst",
-    :ctstate => "-m conntrack --ctstate",
-    :destination => "-d",
-    :dport => "-m multiport --dports",
-    :gid => "-m owner --gid-owner",
-    :icmp => "-m icmp6 --icmpv6-type",
-    :iniface => "-i",
-    :jump => "-j",
-    :hop_limit => "-m hl --hl-eq",
-    :limit => "-m limit --limit",
-    :log_level => "--log-level",
-    :log_prefix => "--log-prefix",
-    :name => "-m comment --comment",
-    :outiface => "-o",
-    :port => '-m multiport --ports',
-    :proto => "-p",
-    :rdest => "--rdest",
-    :reap => "--reap",
-    :recent => "-m recent",
-    :reject => "--reject-with",
-    :rhitcount => "--hitcount",
-    :rname => "--name",
-    :rseconds => "--seconds",
-    :rsource => "--rsource",
-    :rttl => "--rttl",
-    :source => "-s",
-    :state => "-m state --state",
-    :sport => "-m multiport --sports",
-    :table => "-t",
-    :todest => "--to-destination",
-    :toports => "--to-ports",
-    :tosource => "--to-source",
-    :uid => "-m owner --uid-owner",
-    :pkttype => "-m pkttype --pkt-type",
-    :ishasmorefrags => "-m frag --fragid 0 --fragmore",
-    :islastfrag => "-m frag --fragid 0 --fraglast",
-    :isfirstfrag => "-m frag --fragid 0 --fragfirst",
+    :burst            => "--limit-burst",
+    :connlimit_above  => "-m connlimit --connlimit-above",
+    :connlimit_mask   => "--connlimit-mask",
+    :connmark         => "-m connmark --mark",
+    :ctstate          => "-m conntrack --ctstate",
+    :destination      => "-d",
+    :dport            => "-m multiport --dports",
+    :gid              => "-m owner --gid-owner",
+    :hop_limit        => "-m hl --hl-eq",
+    :icmp             => "-m icmp6 --icmpv6-type",
+    :iniface          => "-i",
+    :isfirstfrag      => "-m frag --fragid 0 --fragfirst",
+    :ishasmorefrags   => "-m frag --fragid 0 --fragmore",
+    :islastfrag       => "-m frag --fragid 0 --fraglast",
+    :jump             => "-j",
+    :limit            => "-m limit --limit",
+    :log_level        => "--log-level",
+    :log_prefix       => "--log-prefix",
+    :name             => "-m comment --comment",
+    :outiface         => "-o",
+    :pkttype          => "-m pkttype --pkt-type",
+    :port             => '-m multiport --ports',
+    :proto            => "-p",
+    :rdest            => "--rdest",
+    :reap             => "--reap",
+    :recent           => "-m recent",
+    :reject           => "--reject-with",
+    :rhitcount        => "--hitcount",
+    :rname            => "--name",
+    :rseconds         => "--seconds",
+    :rsource          => "--rsource",
+    :rttl             => "--rttl",
+    :source           => "-s",
+    :sport            => "-m multiport --sports",
+    :stat_every       => '--every',
+    :stat_mode        => "-m statistic --mode",
+    :stat_packet      => '--packet',
+    :stat_probability => '--probability',
+    :state            => "-m state --state",
+    :table            => "-t",
+    :todest           => "--to-destination",
+    :toports          => "--to-ports",
+    :tosource         => "--to-source",
+    :uid              => "-m owner --uid-owner",
   }
 
   # These are known booleans that do not take a value, but we want to munge
@@ -118,6 +136,7 @@ Puppet::Type.type(:firewall).provide :ip6tables, :parent => :iptables, :source =
     :proto, :ishasmorefrags, :islastfrag, :isfirstfrag, :gid, :uid, :sport, :dport,
     :port, :pkttype, :name, :state, :ctstate, :icmp, :hop_limit, :limit, :burst,
     :recent, :rseconds, :reap, :rhitcount, :rttl, :rname, :rsource, :rdest,
-    :jump, :todest, :tosource, :toports, :log_level, :log_prefix, :reject]
+    :jump, :todest, :tosource, :toports, :log_level, :log_prefix, :reject,
+    :connlimit_above, :connlimit_mask, :connmark]
 
 end

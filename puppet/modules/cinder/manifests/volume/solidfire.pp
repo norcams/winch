@@ -35,25 +35,24 @@
 #   Defaults to 443
 #
 class cinder::volume::solidfire(
-  $volume_driver       = 'cinder.volume.drivers.solidfire.SolidFire',
   $san_ip,
   $san_login,
   $san_password,
+  $volume_driver       = 'cinder.volume.drivers.solidfire.SolidFire',
   $sf_emulate_512      = true,
   $sf_allow_tenant_qos = false,
   $sf_account_prefix   = '',
   $sf_api_port         = '443'
-
 ) {
 
-  cinder_config {
-    'DEFAULT/volume_driver':      value => $volume_driver;
-    'DEFAULT/san_ip':             value => $san_ip;
-    'DEFAULT/san_login':          value => $san_login;
-    'DEFAULT/san_password':       value => $san_password;
-    'DEFAULT/sf_emulate_512':     value => $sf_emulate_512;
-    'DEFAULT/sf_allow_tenant_qos':value => $sf_allow_tenant_qos;
-    'DEFAULT/sf_account_prefix':  value => $sf_account_prefix;
-    'DEFAULT/sf_api_port':        value => $sf_api_port;
+  cinder::backend::solidfire { 'DEFAULT':
+    san_ip              => $san_ip,
+    san_login           => $san_login,
+    san_password        => $san_password,
+    volume_driver       => $volume_driver,
+    sf_emulate_512      => $sf_emulate_512,
+    sf_allow_tenant_qos => $sf_allow_tenant_qos,
+    sf_account_prefix   => $sf_account_prefix,
+    sf_api_port         => $sf_api_port,
   }
 }

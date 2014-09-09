@@ -77,14 +77,11 @@ module Puppet::Util::Firewall
       proto = 'tcp'
     end
 
-    if value.kind_of?(String)
-      if value.match(/^\d+(-\d+)?$/)
-        return value
-      else
-        return Socket.getservbyname(value, proto).to_s
-      end
+    m = value.to_s.match(/^(!\s+)?(\S+)/)
+    if m[2].match(/^\d+(-\d+)?$/)
+      return "#{m[1]}#{m[2]}"
     else
-      Socket.getservbyname(value.to_s, proto).to_s
+      return "#{m[1]}#{Socket.getservbyname(m[2], proto).to_s}"
     end
   end
 
@@ -166,8 +163,13 @@ module Puppet::Util::Firewall
       end
     end
 
-    # Fedora 15 and newer use systemd for to persist iptable rules
+    # Fedora 15 and newer use systemd to persist iptable rules
     if os_key == 'RedHat' && Facter.value(:operatingsystem) == 'Fedora' && Facter.value(:operatingsystemrelease).to_i >= 15
+      os_key = 'Fedora'
+    end
+
+    # RHEL 7 and newer also use systemd to persist iptable rules
+    if os_key == 'RedHat' && Facter.value(:operatingsystem) == 'RedHat' && Facter.value(:operatingsystemrelease).to_i >= 7
       os_key = 'Fedora'
     end
 
@@ -182,14 +184,18 @@ module Puppet::Util::Firewall
     when :Fedora
       case proto.to_sym
       when :IPv4
-        %w{/usr/libexec/iptables.init save}
+        %w{/usr/libexec/iptables/iptables.init save}
       when :IPv6
-        %w{/usr/libexec/ip6tables.init save}
+        %w{/usr/libexec/iptables/ip6tables.init save}
       end
     when :Debian
       case proto.to_sym
       when :IPv4, :IPv6
-        %w{/usr/sbin/service iptables-persistent save}
+        if Puppet::Util::Package.versioncmp(persist_ver, '1.0') > 0
+          %w{/usr/sbin/service netfilter-persistent save}
+        else
+          %w{/usr/sbin/service iptables-persistent save}
+        end
       end
     when :Debian_manual
       case proto.to_sym

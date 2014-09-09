@@ -7,8 +7,6 @@ when 'Debian'
   servicename = 'apache2'
 when 'FreeBSD'
   servicename = 'apache22'
-else
-  raise "Unconfigured OS for apache service on #{fact('osfamily')}"
 end
 
 case fact('osfamily')
@@ -30,13 +28,13 @@ when 'FreeBSD'
     end
 
     describe service(servicename) do
-      it { should be_running }
-      it { should be_enabled }
+      it { is_expected.to be_running }
+      it { is_expected.to be_enabled }
     end
   end
 end
 
-describe 'apache::mod::worker class' do
+describe 'apache::mod::worker class', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
   describe 'running puppet code' do
     # Using puppet_apply as a helper
     it 'should work with no errors' do
@@ -53,12 +51,12 @@ describe 'apache::mod::worker class' do
   end
 
   describe service(servicename) do
-    it { should be_running }
-    it { should be_enabled }
+    it { is_expected.to be_running }
+    it { is_expected.to be_enabled }
   end
 end
 
-describe 'apache::mod::prefork class' do
+describe 'apache::mod::prefork class', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
   describe 'running puppet code' do
     # Using puppet_apply as a helper
     it 'should work with no errors' do
@@ -75,7 +73,7 @@ describe 'apache::mod::prefork class' do
   end
 
   describe service(servicename) do
-    it { should be_running }
-    it { should be_enabled }
+    it { is_expected.to be_running }
+    it { is_expected.to be_enabled }
   end
 end

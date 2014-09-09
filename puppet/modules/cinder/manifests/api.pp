@@ -31,6 +31,12 @@
 #   (optional) The protocol used to access the auth host
 #   Defaults to http.
 #
+# [*os_region_name*]
+#   (optional) Some operations require cinder to make API requests
+#   to Nova. This sets the keystone region to be used for these
+#   requests. For example, boot-from-volume.
+#   Defaults to undef.
+#
 # [*keystone_auth_admin_prefix*]
 #   (optional) The admin_prefix used to admin endpoint of the auth host
 #   This allow admin auth URIs like http://auth_host:35357/keystone.
@@ -54,6 +60,10 @@
 #   (optional) The state of the service
 #   Defaults to true
 #
+# [*manage_service*]
+#   (optional) Whether to start/stop the service
+#   Defaults to true
+#
 # [*ratelimits*]
 #   (optional) The state of the service
 #   Defaults to undef. If undefined the default ratelimiting values are used.
@@ -62,6 +72,12 @@
 #   (optional) Factory to use for ratelimiting
 #   Defaults to 'cinder.api.v1.limits:RateLimitingMiddleware.factory'
 #
+# [*default_volume_type*]
+#   (optional) default volume type to use.
+#   This should contain the name of the default volume type to use.
+#   If this parameter is not set when multi-backend is enabled, then cinder will
+#   fail to create a volume.
+#   Defaults to 'false'.
 class cinder::api (
   $keystone_password,
   $keystone_enabled           = true,
@@ -72,11 +88,14 @@ class cinder::api (
   $keystone_auth_protocol     = 'http',
   $keystone_auth_admin_prefix = false,
   $keystone_auth_uri          = false,
+  $os_region_name             = undef,
   $service_port               = '5000',
   $package_ensure             = 'present',
   $bind_host                  = '0.0.0.0',
   $enabled                    = true,
+  $manage_service             = true,
   $ratelimits                 = undef,
+  $default_volume_type        = false,
   $ratelimits_factory =
     'cinder.api.v1.limits:RateLimitingMiddleware.factory'
 ) {
@@ -108,9 +127,13 @@ class cinder::api (
       logoutput   => 'on_failure',
       require     => Package['cinder'],
     }
-    $ensure = 'running'
+    if $manage_service {
+      $ensure = 'running'
+    }
   } else {
-    $ensure = 'stopped'
+    if $manage_service {
+      $ensure = 'stopped'
+    }
   }
 
   service { 'cinder-api':
@@ -123,6 +146,12 @@ class cinder::api (
 
   cinder_config {
     'DEFAULT/osapi_volume_listen': value => $bind_host
+  }
+
+  if $os_region_name {
+    cinder_config {
+      'DEFAULT/os_region_name': value => $os_region_name;
+    }
   }
 
   if $keystone_auth_uri {
@@ -165,4 +194,15 @@ class cinder::api (
       }
     }
   }
+
+  if $default_volume_type {
+    cinder_config {
+      'DEFAULT/default_volume_type': value => $default_volume_type;
+    }
+  } else {
+    cinder_config {
+      'DEFAULT/default_volume_type': ensure => absent;
+    }
+  }
+
 }

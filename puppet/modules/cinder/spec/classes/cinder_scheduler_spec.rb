@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'cinder::scheduler' do
 
-  describe 'on debian plateforms' do
+  describe 'on debian platforms' do
 
     let :facts do
       { :osfamily => 'Debian' }
@@ -10,7 +10,7 @@ describe 'cinder::scheduler' do
 
     describe 'with default parameters' do
 
-      it { should include_class('cinder::params') }
+      it { should contain_class('cinder::params') }
 
       it { should contain_package('cinder-scheduler').with(
         :name      => 'cinder-scheduler',
@@ -38,10 +38,20 @@ describe 'cinder::scheduler' do
       it { should contain_cinder_config('DEFAULT/scheduler_driver').with_value('cinder.scheduler.filter_scheduler.FilterScheduler') }
       it { should contain_package('cinder-scheduler').with_ensure('present') }
     end
+
+    describe 'with manage_service false' do
+      let :params do
+        { 'manage_service' => false
+        }
+      end
+      it 'should not change the state of the service' do
+        should contain_service('cinder-scheduler').without_ensure
+      end
+    end
   end
 
 
-  describe 'on rhel plateforms' do
+  describe 'on rhel platforms' do
 
     let :facts do
       { :osfamily => 'RedHat' }
@@ -49,7 +59,7 @@ describe 'cinder::scheduler' do
 
     describe 'with default parameters' do
 
-      it { should include_class('cinder::params') }
+      it { should contain_class('cinder::params') }
 
       it { should contain_service('cinder-scheduler').with(
         :name    => 'openstack-cinder-scheduler',

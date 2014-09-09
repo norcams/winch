@@ -1,6 +1,8 @@
 swift
 =======
 
+4.0.0 - 2013.1.0 - Icehouse (Swift 1.13.1)
+
 #### Table of Contents
 
 1. [Overview - What is the swift module?](#overview)
@@ -58,6 +60,7 @@ class { 'swift::storage::all':
 }
 
 @@ring_object_device { "${ipaddress_eth0}:6000/1":
+  region => 1, # optional, defaults to 1
   zone   => 1,
   weight => 1,
 }
@@ -71,14 +74,17 @@ class { 'swift::storage::all':
 }
 
 @@ring_object_device { "${ipaddress_eth0}:6000/2":
+  region => 2,
   zone   => 1,
   weight => 1,
 }
 @@ring_container_device { "${ipaddress_eth0}:6001/2":
+  region => 2,
   zone   => 1,
   weight => 1,
 }
 @@ring_account_device { "${ipaddress_eth0}:6002/2":
+  region => 2,
   zone   => 1,
   weight => 1,
 }
@@ -243,6 +249,31 @@ Contributors
 
 Release Notes
 -------------
+
+**4.1.0**
+
+* Added swift-ring-builder multi-region support.
+* Added swift::proxy::crossdomain class.
+* Added support for RHEL 7.
+* Fixed Swift quota filter names.
+* Fixed config dependency bugs.
+* Fixed resource conflict when ringserver and storage are on same node.
+* Fixed selinux bugs.
+* Pinned major gems.
+
+**4.0.0**
+
+* Stable Icehouse release.
+* Added support for parameterizing endpoint prefix.
+* Added read_affinity, write_affinity support to proxy.
+* Added proxyserver gatekeeper middleware.
+* Added swift::proxy::slo class.
+* Added support for allow_versions in Swift containers.
+* Add support for middlewares with hyphens in name.
+* Fixed spurious warning in pipeline check.
+* Fixed test files.
+* Fixed deprecation warnings in inline templates.
+* Updated swift::keystone::auth spec tests.
 
 **3.0.0**
 

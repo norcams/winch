@@ -12,12 +12,12 @@
 # Sample Usage:
 #
 #    sometype { 'foo':
-#      notify => Class['apache::service],
+#      notify => Class['apache::service'],
 #    }
 #
 #
 class apache::service (
-  $service_name   = $apache::params::service_name,
+  $service_name   = $::apache::params::service_name,
   $service_enable = true,
   $service_ensure = 'running',
 ) {
@@ -27,8 +27,17 @@ class apache::service (
   }
   validate_bool($service_enable)
 
+  case $service_ensure {
+    true, false, 'running', 'stopped': {
+      $_service_ensure = $service_ensure
+    }
+    default: {
+      $_service_ensure = undef
+    }
+  }
+
   service { 'httpd':
-    ensure => $service_ensure,
+    ensure => $_service_ensure,
     name   => $service_name,
     enable => $service_enable,
   }

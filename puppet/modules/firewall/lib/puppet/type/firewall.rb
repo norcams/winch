@@ -22,12 +22,13 @@ Puppet::Type.newtype(:firewall) do
     `chain` or `jump` parameters, the firewall resource will autorequire
     those firewallchain resources.
 
-    If Puppet is managing the iptables or iptables-persistent packages, and
-    the provider is iptables or ip6tables, the firewall resource will
+    If Puppet is managing the iptables, iptables-persistent, or iptables-services packages,
+    and the provider is iptables or ip6tables, the firewall resource will
     autorequire those packages to ensure that any required binaries are
     installed.
   EOS
 
+  feature :connection_limiting, "Connection limiting features."
   feature :hop_limiting, "Hop limiting features."
   feature :rate_limiting, "Rate limiting features."
   feature :recent_limiting, "The netfilter recent module"
@@ -40,7 +41,7 @@ Puppet::Type.newtype(:firewall) do
   feature :reject_type, "The ability to control reject messages"
   feature :log_level, "The ability to control the log level"
   feature :log_prefix, "The ability to add prefixes to log messages"
-  feature :mark, "Set the netfilter mark value associated with the packet"
+  feature :mark, "Match or Set the netfilter mark value associated with the packet"
   feature :tcp_flags, "The ability to match on particular TCP flag settings"
   feature :pkttype, "Match a packet type"
   feature :socket, "Match open sockets"
@@ -52,6 +53,7 @@ Puppet::Type.newtype(:firewall) do
   feature :isfirstfrag, "Match the first fragment of a fragmented ipv6 packet"
   feature :ipsec_policy, "Match IPsec policy"
   feature :ipsec_dir, "Match IPsec policy direction"
+  feature :mask, "Ability to match recent rules based on the ipv4 mask"
 
   # provider specific features
   feature :iptables, "The provider provides iptables features."
@@ -322,7 +324,9 @@ Puppet::Type.newtype(:firewall) do
       *tcp*.
     EOS
 
-    newvalues(:tcp, :udp, :icmp, :"ipv6-icmp", :esp, :ah, :vrrp, :igmp, :ipencap, :ospf, :gre, :all)
+    newvalues(*[:tcp, :udp, :icmp, :"ipv6-icmp", :esp, :ah, :vrrp, :igmp, :ipencap, :ospf, :gre, :cbt, :all].collect do |proto|
+      [proto, "! #{proto}".to_sym]
+    end.flatten)
     defaultto "tcp"
   end
 
@@ -605,6 +609,50 @@ Puppet::Type.newtype(:firewall) do
   end
 
 
+  # Connection mark
+  newproperty(:connmark, :required_features => :mark) do
+    desc <<-EOS
+      Match the Netfilter mark value associated with the packet.  Accepts either of:
+      mark/mask or mark.  These will be converted to hex if they are not already.
+    EOS
+    munge do |value|
+      int_or_hex = '[a-fA-F0-9x]'
+      match = value.to_s.match("(#{int_or_hex}+)(/)?(#{int_or_hex}+)?")
+      mark = @resource.to_hex32(match[1])
+
+      # Values that can't be converted to hex.
+      # Or contain a trailing slash with no mask.
+      if mark.nil? or (mark and match[2] and match[3].nil?)
+        raise ArgumentError, "MARK value must be integer or hex between 0 and 0xffffffff"
+      end
+
+      # There should not be a mask on connmark
+      unless match[3].nil?
+        raise ArgumentError, "iptables does not support masks on MARK match rules"
+      end
+      value = mark
+
+      value
+    end
+  end
+
+  # Connection limiting properties
+  newproperty(:connlimit_above, :required_features => :connection_limiting) do
+    desc <<-EOS
+      Connection limiting value for matched connections above n.
+    EOS
+    newvalue(/^\d+$/)
+  end
+
+  newproperty(:connlimit_mask, :required_features => :connection_limiting) do
+    desc <<-EOS
+      Connection limiting by subnet mask for matched connections.
+      IPv4: 0-32
+      IPv6: 0-128
+    EOS
+    newvalue(/^\d+$/)
+  end
+
   # Hop limiting properties
   newproperty(:hop_limit, :required_features => :hop_limiting) do
     desc <<-EOS
@@ -777,6 +825,8 @@ Puppet::Type.newtype(:firewall) do
       attribute. When used, this will cause entries older than 'seconds' to be
       purged.  Must be boolean true.
     EOS
+
+    newvalues(:true, :false)
   end
 
   newproperty(:rhitcount, :required_features => :recent_limiting) do
@@ -837,25 +887,94 @@ Puppet::Type.newtype(:firewall) do
   end
 
   newproperty(:ipsec_policy, :required_features => :ipsec_policy) do
-	  desc <<-EOS
-	  	 Sets the ipsec policy type
-	  EOS
+    desc <<-EOS
+       Sets the ipsec policy type. May take a combination of arguments for any flags that can be passed to `--pol ipsec` such as: `--strict`, `--reqid 100`, `--next`, `--proto esp`, etc.
+    EOS
 
-	  newvalues(:none, :ipsec)
+    newvalues(:none, :ipsec)
   end
 
   newproperty(:ipsec_dir, :required_features => :ipsec_dir) do
-	  desc <<-EOS
-	  	 Sets the ipsec policy direction
-	  EOS
+    desc <<-EOS
+       Sets the ipsec policy direction
+    EOS
 
-	  newvalues(:in, :out)
+    newvalues(:in, :out)
+  end
+
+  newproperty(:stat_mode) do
+    desc <<-EOS
+      Set the matching mode for statistic matching. Supported modes are `random` and `nth`.
+    EOS
+
+    newvalues(:nth, :random)
+  end
+
+  newproperty(:stat_every) do
+    desc <<-EOS
+      Match one packet every nth packet. Requires `stat_mode => 'nth'`
+    EOS
+
+    validate do |value|
+      unless value =~ /^\d+$/
+        raise ArgumentError, <<-EOS
+          stat_every value must be a digit
+        EOS
+      end
+
+      unless value.to_i > 0
+        raise ArgumentError, <<-EOS
+          stat_every value must be larger than 0
+        EOS
+      end
+    end
+  end
+
+  newproperty(:stat_packet) do
+    desc <<-EOS
+      Set the initial counter value for the nth mode. Must be between 0 and the value of `stat_every`. Defaults to 0. Requires `stat_mode => 'nth'`
+    EOS
+
+    newvalues(/^\d+$/)
+  end
+
+  newproperty(:stat_probability) do
+    desc <<-EOS
+      Set the probability from 0 to 1 for a packet to be randomly matched. It works only with `stat_mode => 'random'`.
+    EOS
+
+    validate do |value|
+      unless value =~ /^([01])\.(\d+)$/
+        raise ArgumentError, <<-EOS
+          stat_probability must be between 0.0 and 1.0
+        EOS
+      end
+
+      if $1.to_i == 1 && $2.to_i != 0
+        raise ArgumentError, <<-EOS
+          start_probability must be between 0.0 and 1.0
+        EOS
+      end
+    end
+  end
+
+  newproperty(:mask, :required_features => :mask) do
+    desc <<-EOS
+      Sets the mask to use when `recent` is enabled.
+    EOS
   end
 
   newparam(:line) do
     desc <<-EOS
       Read-only property for caching the rule line.
     EOS
+  end
+
+  newproperty(:mac_source) do
+    desc <<-EOS
+      MAC Source
+    EOS
+    newvalues(/^([0-9a-f]{2}[:]){5}([0-9a-f]{2})$/i)
   end
 
   autorequire(:firewallchain) do
@@ -884,7 +1003,7 @@ Puppet::Type.newtype(:firewall) do
   autorequire(:package) do
     case value(:provider)
     when :iptables, :ip6tables
-      %w{iptables iptables-persistent}
+      %w{iptables iptables-persistent iptables-services}
     else
       []
     end
@@ -920,20 +1039,6 @@ Puppet::Type.newtype(:firewall) do
 
     # Now we analyse the individual properties to make sure they apply to
     # the correct combinations.
-    if value(:iniface)
-      unless value(:chain).to_s =~ /INPUT|FORWARD|PREROUTING/
-        self.fail "Parameter iniface only applies to chains " \
-          "INPUT,FORWARD,PREROUTING"
-      end
-    end
-
-    if value(:outiface)
-      unless value(:chain).to_s =~ /OUTPUT|FORWARD|POSTROUTING/
-        self.fail "Parameter outiface only applies to chains " \
-          "OUTPUT,FORWARD,POSTROUTING"
-      end
-    end
-
     if value(:uid)
       unless value(:chain).to_s =~ /OUTPUT|POSTROUTING/
         self.fail "Parameter uid only applies to chains " \
@@ -981,7 +1086,7 @@ Puppet::Type.newtype(:firewall) do
       end
 
       unless value(:tosource)
-        self.fail "Parameter jump => DNAT must have tosource parameter"
+        self.fail "Parameter jump => SNAT must have tosource parameter"
       end
     end
 
@@ -1011,5 +1116,32 @@ Puppet::Type.newtype(:firewall) do
     if value(:action) && value(:jump)
       self.fail "Only one of the parameters 'action' and 'jump' can be set"
     end
+
+    if value(:connlimit_mask) && ! value(:connlimit_above)
+      self.fail "Parameter 'connlimit_mask' requires 'connlimit_above'"
+    end
+
+    if value(:mask) && ! value(:recent)
+      self.fail "Mask can only be set if recent is enabled."
+    end
+
+    [:stat_packet, :stat_every, :stat_probability].each do |param|
+      if value(param) && ! value(:stat_mode)
+        self.fail "Parameter '#{param.to_s}' requires 'stat_mode' to be set"
+      end
+    end
+
+    if value(:stat_packet) && value(:stat_mode) != :nth
+      self.fail "Parameter 'stat_packet' requires 'stat_mode' to be set to 'nth'"
+    end
+
+    if value(:stat_every) && value(:stat_mode) != :nth
+      self.fail "Parameter 'stat_every' requires 'stat_mode' to be set to 'nth'"
+    end
+
+    if value(:stat_probability) && value(:stat_mode) != :random
+      self.fail "Parameter 'stat_probability' requires 'stat_mode' to be set to 'random'"
+    end
+
   end
 end

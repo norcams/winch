@@ -3,7 +3,10 @@ require 'spec_helper'
 describe 'keystone::db::mysql' do
 
   let :pre_condition do
-    'include mysql::server'
+    [
+      'include mysql::server',
+      'include keystone::db::sync'
+    ]
   end
 
   let :facts do
@@ -15,7 +18,8 @@ describe 'keystone::db::mysql' do
       'password'      => 'keystone_default_password',
       'dbname'        => 'keystone',
       'user'          => 'keystone',
-      'charset'       => 'latin1',
+      'charset'       => 'utf8',
+      'collate'       => 'utf8_unicode_ci',
       'host'          => '127.0.0.1',
       'allowed_hosts' => ['127.0.0.%', '192.168.1.%']
     }

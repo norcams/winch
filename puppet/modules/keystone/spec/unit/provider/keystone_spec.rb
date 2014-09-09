@@ -53,14 +53,14 @@ describe Puppet::Provider::Keystone do
     end
 
     it 'should use the specified bind_host in the admin endpoint' do
-      mock = {'DEFAULT' => {'bind_host' => '192.168.56.210', 'admin_port' => '35357' }}
+      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'admin_port' => '35357' }}
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
       klass.get_admin_endpoint.should == 'http://192.168.56.210:35357/v2.0/'
     end
 
     it 'should use localhost in the admin endpoint if bind_host is 0.0.0.0' do
-      mock = {'DEFAULT' => { 'bind_host' => '0.0.0.0', 'admin_port' => '35357' }}
+      mock = {'DEFAULT' => { 'admin_bind_host' => '0.0.0.0', 'admin_port' => '35357' }}
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
       klass.get_admin_endpoint.should == 'http://127.0.0.1:35357/v2.0/'
@@ -74,14 +74,14 @@ describe Puppet::Provider::Keystone do
     end
 
     it 'should use https if ssl is enabled' do
-      mock = {'DEFAULT' => {'bind_host' => '192.168.56.210', 'admin_port' => '35357' }, 'ssl' => {'enable' => 'True'}}
+      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'admin_port' => '35357' }, 'ssl' => {'enable' => 'True'}}
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
       klass.get_admin_endpoint.should == 'https://192.168.56.210:35357/v2.0/'
     end
 
     it 'should use http if ssl is disabled' do
-      mock = {'DEFAULT' => {'bind_host' => '192.168.56.210', 'admin_port' => '35357' }, 'ssl' => {'enable' => 'False'}}
+      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'admin_port' => '35357' }, 'ssl' => {'enable' => 'False'}}
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
       klass.get_admin_endpoint.should == 'http://192.168.56.210:35357/v2.0/'
@@ -96,13 +96,19 @@ describe Puppet::Provider::Keystone do
 
     describe 'when testing keystone connection retries' do
 
-      ['[Errno 111] Connection refused', '(HTTP 400)', 'HTTP Unable to establish connection'].reverse.each do |valid_message|
+      ['(HTTP 400)',
+       '[Errno 111] Connection refused',
+       '503 Service Unavailable',
+       'Max retries exceeded',
+       'HTTP Unable to establish connection',
+       'Unable to establish connection to http://127.0.0.1:35357/v2.0/OS-KSADM/roles'
+       ].reverse.each do |valid_message|
         it "should retry when keystone is not ready with error #{valid_message}" do
           mock = {'DEFAULT' => {'admin_token' => 'foo'}}
           Puppet::Util::IniConfig::File.expects(:new).returns(mock)
           mock.expects(:read).with('/etc/keystone/keystone.conf')
           klass.expects(:sleep).with(10).returns(nil)
-          klass.expects(:keystone).twice.with('--endpoint', 'http://127.0.0.1:35357/v2.0/', ['test_retries']).raises(Exception, valid_message).then.returns('')
+          klass.expects(:keystone).twice.with('--os-endpoint', 'http://127.0.0.1:35357/v2.0/', ['test_retries']).raises(Exception, valid_message).then.returns('')
           klass.auth_keystone('test_retries')
         end
       end
@@ -118,7 +124,7 @@ describe Puppet::Provider::Keystone do
       klass.expects(
         :keystone
       ).with(
-        '--endpoint',
+        '--os-endpoint',
         'http://127.0.0.1:35357/v2.0/',
         ['test_retries']
       ).returns("WARNING\n+-+-+\nWARNING")

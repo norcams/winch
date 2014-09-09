@@ -11,10 +11,15 @@
 #  [*fqdn*]
 #    (optional) FQDN(s) used to access Horizon. This is used by Django for
 #    security reasons. Can be set to * in environments where security is
-#    deemed unimportant. Defaults to ::fqdn
+#    deemed unimportant. Also used for Server Aliases in web configs.
+#    Defaults to ::fqdn
+#
+#  [*servername*]
+#    (optional) FQDN used for the Server Name directives
+#    Defaults to ::fqdn
 #
 #  [*package_ensure*]
-#     (optional) Package ensure state. Defaults to 'present'.
+#    (optional) Package ensure state. Defaults to 'present'.
 #
 #  [*cache_server_ip*]
 #    (optional) Memcached IP address. Defaults to '127.0.0.1'.
@@ -32,20 +37,24 @@
 #    Each app is defined in two parts, the display name, and
 #    the URIDefaults to false. Defaults to false. (no app links)
 #
-#  [*keystone_host*]
-#    (optional) IP address of the Keystone service. Deprecated in favor of keystone_url.
-#
-#  [*keystone_port*]
-#    (optional) Port of the Keystone service. Deprecated in favor of keystone_url.
+#  [*keystone_url*]
+#    (optional) Full url of keystone public endpoint. (Defaults to 'http://127.0.0.1:5000/v2.0')
+#    Use this parameter in favor of keystone_host, keystone_port and keystone_scheme.
 #
 #  [*keystone_scheme*]
-#    (optional) Scheme of the Keystone service. Deprecated in favor of keystone_url.
+#    (optional) DEPRECATED: Use keystone_url instead.
+#    Scheme of the Keystone service. (Defaults to 'http')
+#    Setting this parameter overrides keystone_url parameter.
 #
-#  [*keystone_url*]
-#    (optional) Full url of keystone public endpoint.
-#    Defaults to 'http://127.0.0.1:5000/v2.0'.
-#    Use this parameter in favor of keystone_host, keystone_port and keystone_scheme.
-#    Set to false to use the deprecated interface.
+#  [*keystone_host*]
+#    (optional) DEPRECATED: Use keystone_url instead.
+#    IP address of the Keystone service. (Defaults to '127.0.0.1')
+#    Setting this parameter overrides keystone_url parameter.
+#
+#  [*keystone_port*]
+#    (optional) DEPRECATED: Use keystone_url instead.
+#    Port of the Keystone service. (Defaults to 5000)
+#    Setting this parameter overrides keystone_url parameter.
 #
 #  [*keystone_default_role*]
 #    (optional) Default Keystone role for new users. Defaults to '_member_'.
@@ -61,19 +70,17 @@
 #    (optional) secondary endpoint type to use for the endpoints in the
 #    Keystone service catalog. Defaults to 'undef'.
 #
+#  [*available_regions*]
+#    (optional) List of available regions. Value should be a list of tuple:
+#    [ ['urlOne', 'RegionOne'], ['urlTwo', 'RegionTwo'] ]
+#    Defaults to undef.
+#
 #  [*api_result_limit*]
 #    (optional) Maximum number of Swift containers/objects to display
 #    on a single page. Defaults to 1000.
 #
 #  [*log_level*]
 #    (optional) Log level. Defaults to 'DEBUG'.
-#
-#  [*can_set_mount_point*]
-#    (optional) Add the option to set the mount point from the UI.
-#    Defaults to 'True'.
-#
-#  [*listen_ssl*]
-#    (optional) Defaults to false.
 #
 #  [*local_settings_template*]
 #    (optional) Location of template to use for local_settings.py generation.
@@ -86,148 +93,220 @@
 #  [*compress_offline*]
 #    (optional) Boolean to enable offline compress of assets.
 #    Defaults to True
-
+#
+#  [*hypervisor_options*]
+#    (optional) A hash of parameters to enable features specific to
+#    Hypervisors. These include:
+#    'can_set_mount_point': Boolean to enable or disable mount point setting
+#      Defaults to 'True'.
+#    'can_set_password': Boolean to enable or disable VM password setting.
+#      Works only with Xen Hypervisor.
+#      Defaults to 'False'.
+#
+#  [*neutron_options*]
+#    (optional) A hash of parameters to enable features specific to
+#    Neutron.  These include:
+#    'enable_lb': Boolean to enable or disable Neutron's LBaaS feature.
+#      Defaults to False.
+#    'enable_firewall': Boolean to enable or disable Neutron's FWaaS feature.
+#      Defaults to False.
+#    'enable_quotas': Boolean to enable or disable Neutron quotas.
+#      Defaults to True.
+#    'enable_security_group': Boolean to enable or disable Neutron
+#      security groups.  Defaults to True.
+#    'enable_vpn': Boolean to enable or disable Neutron's VPNaaS feature.
+#      Defaults to False.
+#    'profile_support':  A string indiciating which plugin-specific
+#      profiles to enable.  Defaults to 'None', other options include
+#      'cisco'.
+#
+#  [*configure_apache*]
+#    (optional) Configure Apache for Horizon. (Defaults to true)
+#
+#  [*bind_address*]
+#    (optional) Bind address in Apache for Horizon. (Defaults to undef)
+#
+#  [*listen_ssl*]
+#    (optional) Enable SSL support in Apache. (Defaults to false)
+#
+#  [*ssl_redirect*]
+#    (optional) Whether to redirect http to https
+#    Defaults to True
+#
+#  [*horizon_cert*]
+#    (required with listen_ssl) Certificate to use for SSL support.
+#
+#  [*horizon_key*]
+#    (required with listen_ssl) Private key to use for SSL support.
+#
+#  [*horizon_ca*]
+#    (required with listen_ssl) CA certificate to use for SSL support.
+#
+#  [*vhost_extra_params*]
+#    (optionnal) extra parameter to pass to the apache::vhost class
+#    Defaults to undef
+#
+#  [*file_upload_temp_dir*]
+#    (optional) Location to use for temporary storage of images uploaded
+#    You must ensure that the path leading to the directory is created
+#    already, only the last level directory is created by this manifest.
+#    Specify an absolute pathname.
+#    Defaults to /tmp
+#
+#  [*secure_cookies*]
+#    (optional) Enables security settings for cookies. Useful when using
+#    https on public sites. See: http://docs.openstack.org/developer/horizon/topics/deployment.html#secure-site-recommendations
+#    Defaults to false
+#
+# === Deprecation notes
+#
+# If any value is provided for keystone_scheme, keystone_host, or
+# keystone_port parameters; keystone_url will be completely ignored. Also
+# can_set_mount_point is deprecated.
+#
+# === Examples
+#
+#  class { 'horizon':
+#    secret       => 's3cr3t',
+#    keystone_url => 'https://10.0.0.10:5000/v2.0',
+#    available_regions => [
+#      ['http://region-1.example.com:5000/v2.0', 'Region-1'],
+#      ['http://region-2.example.com:5000/v2.0', 'Region-2']
+#    ]
+#  }
+#
 class horizon(
   $secret_key,
   $fqdn                    = $::fqdn,
   $package_ensure          = 'present',
-  $bind_address            = '0.0.0.0',
   $cache_server_ip         = '127.0.0.1',
   $cache_server_port       = '11211',
   $swift                   = false,
   $horizon_app_links       = false,
-  $keystone_host           = undef,
-  $keystone_port           = undef,
-  $keystone_scheme         = undef,
   $keystone_url            = 'http://127.0.0.1:5000/v2.0',
   $keystone_default_role   = '_member_',
   $django_debug            = 'False',
   $openstack_endpoint_type = undef,
   $secondary_endpoint_type = undef,
+  $available_regions       = undef,
   $api_result_limit        = 1000,
   $log_level               = 'DEBUG',
-  $can_set_mount_point     = 'True',
+  $help_url                = 'http://docs.openstack.org',
+  $local_settings_template = 'horizon/local_settings.py.erb',
+  $configure_apache        = true,
+  $bind_address            = undef,
+  $servername              = $::fqdn,
   $listen_ssl              = false,
+  $ssl_redirect            = true,
   $horizon_cert            = undef,
   $horizon_key             = undef,
   $horizon_ca              = undef,
-  $help_url                = 'http://docs.openstack.org',
-  $local_settings_template = 'horizon/local_settings.py.erb',
-  $compress_offline        = 'True'
+  $compress_offline        = 'True',
+  $hypervisor_options      = {},
+  $neutron_options         = {},
+  $file_upload_temp_dir    = '/tmp',
+  # DEPRECATED PARAMETERS
+  $can_set_mount_point     = undef,
+  $keystone_host           = undef,
+  $keystone_port           = undef,
+  $keystone_scheme         = undef,
+  $vhost_extra_params      = undef,
+  $secure_cookies          = false,
 ) {
 
-  include horizon::params
-  include apache
-  include apache::mod::wsgi
+  include ::horizon::params
 
   if $swift {
     warning('swift parameter is deprecated and has no effect.')
   }
 
-  if $keystone_host or $keystone_port or $keystone_scheme {
-    warning('keystone_host, keystone_port and keystone_scheme are deprecated. Use keystone_url instead.')
-    if $keystone_url {
-      warning('keystone_host, keystone_port and keystone_scheme are ignored when keystone_url is set.')
+  if $keystone_scheme {
+    warning('The keystone_scheme parameter is deprecated, use keystone_url instead.')
+  }
+
+  if $keystone_host {
+    warning('The keystone_host parameter is deprecated, use keystone_url instead.')
+  }
+
+  if $keystone_port {
+    warning('The keystone_port parameter is deprecated, use keystone_url instead.')
+  }
+
+  # Default options for the OPENSTACK_HYPERVISOR_FEATURES section. These will
+  # be merged with user-provided options when the local_settings.py.erb
+  # template is interpolated. Also deprecates can_set_mount_point.
+  if $can_set_mount_point {
+    warning('The can_set_mount_point parameter is deprecated, use hypervisor_options instead.')
+    $hypervisor_defaults = {
+      'can_set_mount_point' => $can_set_mount_point,
+      'can_set_password'    => false
+    }
+  } else {
+    $hypervisor_defaults = {
+      'can_set_mount_point' => true,
+      'can_set_password'    => false
     }
   }
 
-  file { $::horizon::params::httpd_config_file: }
+  # Default options for the OPENSTACK_NEUTRON_NETWORK section.  These will
+  # be merged with user-provided options when the local_settings.py.erb
+  # template is interpolated.
+  $neutron_defaults = {
+    'enable_lb'             => false,
+    'enable_firewall'       => false,
+    'enable_quotas'         => true,
+    'enable_security_group' => true,
+    'enable_vpn'            => false,
+    'profile_support'       => 'None'
+  }
 
   Service <| title == 'memcached' |> -> Class['horizon']
 
   package { 'horizon':
     ensure  => $package_ensure,
     name    => $::horizon::params::package_name,
-    require => Package[$::horizon::params::http_service],
+  }
+  package { 'python-lesscpy':
+    ensure  => $package_ensure,
   }
 
-  file { $::horizon::params::config_file:
-    content => template($local_settings_template),
-    mode    => '0644',
-    notify  => Service[$::horizon::params::http_service],
-    require => Package['horizon'],
+  exec { 'refresh_horizon_django_cache':
+    command     => "${::horizon::params::manage_py} compress",
+    refreshonly => true,
+    subscribe   => File[$::horizon::params::config_file],
+    require     => [Package['python-lesscpy'], Package['horizon']],
   }
 
-  file { $::horizon::params::logdir:
-    ensure  => directory,
-    mode    => '0751',
-    owner   => $::horizon::params::apache_user,
-    group   => $::horizon::params::apache_group,
-    before  => Service[$::horizon::params::http_service],
-    require => Package['horizon']
-  }
-
-  file_line { 'horizon_redirect_rule':
-    path    => $::horizon::params::httpd_config_file,
-    line    => "RedirectMatch permanent ^/$ ${::horizon::params::root_url}/",
-    require => Package['horizon'],
-    notify  => Service[$::horizon::params::http_service]
-  }
-
-  file_line { 'httpd_listen_on_bind_address_80':
-    path    => $::horizon::params::httpd_listen_config_file,
-    match   => '^Listen (.*):?80$',
-    line    => "Listen ${bind_address}:80",
-    require => Package['horizon'],
-    notify  => Service[$::horizon::params::http_service],
-  }
-
-  if $listen_ssl {
-    include apache::mod::ssl
-
-    if $horizon_ca == undef or $horizon_cert == undef or $horizon_key == undef {
-      fail('The horizon CA, cert and key are all required.')
-    }
-
-    file_line { 'httpd_listen_on_bind_address_443':
-      path    => $::horizon::params::httpd_listen_config_file,
-      match   => '^Listen (.*):?443$',
-      line    => "Listen ${bind_address}:443",
+  if $compress_offline {
+    file { $::horizon::params::config_file:
+      content => template($local_settings_template),
+      mode    => '0644',
+      notify  => Exec['refresh_horizon_django_cache'],
       require => Package['horizon'],
-      notify  => Service[$::horizon::params::http_service],
-    }
-
-    # Enable SSL Engine
-    file_line{'httpd_sslengine_on':
-      path    => $::horizon::params::httpd_listen_config_file,
-      match   => '^SSLEngine ',
-      line    => 'SSLEngine on',
-      notify  => Service[$::horizon::params::http_service],
-      require => Class['apache::mod::ssl'],
-    }
-
-    # set the name of the ssl cert and key file
-    file_line{'httpd_sslcert_path':
-      path    => $::horizon::params::httpd_listen_config_file,
-      match   => '^SSLCertificateFile ',
-      line    => "SSLCertificateFile ${horizon_cert}",
-      notify  => Service[$::horizon::params::http_service],
-      require => Class['apache::mod::ssl'],
-    }
-
-    file_line{'httpd_sslkey_path':
-      path    => $::horizon::params::httpd_listen_config_file,
-      match   => '^SSLCertificateKeyFile ',
-      line    => "SSLCertificateKeyFile ${horizon_key}",
-      notify  => Service[$::horizon::params::http_service],
-      require => Class['apache::mod::ssl'],
-    }
-
-    file_line{'httpd_sslca_path':
-      path    => $::horizon::params::httpd_listen_config_file,
-      match   => '^SSLCACertificateFile ',
-      line    => "SSLCACertificateFile ${horizon_ca}",
-      notify  => Service[$::horizon::params::http_service],
-      require => Class['apache::mod::ssl'],
     }
   }
 
-  $django_wsgi = '/usr/share/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi'
-
-  file_line { 'horizon root':
-    path    => $::horizon::params::httpd_config_file,
-    line    => "WSGIScriptAlias ${::horizon::params::root_url} ${django_wsgi}",
-    match   => 'WSGIScriptAlias ',
-    require => Package['horizon'],
+  if $configure_apache {
+    class { 'horizon::wsgi::apache':
+      bind_address => $bind_address,
+      fqdn         => $fqdn,
+      servername   => $servername,
+      listen_ssl   => $listen_ssl,
+      ssl_redirect => $ssl_redirect,
+      horizon_cert => $horizon_cert,
+      horizon_key  => $horizon_key,
+      horizon_ca   => $horizon_ca,
+      extra_params => $vhost_extra_params,
+    }
   }
+
+  if $file_upload_temp_dir != '/tmp' {
+    file { $file_upload_temp_dir :
+      ensure => directory,
+      owner  => $::horizon::params::wsgi_user,
+      group  => $::horizon::params::wsgi_group,
+      mode   => '0755'
+    }
+  }
+
 }

@@ -1,3 +1,48 @@
+##2014-07-07 - Supported Release 1.1.1
+###Summary
+
+This supported bugfix release corrects the inifile section header detection
+regex (so you can use more characters in your section titles).
+
+####Bugfixes
+- Correct section regex to allow anything other than ]
+- Correct `exists?` to return a boolean
+- Lots of test updates
+- Add missing CONTRIBUTING.md
+
+##2014-06-04 - Release 1.1.0
+###Summary
+
+This is a compatibility and feature release.  This release adds one new
+feature, the ability to control the quote character used.  This allows you to
+do things like:
+
+```
+ini_subsetting { '-Xms':
+    ensure     => present,
+    path       => '/some/config/file',
+    section    => '',
+    setting    => 'JAVA_ARGS',
+    quote_char => '"',
+    subsetting => '-Xms'
+    value      => '256m',
+  }
+```
+
+Which builds:
+
+```
+JAVA_ARGS="-Xmx256m -Xms256m"
+```
+
+####Features
+- Add quote_char parameter to the ini_subsetting resource type
+
+####Bugfixes
+
+####Known Bugs
+* No known bugs
+
 ##2014-03-04 - Supported Release 1.0.3
 ###Summary
 

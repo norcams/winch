@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source ENV['GEM_SOURCE'] || "https://rubygems.org"
 
 group :development, :test do
   gem 'rake',                    :require => false
@@ -8,6 +8,8 @@ group :development, :test do
   gem 'puppet-lint',             :require => false
   gem 'beaker',                  :require => false
   gem 'beaker-rspec',            :require => false
+  gem 'pry',                     :require => false
+  gem 'simplecov',               :require => false
 end
 
 if facterversion = ENV['FACTER_GEM_VERSION']
