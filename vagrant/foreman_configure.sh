@@ -8,10 +8,10 @@ hammer domain create --name "winch.local" --dns-id 1
 hammer domain info --name "winch.local"
 
 hammer subnet create --name "vagrant" \
-  --network "172.16.188.0" \
+  --network "172.16.33.0" \
   --mask "255.255.255.0" \
-  --gateway "172.16.188.11" \
-  --dns-primary "172.16.188.11"
+  --gateway "172.16.33.11" \
+  --dns-primary "172.16.33.11"
 hammer subnet update --name "vagrant" \
   --domain-ids 1 --dhcp-id 1 --tftp-id 1 --dns-id 1
 hammer subnet info --name "vagrant"
@@ -25,4 +25,3 @@ hammer template update --id 11 --operatingsystem-ids 1
 
 # work around Puppet bug #2244 which is fixed in 3.x
 sudo mkdir -p /etc/puppet/environments/common/dummy/lib
-
