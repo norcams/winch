@@ -2,7 +2,7 @@
 
 ## Compute
 VBoxManage createvm --name "compute" --register --ostype RedHat_64
-VBoxManage modifyvm "compute" --memory 2048 --acpi on --cpus 2 --cpuexecutioncap 100 --cpus 2 --cpuexecutioncap 100 --boot1 disk --boot2 dvd
+VBoxManage modifyvm "compute" --memory 2048 --acpi on --cpuexecutioncap 100 --cpus 2 --boot1 disk --boot2 dvd
 
 VBoxManage modifyvm "compute" --nic1 hostonly --hostonlyadapter1 vboxnet0 --cableconnected1 on
 VBoxManage modifyvm "compute" --macaddress1 auto --nictype2 82540EM

@@ -2,7 +2,7 @@
 
 ## Controller
 VBoxManage createvm --name "controller" --register --ostype RedHat_64
-VBoxManage modifyvm "controller" --memory 2048 --acpi on --cpus 2 --cpuexecutioncap 100 --cpus 2 --cpuexecutioncap 100 --boot1 disk --boot2 dvd
+VBoxManage modifyvm "controller" --memory 2048 --acpi on --cpus 2 --cpuexecutioncap 100 --boot1 disk --boot2 dvd
 
 VBoxManage modifyvm "controller" --nic1 hostonly --hostonlyadapter1 vboxnet0 --cableconnected1 on
 VBoxManage modifyvm "controller" --macaddress1 auto --nictype2 82540EM
