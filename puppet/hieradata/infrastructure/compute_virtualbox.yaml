@@ -1,0 +1,5 @@
+######## Network
+### Device names are different on non-vagrant boxes
+
+openstack::network::management::device: 'eth0'
+openstack::network::data::device: 'eth1'
