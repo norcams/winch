@@ -3,8 +3,10 @@
     - yaml
 
 :yaml:
-    :datadir: hieradata
+    :datadir: /vagrant/puppet/hieradata
 :merge_behavior: deeper
 :hierarchy:
+    - "infrastructure/%{::role}_%{infrastructure}"
+    - "infrastructure/%{::infrasructure}"
     - common
 
