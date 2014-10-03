@@ -11,6 +11,7 @@
 #    should the daemons log debug messages. Optional. Defaults to 'False'
 #  [*log_dir*]
 #    (optional) directory to which ceilometer logs are sent.
+#    If set to boolean false, it will not log to any directory.
 #    Defaults to '/var/log/ceilometer'
 #  [*verbose*]
 #    should the daemons log verbose messages. Optional. Defaults to 'False'
@@ -21,9 +22,8 @@
 #    (optional) Syslog facility to receive log lines.
 #    Defaults to 'LOG_USER'
 # [*rpc_backend*]
-# (optional) what rpc/queuing service to use
-# Defaults to impl_kombu (rabbitmq)
-#
+#    (optional) what rpc/queuing service to use
+#    Defaults to impl_kombu (rabbitmq)
 #  [*rabbit_host*]
 #    ip or hostname of the rabbit server. Optional. Defaults to '127.0.0.1'
 #  [*rabbit_port*]
@@ -37,6 +37,23 @@
 #    password to connect to the rabbit_server. Optional. Defaults to empty.
 #  [*rabbit_virtual_host*]
 #    virtualhost to use. Optional. Defaults to '/'
+#  [*rabbit_use_ssl*]
+#    (optional) Connect over SSL for RabbitMQ
+#    Defaults to false
+#  [*kombu_ssl_ca_certs*]
+#    (optional) SSL certification authority file (valid only if SSL enabled).
+#    Defaults to undef
+#  [*kombu_ssl_certfile*]
+#    (optional) SSL cert file (valid only if SSL enabled).
+#    Defaults to undef
+#  [*kombu_ssl_keyfile*]
+#    (optional) SSL key file (valid only if SSL enabled).
+#    Defaults to undef
+#  [*kombu_ssl_version*]
+#    (optional) SSL version to use (valid only if SSL enabled).
+#    Valid values are TLSv1, SSLv23 and SSLv3. SSLv2 may be
+#    available on some distributions.
+#    Defaults to 'SSLv3'
 #
 # [*qpid_hostname*]
 # [*qpid_port*]
@@ -55,20 +72,26 @@
 #
 
 class ceilometer(
-  $metering_secret    = false,
-  $package_ensure     = 'present',
-  $debug              = false,
-  $log_dir            = '/var/log/ceilometer',
-  $verbose            = false,
-  $use_syslog         = false,
-  $log_facility       = 'LOG_USER',
-  $rpc_backend        = 'ceilometer.openstack.common.rpc.impl_kombu',
-  $rabbit_host        = '127.0.0.1',
-  $rabbit_port        = 5672,
-  $rabbit_hosts       = undef,
-  $rabbit_userid      = 'guest',
-  $rabbit_password    = '',
+  $metering_secret     = false,
+  $notification_topics = ['notifications'],
+  $package_ensure      = 'present',
+  $debug               = false,
+  $log_dir             = '/var/log/ceilometer',
+  $verbose             = false,
+  $use_syslog          = false,
+  $log_facility        = 'LOG_USER',
+  $rpc_backend         = 'ceilometer.openstack.common.rpc.impl_kombu',
+  $rabbit_host         = '127.0.0.1',
+  $rabbit_port         = 5672,
+  $rabbit_hosts        = undef,
+  $rabbit_userid       = 'guest',
+  $rabbit_password     = '',
   $rabbit_virtual_host = '/',
+  $rabbit_use_ssl      = false,
+  $kombu_ssl_ca_certs  = undef,
+  $kombu_ssl_certfile  = undef,
+  $kombu_ssl_keyfile   = undef,
+  $kombu_ssl_version   = 'SSLv3',
   $qpid_hostname = 'localhost',
   $qpid_port = 5672,
   $qpid_username = 'guest',
@@ -85,7 +108,6 @@ class ceilometer(
 ) {
 
   validate_string($metering_secret)
-
 
   include ceilometer::params
 
@@ -151,6 +173,40 @@ class ceilometer(
         'DEFAULT/rabbit_userid'          : value => $rabbit_userid;
         'DEFAULT/rabbit_password'        : value => $rabbit_password;
         'DEFAULT/rabbit_virtual_host'    : value => $rabbit_virtual_host;
+        'DEFAULT/rabbit_use_ssl'         : value => $rabbit_use_ssl;
+      }
+
+      if $rabbit_use_ssl {
+        if $kombu_ssl_ca_certs {
+          ceilometer_config { 'DEFAULT/kombu_ssl_ca_certs': value => $kombu_ssl_ca_certs }
+        } else {
+          ceilometer_config { 'DEFAULT/kombu_ssl_ca_certs': ensure => absent}
+        }
+
+        if $kombu_ssl_certfile {
+          ceilometer_config { 'DEFAULT/kombu_ssl_certfile': value => $kombu_ssl_certfile }
+        } else {
+          ceilometer_config { 'DEFAULT/kombu_ssl_certfile': ensure => absent}
+        }
+
+        if $kombu_ssl_keyfile {
+          ceilometer_config { 'DEFAULT/kombu_ssl_keyfile': value => $kombu_ssl_keyfile }
+        } else {
+          ceilometer_config { 'DEFAULT/kombu_ssl_keyfile': ensure => absent}
+        }
+
+        if $kombu_ssl_version {
+          ceilometer_config { 'DEFAULT/kombu_ssl_version': value => $kombu_ssl_version }
+        } else {
+          ceilometer_config { 'DEFAULT/kombu_ssl_version': ensure => absent}
+        }
+      } else {
+        ceilometer_config {
+          'DEFAULT/kombu_ssl_ca_certs': ensure => absent;
+          'DEFAULT/kombu_ssl_certfile': ensure => absent;
+          'DEFAULT/kombu_ssl_keyfile':  ensure => absent;
+          'DEFAULT/kombu_ssl_version':  ensure => absent;
+        }
       }
   }
 
@@ -175,17 +231,23 @@ class ceilometer(
   }
 
   # Once we got here, we can act as an honey badger on the rpc used.
-
   ceilometer_config {
     'DEFAULT/rpc_backend'            : value => $rpc_backend;
-    'DEFAULT/metering_secret'        : value => $metering_secret;
+    'publisher/metering_secret'      : value => $metering_secret;
     'DEFAULT/debug'                  : value => $debug;
-    'DEFAULT/log_dir'                : value => $log_dir;
     'DEFAULT/verbose'                : value => $verbose;
-    # Fix a bad default value in ceilometer.
-    # Fixed in https://review.openstack.org/#/c/18487/
-    'DEFAULT/glance_control_exchange': value => 'glance';
-    'DEFAULT/notification_topics'    : value => 'notifications';
+    'DEFAULT/notification_topics'    : value => join($notification_topics, ',');
+  }
+
+  # Log configuration
+  if $log_dir {
+    ceilometer_config {
+      'DEFAULT/log_dir' : value  => $log_dir;
+    }
+  } else {
+    ceilometer_config {
+      'DEFAULT/log_dir' : ensure => absent;
+    }
   }
 
   # Syslog configuration

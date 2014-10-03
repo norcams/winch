@@ -6,8 +6,18 @@
 #  [*database_connection*]
 #    the connection string. format: [driver]://[user]:[password]@[host]/[database]
 #
+#  [*sync_db*]
+#    enable dbsync.
+#
+#  [*mysql_module*]
+#    (optional) Mysql puppet module version to use. Tested versions
+#    are 0.9 and 2.2
+#    Defaults to '0.9
+#
 class ceilometer::db (
-  $database_connection = 'mysql://ceilometer:ceilometer@localhost/ceilometer'
+  $database_connection = 'mysql://ceilometer:ceilometer@localhost/ceilometer',
+  $sync_db             = true,
+  $mysql_module        = '0.9',
 ) {
 
   include ceilometer::params
@@ -20,7 +30,12 @@ class ceilometer::db (
   case $database_connection {
     /^mysql:\/\//: {
       $backend_package = false
-      include mysql::python
+
+      if ($mysql_module >= 2.2) {
+        include mysql::bindings::python
+      } else {
+        include mysql::python
+      }
     }
     /^postgres:\/\//: {
       $backend_package = $::ceilometer::params::psycopg_package_name
@@ -34,6 +49,12 @@ class ceilometer::db (
     default: {
       fail('Unsupported backend configured')
     }
+  }
+
+  if $sync_db {
+    $command = $::ceilometer::params::dbsync_command
+  } else {
+    $command = '/bin/true'
   }
 
   if $backend_package and !defined(Package[$backend_package]) {
@@ -50,9 +71,9 @@ class ceilometer::db (
   Ceilometer_config['database/connection'] ~> Exec['ceilometer-dbsync']
 
   exec { 'ceilometer-dbsync':
-    command     => $::ceilometer::params::dbsync_command,
+    command     => $command,
     path        => '/usr/bin',
-    user        => $::ceilometer::params::username,
+    user        => $::ceilometer::params::user,
     refreshonly => true,
     logoutput   => on_failure,
     subscribe   => Ceilometer_config['database/connection']

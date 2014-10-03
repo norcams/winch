@@ -1,6 +1,8 @@
 cinder
 =======
 
+4.0.0 - 2014.1.0 - Icehouse
+
 #### Table of Contents
 
 1. [Overview - What is the cinder module?](#overview)
@@ -43,10 +45,10 @@ To utilize the cinder module's functionality you will need to declare multiple r
 
 ```puppet
 class { 'cinder':
-  sql_connection  => 'mysql://cinder:secret_block_password@openstack-controller.example.com/cinder',
-  rabbit_password => 'secret_rpc_password_for_blocks',
-  rabbit_host     => 'openstack-controller.example.com',
-  verbose         => true,
+  database_connection     => 'mysql://cinder:secret_block_password@openstack-controller.example.com/cinder',
+  rabbit_password         => 'secret_rpc_password_for_blocks',
+  rabbit_host             => 'openstack-controller.example.com',
+  verbose                 => true,
 }
 
 class { 'cinder::api':
@@ -71,10 +73,10 @@ class { 'cinder::scheduler':
 
 ```puppet
 class { 'cinder':
-  sql_connection  => 'mysql://cinder:secret_block_password@openstack-controller.example.com/cinder',
-  rabbit_password => 'secret_rpc_password_for_blocks',
-  rabbit_host     => 'openstack-controller.example.com',
-  verbose         => true,
+  database_connection     => 'mysql://cinder:secret_block_password@openstack-controller.example.com/cinder',
+  rabbit_password         => 'secret_rpc_password_for_blocks',
+  rabbit_host             => 'openstack-controller.example.com',
+  verbose                 => true,
 }
 
 class { 'cinder::volume': }
@@ -83,6 +85,71 @@ class { 'cinder::volume::iscsi':
   iscsi_ip_address => '10.0.0.2',
 }
 ```
+
+**Define a cinder storage node with multiple backends **
+
+```puppet
+class { 'cinder':
+  database_connection     => 'mysql://cinder:secret_block_password@openstack-controller.example.com/cinder',
+  rabbit_password         => 'secret_rpc_password_for_blocks',
+  rabbit_host             => 'openstack-controller.example.com',
+  verbose                 => true,
+}
+
+class { 'cinder::volume': }
+
+cinder::backend::iscsi {'iscsi1':
+  iscsi_ip_address => '10.0.0.2',
+}
+
+cinder::backend::iscsi {'iscsi2':
+  iscsi_ip_address => '10.0.0.3',
+}
+
+cinder::backend::iscsi {'iscsi3':
+  iscsi_ip_address    => '10.0.0.4',
+  volume_backend_name => 'iscsi',
+}
+
+cinder::backend::iscsi {'iscsi4':
+  iscsi_ip_address    => '10.0.0.5',
+  volume_backend_name => 'iscsi',
+}
+
+cinder::backend::rbd {'rbd-images':
+  rbd_pool => 'images',
+  rbd_user => 'images',
+}
+
+# Cinder::Type requires keystone credentials
+Cinder::Type {
+  os_password     => 'admin',
+  os_tenant_name  => 'admin',
+  os_username     => 'admin',
+  os_auth_url     => 'http://127.0.0.1:5000/v2.0/',
+}
+
+cinder::type {'iscsi':
+  set_key   => 'volume_backend_name',
+  set_value => ['iscsi1', 'iscsi2', 'iscsi']
+}
+
+cinder::type {'rbd':
+  set_key   => 'volume_backend_name',
+  set_value => 'rbd-images',
+}
+
+class { 'cinder::backends':
+  enabled_backends => ['iscsi1', 'iscsi2', 'rbd-images']
+}
+```
+
+Note: that the name passed to any backend resource must be unique accross all backends otherwise a duplicate resource will be defined.
+
+** Using type and type_set **
+
+Cinder allows for the usage of type to set extended information that can be used for various reasons. We have resource provider for ``type`` and ``type_set`` Since types are rarely defined with out also setting attributes with it, the resource for ``type`` can also call ``type_set`` if you pass ``set_key`` and ``set_value``
+
 
 Implementation
 --------------
@@ -94,8 +161,9 @@ cinder is a combination of Puppet manifest and ruby code to delivery configurati
 Limitations
 ------------
 
-* Setup of storage nodes is limited to Linux and LVM, i.e. Puppet won't configure a Nexenta appliacne but nova can be configured to use the Nexenta driver with Class['cinder::volume::nexenta'].
+* Setup of storage nodes is limited to Linux and LVM, i.e. Puppet won't configure a Nexenta appliance but nova can be configured to use the Nexenta driver with Class['cinder::volume::nexenta'].
 
+* The Cinder Openstack service depends on a sqlalchemy database. If you are using puppetlabs-mysql to achieve this, there is a parameter called mysql_module that can be used to swap between the two supported versions: 0.9 and 2.2. This is needed because the puppetlabs-mysql module was rewritten and the custom type names have changed between versions.
 Development
 -----------
 
@@ -111,16 +179,50 @@ Contributors
 Release Notes
 -------------
 
+**4.1.0**
+
+* Added Cinder v2 endpoint support.
+* Added SSL support for Cinder API.
+* Added RabbitMQ SSL support.
+* Moved default_volume_type to cinder::api
+* Removed warnings for existing Cinder volumes.
+* Pinned major gems.
+
+**4.0.0**
+
+* Stable Icehouse release.
+* Updated NetApp unified driver config options.
+* Updated support for latest RabbitMQ module.
+* Added Glance support.
+* Added GlusterFS driver support.
+* Added region support.
+* Added support for MySQL module (>= 2.2).
+* Added support for Swift and Ceph backup backend.
+* Added cinder::config to handle additional custom options.
+* Refactored duplicate code for single and multiple backends.
+* Removed control exchange flag.
+* Removed deprecated cinder::base class.
+
+**3.1.1**
+
+* Fixed resource duplication bug.
+
+**3.1.0**
+
+* Added default_volume_type as a Cinder API parameter.
+* Added parameter for endpoint procols.
+* Deprecated glance_api_version.
+* Added support for VMDK.
+* Added support for Cinder multi backend.
+* Added support for https authentication endpoints.
+* Replaced pip with native package manager (VMDK).
+
 **3.0.0**
 
 * Major release for OpenStack Havana.
-* Added support for Solid Fire.
+* Added support for SolidFire.
 * Added support for ceilometer.
-* Added Ceph backend support.
-* Added Glance support.
-* Improved Cinder backup support.
 * Fixed bug for cinder-volume requirement.
-* Fixed default Swift URL for backup service.
 
 **2.2.0**
 

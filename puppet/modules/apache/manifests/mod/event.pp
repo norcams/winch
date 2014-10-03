@@ -6,6 +6,7 @@ class apache::mod::event (
   $threadsperchild     = '25',
   $maxrequestsperchild = '0',
   $serverlimit         = '25',
+  $apache_version      = $::apache::apache_version,
 ) {
   if defined(Class['apache::mod::itk']) {
     fail('May not include both apache::mod::event and apache::mod::itk on the same node')
@@ -21,7 +22,7 @@ class apache::mod::event (
   }
   File {
     owner => 'root',
-    group => $apache::params::root_group,
+    group => $::apache::params::root_group,
     mode  => '0644',
   }
 
@@ -33,18 +34,25 @@ class apache::mod::event (
   # - $threadsperchild
   # - $maxrequestsperchild
   # - $serverlimit
-  file { "${apache::mod_dir}/event.conf":
+  file { "${::apache::mod_dir}/event.conf":
     ensure  => file,
     content => template('apache/mod/event.conf.erb'),
-    require => Exec["mkdir ${apache::mod_dir}"],
-    before  => File[$apache::mod_dir],
+    require => Exec["mkdir ${::apache::mod_dir}"],
+    before  => File[$::apache::mod_dir],
     notify  => Service['httpd'],
   }
 
   case $::osfamily {
-    'freebsd' : {
-      class { 'apache::package':
-        mpm_module => 'event'
+    'redhat': {
+      if versioncmp($apache_version, '2.4') >= 0 {
+        apache::mpm{ 'event':
+          apache_version => $apache_version,
+        }
+      }
+    }
+    'debian','freebsd' : {
+      apache::mpm{ 'event':
+        apache_version => $apache_version,
       }
     }
     default: {

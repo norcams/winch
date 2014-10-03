@@ -25,12 +25,13 @@ define swift::storage::server(
   $config_file_path       = "${type}-server/${name}.conf"
 ) {
 
-  # TODO if array does not include type-server, warn
-  if(
-    (is_array($pipeline) and ! member($pipeline, "${type}-server")) or
-    $pipeline != "${type}-server"
-  ) {
+  # Warn if ${type-server} isn't included in the pipeline
+  if is_array($pipeline) {
+    if !member($pipeline, "${type}-server") {
       warning("swift storage server ${type} must specify ${type}-server")
+    }
+  } elsif $pipeline != "${type}-server" {
+    warning("swift storage server ${type} must specify ${type}-server")
   }
 
   include "swift::storage::${type}"
@@ -57,13 +58,14 @@ define swift::storage::server(
     owner   => $owner,
     group   => $group,
     notify  => Service["swift-${type}", "swift-${type}-replicator"],
+    require => Package['swift'],
     mode    => 640,
   }
 
   $required_middlewares = split(
     inline_template(
       "<%=
-        (pipeline - ['${type}-server']).collect do |x|
+        (@pipeline - ['${type}-server']).collect do |x|
           'Swift::Storage::Filter::' + x.capitalize + '[${type}]'
         end.join(',')
       %>"), ',')
@@ -78,5 +80,6 @@ define swift::storage::server(
     # does not specify the backends for every specified element of
     # the pipeline
     before  => $required_middlewares,
+    require => Package['swift'],
   }
 }

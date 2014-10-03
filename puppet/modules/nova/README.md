@@ -1,6 +1,8 @@
 nova
 ====
 
+4.0.0 - 2014.1.0 - Icehouse
+
 #### Table of Contents
 
 1. [Overview - What is the nova module?](#overview)
@@ -41,7 +43,7 @@ To utilize the nova module's functionality you will need to declare multiple res
 
 ```puppet
 class { 'nova':
-  database_connection => 'mysql://nova:a_big_secret@127.0.0.1/nova?charset=utf8",
+  database_connection => 'mysql://nova:a_big_secret@127.0.0.1/nova?charset=utf8',
   rabbit_userid       => 'nova',
   rabbit_password     => 'an_even_bigger_secret',
   image_service       => 'nova.image.glance.GlanceImageService',
@@ -72,6 +74,7 @@ Limitations
 
 * Supports libvirt, xenserver and vmware compute drivers.
 * Tested on EL and Debian derivatives.
+* The Nova Openstack service depends on a sqlalchemy database. If you are using puppetlabs-mysql to achieve this, there is a parameter called mysql_module that can be used to swap between the two supported versions: 0.9 and 2.2. This is needed because the puppetlabs-mysql module was rewritten and the custom type names have changed between versions.
 
 Development
 -----------
@@ -87,6 +90,49 @@ Contributors
 
 Release Notes
 -------------
+
+**4.1.0**
+
+* Added API v3 endpoint support.
+* Added configuration of rbd keyring name.
+* Added support for run Nova SSL endpoints.
+* Updated RabbitMQ dependency.
+* Updated mysql charset to UTF8.
+* Pinned major gems.
+
+**4.0.0**
+
+* Stable Icehouse release.
+* Added support for RHEL 7.
+* Added support for metadata and conductor workers.
+* Added support for vif_plugging parameters.
+* Added support for puppetlabs-mysql 2.2 and greater.
+* Added support for instance_usage_audit parameters.
+* Added support to manage the nova uid/gid for NFS live migration..
+* Added nova::config to handle additional custom options.
+* Added support to disable installation of nova utilities.
+* Added support for durable RabbitMQ queues.
+* Added SSL support for RabbitMQ.
+* Added support for nova-objectstore bind address.
+* Updated support for notification parameters.
+* Fixed packaging bugs.
+* Fixed report_interval configuration.
+* Fixed file location for nova compute rbd secret.
+
+**3.2.1**
+
+* Fixed consoleauth/spice resource duplication on Red Hat systems.
+
+**3.2.0**
+
+* Replace pip with native package manager for VMWare.
+* Deprecated logdir parameter in favor of log_dir.
+* Allows log_dir to be set to false in order to disable file logging.
+* Enables libvirt at boot.
+* Adds RBD backend support for VM image storage.
+* Parameterizes libvirt cpu_mode and disk_cachemodes.
+* Adds support for https auth endpoints.
+* Adds ability to disable installation of nova utilities.
 
 **3.1.0**
 

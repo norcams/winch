@@ -2,22 +2,31 @@ node_defaults:
     cpus: 2
     memory: 2048
     box: centos65
-    domain: localdomain
+    domain: winch.local
     networks:
-        - api
-        - external
         - management
         - data
+        - api
+        - external
 
 nodes:
+    - name: manager
     - name: controller
     - name: compute
 
 networks:
-    api:        192.168.166
-    external:   192.168.177
-    management: 172.16.188
-    data:       172.16.199
+    api:
+      net:         192.168.11
+      auto_config: true
+    external:
+      net:         192.168.22
+      auto_config: true
+    management:
+      net:         172.16.33
+      auto_config: true
+    data:
+      net:         172.16.44
+      auto_config: true
 
 boxes:
     centos65: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.5_chef-provisionerless.box

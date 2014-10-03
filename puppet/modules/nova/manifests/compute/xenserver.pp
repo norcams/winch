@@ -1,3 +1,21 @@
+# == Class: nova::compute::xenserver
+#
+# Configures nova-compute to manage xen guests
+#
+# === Parameters:
+#
+# [*xenapi_connection_url*]
+#   (required) URL for connection to XenServer/Xen Cloud Platform.
+#
+# [*xenapi_connection_username*]
+#   (required) Username for connection to XenServer/Xen Cloud Platform
+#
+# [*xenapi_connection_password*]
+#   (required) Password for connection to XenServer/Xen Cloud Platform
+#
+# [*xenapi_inject_image*]
+#   (optional) This parameter was removed in Diablo and does nothing.
+#   Defaults to false
 #
 class nova::compute::xenserver(
   $xenapi_connection_url,
@@ -15,8 +33,12 @@ class nova::compute::xenserver(
     'DEFAULT/xenapi_inject_image':        value => $xenapi_inject_image;
   }
 
+  ensure_packages(['python-pip'])
+
   package { 'xenapi':
     ensure   => present,
     provider => pip
   }
+
+  Package['python-pip'] -> Package['xenapi']
 }

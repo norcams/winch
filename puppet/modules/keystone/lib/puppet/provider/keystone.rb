@@ -25,8 +25,8 @@ class Puppet::Provider::Keystone < Puppet::Provider
     admin_port = keystone_file['DEFAULT']['admin_port'] ? keystone_file['DEFAULT']['admin_port'].strip : '35357'
     ssl = keystone_file['ssl'] && keystone_file['ssl']['enable'] ? keystone_file['ssl']['enable'].strip.downcase == 'true' : false
     protocol = ssl ? 'https' : 'http'
-    if keystone_file and keystone_file['DEFAULT'] and keystone_file['DEFAULT']['bind_host']
-      host = keystone_file['DEFAULT']['bind_host'].strip
+    if keystone_file and keystone_file['DEFAULT'] and keystone_file['DEFAULT']['admin_bind_host']
+      host = keystone_file['DEFAULT']['admin_bind_host'].strip
       if host == "0.0.0.0"
         host = "127.0.0.1"
       end
@@ -77,13 +77,13 @@ class Puppet::Provider::Keystone < Puppet::Provider
     authenv = {:OS_SERVICE_TOKEN => admin_token}
     begin
       withenv authenv do
-        remove_warnings(keystone('--endpoint', admin_endpoint, args))
+        remove_warnings(keystone('--os-endpoint', admin_endpoint, args))
       end
     rescue Exception => e
-      if (e.message =~ /\[Errno 111\] Connection refused/) or (e.message =~ /\(HTTP 400\)/) or (e.message =~ /HTTP Unable to establish connection/)
+      if e.message =~ /(\(HTTP\s+400\))|(\[Errno 111\]\s+Connection\s+refused)|(503\s+Service\s+Unavailable)|(Max\s+retries\s+exceeded)|(Unable\s+to\s+establish\s+connection)/
         sleep 10
         withenv authenv do
-          remove_warnings(keystone('--endpoint', admin_endpoint, args))
+          remove_warnings(keystone('--os-endpoint', admin_endpoint, args))
         end
       else
         raise(e)
@@ -102,7 +102,7 @@ class Puppet::Provider::Keystone < Puppet::Provider
         remove_warnings(keystone('--os-auth-url', admin_endpoint, args))
       end
     rescue Exception => e
-      if (e.message =~ /\[Errno 111\] Connection refused/) or (e.message =~ /\(HTTP 400\)/) or (e.message =~ /HTTP Unable to establish connection/)
+      if e.message =~ /(\(HTTP\s+400\))|(\[Errno 111\]\s+Connection\s+refused)|(503\s+Service\s+Unavailable)|(Max\s+retries\s+exceeded)|(Unable\s+to\s+establish\s+connection)/
         sleep 10
         withenv authenv do
           remove_warnings(keystone('--os-auth-url', admin_endpoint, args))

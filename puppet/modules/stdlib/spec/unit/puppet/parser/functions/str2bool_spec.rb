@@ -1,4 +1,3 @@
-#! /usr/bin/env ruby -S rspec
 require 'spec_helper'
 
 describe "the str2bool function" do
@@ -21,7 +20,7 @@ describe "the str2bool function" do
     result = scope.function_str2bool(["undef"])
     result.should(eq(false))
   end
-  
+
   it "should return the boolean it was called with" do
     result = scope.function_str2bool([true])
     result.should(eq(true))

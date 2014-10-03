@@ -2,7 +2,9 @@
 # should be considered to be constant
 class horizon::params {
 
-  $logdir = '/var/log/horizon'
+  $logdir      = '/var/log/horizon'
+  $django_wsgi = '/usr/share/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi'
+  $manage_py   = '/usr/share/openstack-dashboard/manage.py'
 
   case $::osfamily {
     'RedHat': {
@@ -15,6 +17,8 @@ class horizon::params {
       $root_url                    = '/dashboard'
       $apache_user                 = 'apache'
       $apache_group                = 'apache'
+      $wsgi_user                   = 'dashboard'
+      $wsgi_group                  = 'dashboard'
     }
     'Debian': {
       $http_service                = 'apache2'
@@ -22,16 +26,16 @@ class horizon::params {
       $httpd_config_file           = '/etc/apache2/conf.d/openstack-dashboard.conf'
       $httpd_listen_config_file    = '/etc/apache2/ports.conf'
       $root_url                    = '/horizon'
+      $apache_user                 = 'www-data'
+      $apache_group                = 'www-data'
+      $wsgi_user                   = 'horizon'
+      $wsgi_group                  = 'horizon'
       case $::operatingsystem {
         'Debian': {
             $package_name          = 'openstack-dashboard-apache'
-            $apache_user           = 'www-data'
-            $apache_group          = 'www-data'
         }
         default: {
             $package_name          = 'openstack-dashboard'
-            $apache_user           = 'horizon'
-            $apache_group          = 'horizon'
         }
       }
     }

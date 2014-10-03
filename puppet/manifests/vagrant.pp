@@ -1,8 +1,12 @@
 node controller {
-  include ::havana::role::winch_controller
+  include ::openstack::role::winch_controller
 }
 
 node compute {
-  include ::havana::role::winch_compute
+  include ::openstack::role::winch_compute
+}
+
+node manager {
+  include ::openstack::role::winch_manager
 }
 

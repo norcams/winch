@@ -6,6 +6,8 @@ class apache::mod::worker (
   $threadsperchild     = '25',
   $maxrequestsperchild = '0',
   $serverlimit         = '25',
+  $threadlimit         = '64',
+  $apache_version      = $::apache::apache_version,
 ) {
   if defined(Class['apache::mod::event']) {
     fail('May not include both apache::mod::worker and apache::mod::event on the same node')
@@ -21,7 +23,7 @@ class apache::mod::worker (
   }
   File {
     owner => 'root',
-    group => $apache::params::root_group,
+    group => $::apache::params::root_group,
     mode  => '0644',
   }
 
@@ -33,39 +35,36 @@ class apache::mod::worker (
   # - $threadsperchild
   # - $maxrequestsperchild
   # - $serverlimit
-  file { "${apache::mod_dir}/worker.conf":
+  # - $threadLimit
+  file { "${::apache::mod_dir}/worker.conf":
     ensure  => file,
     content => template('apache/mod/worker.conf.erb'),
-    require => Exec["mkdir ${apache::mod_dir}"],
-    before  => File[$apache::mod_dir],
+    require => Exec["mkdir ${::apache::mod_dir}"],
+    before  => File[$::apache::mod_dir],
     notify  => Service['httpd'],
   }
 
   case $::osfamily {
     'redhat': {
-      file_line { '/etc/sysconfig/httpd worker enable':
-        ensure => present,
-        path   => '/etc/sysconfig/httpd',
-        line   => 'HTTPD=/usr/sbin/httpd.worker',
-        match  => '#?HTTPD=/usr/sbin/httpd.worker',
-        notify => Service['httpd'],
+      if versioncmp($apache_version, '2.4') >= 0 {
+        ::apache::mpm{ 'worker':
+          apache_version => $apache_version,
+        }
+      }
+      else {
+        file_line { '/etc/sysconfig/httpd worker enable':
+          ensure  => present,
+          path    => '/etc/sysconfig/httpd',
+          line    => 'HTTPD=/usr/sbin/httpd.worker',
+          match   => '#?HTTPD=/usr/sbin/httpd.worker',
+          require => Package['httpd'],
+          notify  => Service['httpd'],
+        }
       }
     }
-    'debian': {
-      file { "${apache::mod_enable_dir}/worker.conf":
-        ensure  => link,
-        target  => "${apache::mod_dir}/worker.conf",
-        require => Exec["mkdir ${apache::mod_enable_dir}"],
-        before  => File[$apache::mod_enable_dir],
-        notify  => Service['httpd'],
-      }
-      package { 'apache2-mpm-worker':
-        ensure => present,
-      }
-    }
-    'freebsd' : {
-      class { 'apache::package':
-        mpm_module => 'worker'
+    'debian', 'freebsd': {
+      ::apache::mpm{ 'worker':
+        apache_version => $apache_version,
       }
     }
     default: {

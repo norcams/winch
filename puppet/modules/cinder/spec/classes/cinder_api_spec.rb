@@ -15,7 +15,8 @@ describe 'cinder::api' do
     end
 
     it { should contain_service('cinder-api').with(
-      'hasstatus' => true
+      'hasstatus' => true,
+      'ensure' => 'running'
     )}
 
     it 'should configure cinder api correctly' do
@@ -24,6 +25,9 @@ describe 'cinder::api' do
       )
       should contain_cinder_config('DEFAULT/osapi_volume_listen').with(
        :value => '0.0.0.0'
+      )
+      should contain_cinder_config('DEFAULT/default_volume_type').with(
+       :ensure => 'absent'
       )
       should contain_cinder_api_paste_ini('filter:authtoken/service_protocol').with(
         :value => 'http'
@@ -61,6 +65,29 @@ describe 'cinder::api' do
         :value => 'http://localhost:5000/'
       )
 
+      should_not contain_cinder_config('DEFAULT/os_region_name')
+    end
+  end
+
+  describe 'with a custom region for nova' do
+    let :params do
+      req_params.merge({'os_region_name' => 'MyRegion'})
+    end
+    it 'should configure the region for nova' do
+      should contain_cinder_config('DEFAULT/os_region_name').with(
+        :value => 'MyRegion'
+      )
+    end
+  end
+
+  describe 'with a default volume type' do
+    let :params do
+      req_params.merge({'default_volume_type' => 'foo'})
+    end
+    it 'should configure the default volume type for cinder' do
+      should contain_cinder_config('DEFAULT/default_volume_type').with(
+        :value => 'foo'
+      )
     end
   end
 
@@ -126,8 +153,20 @@ describe 'cinder::api' do
     let :params do
       req_params.merge({'enabled' => false})
     end
+    it 'should stop the service' do
+      should contain_service('cinder-api').with_ensure('stopped')
+    end
     it 'should contain db_sync exec' do
       should_not contain_exec('cinder-manage db_sync')
+    end
+  end
+
+  describe 'with manage_service false' do
+    let :params do
+      req_params.merge({'manage_service' => false})
+    end
+    it 'should not change the state of the service' do
+      should contain_service('cinder-api').without_ensure
     end
   end
 

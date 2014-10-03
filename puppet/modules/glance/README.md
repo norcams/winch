@@ -1,6 +1,8 @@
 glance
 =======
 
+4.0.0 - 2014.1.0 - Icehouse
+
 #### Table of Contents
 
 1. [Overview - What is the glance module?](#overview)
@@ -91,6 +93,19 @@ class { 'glance::keystone::auth':
 }
 ```
 
+**Setup up notifications for multiple RabbitMQ nodes**
+
+```puppet
+class { 'glance::notify::rabbitmq':
+  rabbit_password               => 'pass',
+  rabbit_userid                 => 'guest',
+  rabbit_hosts                  => [
+    'localhost:5672', 'remotehost:5672'
+  ],
+  rabbit_use_ssl                => false,
+}
+```
+
 Implementation
 --------------
 
@@ -102,6 +117,8 @@ Limitations
 ------------
 
 * Only supports configuring the file, swift and rbd storage backends.
+
+* The Glance Openstack service depends on a sqlalchemy database. If you are using puppetlabs-mysql to achieve this, there is a parameter called mysql_module that can be used to swap between the two supported versions: 0.9 and 2.2. This is needed because the puppetlabs-mysql module was rewritten and the custom type names have changed between versions.
 
 Development
 -----------
@@ -117,6 +134,35 @@ Contributors
 
 Release Notes
 -------------
+
+**4.1.0**
+
+* Added multiple rabbit hosts support.
+* Added image_cache_dir parameter.
+* Deprecated old SQL parameters.
+* Fixed the Glance add_image parser for new client.
+* Fixed values in get_glance_image_attrs.
+* Fixed 'could not find user glance' bug.
+* Pinned major gems.
+
+**4.0.0**
+
+* Stable Icehouse release.
+* Added glance::config to handle additional custom options.
+* Added known_stores option for glance::api.
+* Added copy-on-write cloning of images to volumes.
+* Added support for puppetlabs-mysql 2.2 and greater.
+* Added support for python-glanceclient v2 API update.
+* Removed deprecated notifier_stratgy parameter.
+* Deprecated show_image_direct_url in glance::rbd.
+
+**3.1.0**
+
+* Added availability to configure show_image_direct_url.
+* Removed Keystone client warnings.
+* Added support for https authentication endpoints.
+* Enabled ssl configuration for glance-registry.
+* Explicitly sets default notifier strategy.
 
 **3.0.0**
 

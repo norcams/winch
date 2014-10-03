@@ -1,4 +1,6 @@
-# these parameters need to be accessed from several locations and
+# == Class: nova::params
+#
+# These parameters need to be accessed from several locations and
 # should be considered to be constant
 class nova::params {
 
@@ -39,8 +41,15 @@ class nova::params {
       $root_helper                  = 'sudo nova-rootwrap'
       $lock_path                    = '/var/lib/nova/tmp'
       case $::operatingsystem {
-        'Fedora': {
+        'Fedora', 'RedHat': {
           $special_service_provider = undef
+        }
+        'RedHat', 'CentOS', 'Scientific': {
+          if ($::operatingsystemmajrelease < 7) {
+            $special_service_provider = 'init'
+          } else {
+            $special_service_provider = undef
+          }
         }
         default: {
           $special_service_provider = 'init'

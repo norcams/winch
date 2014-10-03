@@ -72,11 +72,11 @@ class Puppet::Provider::Glance < Puppet::Provider
   def self.auth_glance(*args)
     begin
       g = glance_credentials
-      glance('-T', g['admin_tenant_name'], '-I', g['admin_user'], '-K', g['admin_password'], '-N', auth_endpoint, args)
+      remove_warnings(glance('-T', g['admin_tenant_name'], '-I', g['admin_user'], '-K', g['admin_password'], '-N', auth_endpoint, args))
     rescue Exception => e
       if (e.message =~ /\[Errno 111\] Connection refused/) or (e.message =~ /\(HTTP 400\)/) or (e.message =~ /HTTP Unable to establish connection/)
         sleep 10
-        glance('-T', g['admin_tenant_name'], '-I', g['admin_user'], '-K', g['admin_password'], '-N', auth_endpoint, args)
+        remove_warnings(glance('-T', g['admin_tenant_name'], '-I', g['admin_user'], '-K', g['admin_password'], '-N', auth_endpoint, args))
       else
         raise(e)
       end
@@ -106,7 +106,6 @@ class Puppet::Provider::Glance < Puppet::Provider
     self.class.auth_glance_stdin(args)
   end
 
-
   private
     def self.list_glance_images
       ids = []
@@ -127,9 +126,61 @@ class Puppet::Provider::Glance < Puppet::Provider
     def self.get_glance_image_attrs(id)
       attrs = {}
       (auth_glance('show', id).split("\n") || []).collect do |line|
-        attrs[line.split(': ').first.downcase] = line.split(': ')[1..-1].to_s
+        attrs[line.split(': ').first.downcase] = line.split(': ')[1..-1].pop
       end
       return attrs
     end
 
+    def parse_table(table)
+      # parse the table into an array of maps with a simplistic state machine
+      found_header = false
+      parsed_header = false
+      keys = nil
+      results = []
+      table.split("\n").collect do |line|
+        # look for the header
+        if not found_header
+          if line =~ /^\+[-|+]+\+$/
+            found_header = true
+            nil
+          end
+        # look for the key names in the table header
+        elsif not parsed_header
+          if line =~ /^(\|\s*[:alpha:]\s*)|$/
+            keys = line.split('|').map(&:strip)
+            parsed_header = true
+          end
+        # parse the values in the rest of the table
+        elsif line =~ /^|.*|$/
+          values = line.split('|').map(&:strip)
+          result = Hash[keys.zip values]
+          results << result
+        end
+      end
+      results
+    end
+
+    # Remove warning from the output. This is a temporary hack until
+    # things will be refactored to use the REST API
+    def self.remove_warnings(results)
+      found_header = false
+      in_warning = false
+      results.split("\n").collect do |line|
+        unless found_header
+          if line =~ /^\+[-\+]+\+$/ # Matches upper and lower box borders
+            in_warning = false
+            found_header = true
+            line
+          elsif line =~ /^WARNING/ or line =~ /UserWarning/ or in_warning
+            # warnings can be multi line, we have to skip all of them
+            in_warning = true
+            nil
+          else
+            line
+          end
+        else
+          line
+        end
+      end.compact.join("\n")
+    end
 end

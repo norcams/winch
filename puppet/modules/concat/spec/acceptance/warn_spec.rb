@@ -1,22 +1,20 @@
 require 'spec_helper_acceptance'
 
-describe 'concat warn =>', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
-  basedir = default.tmpdir('concat')
+describe 'concat warn =>' do
   context 'true should enable default warning message' do
     pp = <<-EOS
-      include concat::setup
-      concat { '#{basedir}/file':
+      concat { '/tmp/concat/file':
         warn  => true,
       }
 
       concat::fragment { '1':
-        target  => '#{basedir}/file',
+        target  => '/tmp/concat/file',
         content => '1',
         order   => '01',
       }
 
       concat::fragment { '2':
-        target  => '#{basedir}/file',
+        target  => '/tmp/concat/file',
         content => '2',
         order   => '02',
       }
@@ -27,7 +25,7 @@ describe 'concat warn =>', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfam
       expect(apply_manifest(pp, :catch_changes => true).stderr).to eq("")
     end
 
-    describe file("#{basedir}/file") do
+    describe file('/tmp/concat/file') do
       it { should be_file }
       it { should contain '# This file is managed by Puppet. DO NOT EDIT.' }
       it { should contain '1' }
@@ -36,19 +34,18 @@ describe 'concat warn =>', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfam
   end
   context 'false should not enable default warning message' do
     pp = <<-EOS
-      include concat::setup
-      concat { '#{basedir}/file':
+      concat { '/tmp/concat/file':
         warn  => false,
       }
 
       concat::fragment { '1':
-        target  => '#{basedir}/file',
+        target  => '/tmp/concat/file',
         content => '1',
         order   => '01',
       }
 
       concat::fragment { '2':
-        target  => '#{basedir}/file',
+        target  => '/tmp/concat/file',
         content => '2',
         order   => '02',
       }
@@ -59,7 +56,7 @@ describe 'concat warn =>', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfam
       expect(apply_manifest(pp, :catch_changes => true).stderr).to eq("")
     end
 
-    describe file("#{basedir}/file") do
+    describe file('/tmp/concat/file') do
       it { should be_file }
       it { should_not contain '# This file is managed by Puppet. DO NOT EDIT.' }
       it { should contain '1' }
@@ -68,19 +65,18 @@ describe 'concat warn =>', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfam
   end
   context '# foo should overide default warning message' do
     pp = <<-EOS
-      include concat::setup
-      concat { '#{basedir}/file':
+      concat { '/tmp/concat/file':
         warn  => '# foo',
       }
 
       concat::fragment { '1':
-        target  => '#{basedir}/file',
+        target  => '/tmp/concat/file',
         content => '1',
         order   => '01',
       }
 
       concat::fragment { '2':
-        target  => '#{basedir}/file',
+        target  => '/tmp/concat/file',
         content => '2',
         order   => '02',
       }
@@ -91,7 +87,7 @@ describe 'concat warn =>', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfam
       expect(apply_manifest(pp, :catch_changes => true).stderr).to eq("")
     end
 
-    describe file("#{basedir}/file") do
+    describe file('/tmp/concat/file') do
       it { should be_file }
       it { should contain '# foo' }
       it { should contain '1' }

@@ -8,7 +8,7 @@ ServerRoot "<%= @server_root %>"
 PidFile <%= @pidfile %>
 Timeout <%= @timeout %>
 KeepAlive <%= @keepalive %>
-MaxKeepAliveRequests 100
+MaxKeepAliveRequests <%= @max_keepalive_requests %>
 KeepAliveTimeout <%= @keepalive_timeout %>
 
 User <%= @user %>
@@ -16,9 +16,13 @@ Group <%= @group %>
 
 AccessFileName .htaccess
 <FilesMatch "^\.ht">
+<%- if scope.function_versioncmp([@apache_version, '2.4']) >= 0 -%>
+    Require all denied
+<%- else -%>
      Order allow,deny
      Deny from all
      Satisfy all
+<%- end -%>
 </FilesMatch>
 
 <Directory />
@@ -51,10 +55,19 @@ LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combine
 LogFormat "%h %l %u %t \"%r\" %>s %b" common
 LogFormat "%{Referer}i -> %U" referer
 LogFormat "%{User-agent}i" agent
+<% if @log_formats and !@log_formats.empty? -%>
+  <%- @log_formats.each do |nickname,format| -%>
+LogFormat "<%= format -%>" <%= nickname %>
+  <%- end -%>
+<% end -%>
 
+<%- if scope.function_versioncmp([@apache_version, '2.4']) >= 0 -%>
+IncludeOptional "<%= @confd_dir %>/*.conf"
+<%- else -%>
 Include "<%= @confd_dir %>/*.conf"
+<%- end -%>
 <% if @vhost_load_dir != @confd_dir -%>
-Include "<%= @vhost_load_dir %>/*.conf"
+Include "<%= @vhost_load_dir %>/*"
 <% end -%>
 
 <% if @error_documents -%>
@@ -66,8 +79,12 @@ Alias /error/ "<%= @error_documents_path %>/"
   Options IncludesNoExec
   AddOutputFilter Includes html
   AddHandler type-map var
+<%- if scope.function_versioncmp([@apache_version, '2.4']) >= 0 -%>
+  Require all granted
+<%- else -%>
   Order allow,deny
   Allow from all
+<%- end -%>
   LanguagePriority en cs de es fr it nl sv pt-br ro
   ForceLanguagePriority Prefer Fallback
 </Directory>

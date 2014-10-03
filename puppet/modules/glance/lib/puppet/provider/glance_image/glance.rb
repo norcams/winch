@@ -50,53 +50,68 @@ Puppet::Type.type(:glance_image).provide(
         location = "< #{resource[:source]}"
         stdin = true
       else
-        location = "copy_from=#{resource[:source]}"
+        location = "--copy-from=#{resource[:source]}"
       end
     # location cannot handle file://
     # location does not import, so no sense in doing anything more than this
     elsif resource[:location]
-      location = "location=#{resource[:location]}"
+      location = "--location=#{resource[:location]}"
     else
       raise(Puppet::Error, "Must specify either source or location")
     end
     if stdin
-      result = auth_glance_stdin('add', "name=#{resource[:name]}", "is_public=#{resource[:is_public]}", "container_format=#{resource[:container_format]}", "disk_format=#{resource[:disk_format]}", location)
+      result = auth_glance_stdin('image-create', "--name=#{resource[:name]}", "--is-public=#{resource[:is_public]}", "--container-format=#{resource[:container_format]}", "--disk-format=#{resource[:disk_format]}", location)
     else
-      results = auth_glance('add', "name=#{resource[:name]}", "is_public=#{resource[:is_public]}", "container_format=#{resource[:container_format]}", "disk_format=#{resource[:disk_format]}", location)
+      results = auth_glance('image-create', "--name=#{resource[:name]}", "--is-public=#{resource[:is_public]}", "--container-format=#{resource[:container_format]}", "--disk-format=#{resource[:disk_format]}", location)
     end
+
+    id = nil
+
+    # Check the old behavior of the python-glanceclient
     if results =~ /Added new image with ID: (\S+)/
+      id = $1
+    else # the new behavior doesn't print the status, so parse the table
+      results_array = parse_table(results)
+      results_array.each do |result|
+        if result["Property"] == "id"
+          id = result["Value"]
+        end
+      end
+    end
+
+    if id
       @property_hash = {
         :ensure           => :present,
         :name             => resource[:name],
         :is_public        => resource[:is_public],
         :container_format => resource[:container_format],
         :disk_format      => resource[:disk_format],
-        :id               => $1
+        :id               => id
       }
     else
-      fail("did not get expected message from image creation, got #{results}")
+        fail("did not get expected message from image creation, got #{results}")
     end
   end
 
   def destroy
-    auth_glance('delete', id)
+    auth_glance('image-delete', id)
     @property_hash[:ensure] = :absent
   end
 
   def location=(value)
-    auth_glance('update', id, "location=#{value}")
+    auth_glance('image-update', id, "--location=#{value}")
   end
 
   def is_public=(value)
-    auth_glance('update', id, "is_public=#{value}")
+    auth_glance('image-update', id, "--is-public=#{value}")
   end
 
   def disk_format=(value)
-    auth_glance('update', id, "disk_format=#{value}")
+    auth_glance('image-update', id, "--disk-format=#{value}")
   end
 
   def container_format=(value)
-    auth_glance('update', id, "container_format=#{value}")
+    auth_glance('image-update', id, "--container-format=#{value}")
   end
 
   def id=(id)

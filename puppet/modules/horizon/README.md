@@ -1,6 +1,8 @@
 horizon
 =======
 
+4.0.0 - 2014.1.0 - Icehouse
+
 #### Table of Contents
 
 1. [Overview - What is the horizon module?](#overview)
@@ -84,6 +86,28 @@ Contributors
 
 Release Notes
 -------------
+
+**4.1.0**
+
+* Added option to set temporary upload directory for images.
+* Ensure ssl wsgi_process_group is the same as wsgi_daemon_process.
+* Pined major gems.
+
+**4.0.0**
+
+* Stable Icehouse release.
+* Added support to pass extra parameters to vhost.
+* Added support to ensure online cache is present and can be refreshed.
+* Added support to configure OPENSTACK_HYPERVISOR_FEATURES settings, AVAILABLE_REGIONS, OPENSTACK_NEUTRON_NETWORK.
+* Added support to disable configuration of Apache.
+* Fixed log ownership and WSGIProcess* settings for Red Hat releases.
+* Fixed overriding of policy files in local settings.
+* Fixed SSL bugs.
+* Improved WSGI configuration.
+
+**3.1.0**
+
+* Added option parameterize OPENSTACK_NEUTRON_NETWORK settings.
 
 **3.0.1**
 

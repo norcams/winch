@@ -1,102 +1,145 @@
-havana::region: 'openstack'
+openstack::region: 'openstack'
 
 ######## Network
-havana::network::api: '192.168.166.0/24'
-havana::network::api::device: 'eth1'
+openstack::network::api: '192.168.11.0/24'
+openstack::network::api::device: 'eth3'
 
-havana::network::external: '192.168.177.0/24'
-havana::network::external::device: 'eth2'
+openstack::network::external: '192.168.22.0/24'
+openstack::network::external::device: 'eth4'
 
-havana::network::management: '172.16.188.0/24'
-havana::network::management::device: 'eth3'
+openstack::network::management: '172.16.33.0/24'
+openstack::network::management::device: 'eth1'
 
-havana::network::data: '172.16.199.0/24'
-havana::network::data::device: 'eth4'
+openstack::network::data: '172.16.44.0/24'
+openstack::network::data::device: 'eth2'
+
+openstack::network::external::ippool::start: 192.168.22.100
+openstack::network::external::ippool::end: 192.168.22.200
+openstack::network::external::gateway: 192.168.22.2
+openstack::network::external::dns: 192.168.22.2
+
+######## Private Neutron Network
+
+openstack::network::neutron::private: '10.0.0.0/24'
 
 ######## Fixed IPs (controller)
 
-havana::controller::address::api: '192.168.166.11'
-havana::controller::address::management: '172.16.188.11'
-havana::storage::address::api: '192.168.166.11'
-havana::storage::address::management: '172.16.188.11'
+openstack::controller::address::api: '192.168.11.12'
+openstack::controller::address::management: '172.16.33.12'
+openstack::storage::address::api: '192.168.11.12'
+openstack::storage::address::management: '172.16.33.12'
 
 ######## Database
 
-havana::mysql::root_password: 'spam-gak'
-havana::mysql::service_password: 'fuva-wax'
-havana::mysql::allowed_hosts: ['localhost', '127.0.0.1', '172.16.188.%']
+openstack::mysql::root_password: 'spam-gak'
+openstack::mysql::service_password: 'fuva-wax'
+openstack::mysql::allowed_hosts: ['localhost', '127.0.0.1', '172.16.33.%']
 
 ######## RabbitMQ
 
-havana::rabbitmq::user: 'openstack'
-havana::rabbitmq::password: 'pose-vix'
+openstack::rabbitmq::user: 'openstack'
+openstack::rabbitmq::password: 'pose-vix'
 
 ######## Keystone
 
-havana::keystone::admin_token: 'sosp-kyl'
-havana::keystone::admin_email: 'nobody@example.com'
-havana::keystone::admin_password: 'fyby-tet'
-havana::keystone::verbose: 'True'
-havana::keystone::debug: 'True'
+openstack::keystone::admin_token: 'sosp-kyl'
+openstack::keystone::admin_email: 'nobody@example.com'
+openstack::keystone::admin_password: 'fyby-tet'
+openstack::keystone::verbose: 'True'
+openstack::keystone::debug: 'True'
 
-havana::tenants:
+openstack::keystone::tenants:
     "test":
         description: "Test tenant"
+    "test2":
+        description: "Test tenant"
 
-havana::users:
+openstack::keystone::users:
     "test":
         password: "abc123"
         tenant: "test"
         email: "test@example.com"
         admin: true
+    "demo":
+        password: "abc123"
+        tenant: "test"
+        email: "demo@example.com"
+        admin: false
+    "demo2":
+        password: "abc123"
+        tenant: "test2"
+        email: "demo@example.com"
+        admin: false
 
 ######## Glance
 
-havana::glance::password: 'na-mu-va'
-havana::glance::verbose: 'True'
-havana::glance::debug: 'True'
+openstack::glance::password: 'na-mu-va'
+openstack::glance::verbose: 'True'
+openstack::glance::debug: 'True'
 
 ######## Cinder
 
-havana::cinder::password: 'zi-co-se'
-havana::cinder::verbose: 'True'
-havana::cinder::debug: 'True'
+openstack::cinder::password: 'zi-co-se'
+openstack::cinder::verbose: 'True'
+openstack::cinder::debug: 'True'
 
-havana::cinder::volume_size: '4G'
+openstack::cinder::volume_size: '4G'
 
 ######## Swift
 
-havana::swift::password: 'dexc-flo'
-havana::swift::hash_suffix: 'pop-bang'
+openstack::swift::password: 'dexc-flo'
+openstack::swift::hash_suffix: 'pop-bang'
 
 ######## Nova
 
-havana::nova::libvirt_type: 'qemu'
-havana::nova::password: 'quuk-paj'
-havana::nova::verbose: 'True'
-havana::nova::debug: 'True'
+openstack::nova::libvirt_type: 'qemu'
+openstack::nova::password: 'quuk-paj'
+openstack::nova::verbose: 'True'
+openstack::nova::debug: 'True'
 
 ######## Neutron
 
-havana::neutron::password: 'whi-rtuz'
-havana::neutron::shared_secret: 'by-sa-bo'
-havana::neutron::verbose: 'True'
-havana::neutron::debug: 'True'
+openstack::neutron::password: 'whi-rtuz'
+openstack::neutron::shared_secret: 'by-sa-bo'
+openstack::neutron::verbose: 'True'
+openstack::neutron::debug: 'True'
 
 ######## Ceilometer
-havana::ceilometer::mongo::password: 'whi-truz'
-havana::ceilometer::password: 'whi-truz'
-havana::ceilometer::meteringsecret: 'ceilometersecretkey'
-havana::ceilometer::verbose: 'True'
-havana::ceilometer::debug: 'True'
+openstack::ceilometer::mongo::password: 'whi-truz'
+openstack::ceilometer::password: 'whi-truz'
+openstack::ceilometer::meteringsecret: 'ceilometersecretkey'
+openstack::ceilometer::verbose: 'True'
+openstack::ceilometer::debug: 'True'
 
 ######## Heat
-havana::heat::password: 'zap-bang'
-havana::heat::encryption_key: 'heatsecretkey'
-havana::heat::verbose: 'True'
-havana::heat::debug: 'True'
-
+openstack::heat::password: 'zap-bang'
+openstack::heat::encryption_key: 'heatsecretkey'
+openstack::heat::verbose: 'True'
+openstack::heat::debug: 'True'
 
 ######## Horizon
 
-havana::horizon::secret_key: 'whu-ghuk'
+openstack::horizon::secret_key: 'whu-ghuk'
+
+######## Tempest
+
+openstack::tempest::configure_images    : true
+openstack::tempest::image_name          : 'Cirros'
+openstack::tempest::image_name_alt      : 'Cirros'
+openstack::tempest::username            : 'demo'
+openstack::tempest::username_alt        : 'demo2'
+openstack::tempest::username_admin      : 'test'
+openstack::tempest::configure_network   : true
+openstack::tempest::public_network_name : 'public'
+openstack::tempest::cinder_available    : true
+openstack::tempest::glance_available    : true
+openstack::tempest::horizon_available   : true
+openstack::tempest::nova_available      : true
+openstack::tempest::neutron_available   : true
+openstack::tempest::heat_available      : false
+openstack::tempest::swift_available     : false
+
+######## Log levels
+openstack::verbose: 'True'
+openstack::debug: 'True'
+

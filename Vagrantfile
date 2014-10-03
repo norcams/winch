@@ -16,9 +16,10 @@ Vagrant.configure("2") do |config|
             box.vm.box = node['box']
             box.vm.box_url = node['box_url']
 
-            node['networks'].each do |net|
-                ip = settings['networks'][net] + ".#{i+11}"
-                box.vm.network :private_network, ip: ip
+            node['networks'].each do |n|
+                ip = settings['networks'][n]['net'] + ".#{i+11}"
+                auto_config = settings['networks'][n]['auto_config']
+                box.vm.network :private_network, ip: ip, auto_config: auto_config
             end
 
             box.vm.provider :virtualbox do |vb|
@@ -30,7 +31,8 @@ Vagrant.configure("2") do |config|
                 vb.customize ["modifyvm", :id, "--name", node['name']]
             end
 
-            box.vm.provision :shell, :path => "vagrant/install-puppet.sh"
+            #box.vm.provision :shell, :path => "vagrant/install-puppet.sh"
+            box.vm.provision :shell, :path => "vagrant/install-puppetlabsrepo.sh"
             box.vm.provision :shell, :path => "vagrant/virbr0-fix.sh"
             box.vm.provision :puppet do |puppet|
                 puppet.manifests_path = "puppet/manifests"

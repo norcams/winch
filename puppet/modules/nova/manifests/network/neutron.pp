@@ -2,7 +2,7 @@
 #
 # Configures Nova network to use Neutron.
 #
-# === Parameters
+# === Parameters:
 #
 # [*neutron_admin_password*]
 #   (required) Password for connecting to Neutron network services in
@@ -10,18 +10,20 @@
 #
 # [*neutron_auth_strategy*]
 #   (optional) Should be kept as default 'keystone' for all production deployments.
+#   Defaults to 'keystone'
 #
 # [*neutron_url*]
 #   (optional) URL for connecting to the Neutron networking service.
-#   Defaults to 'http://127.0.0.1:9696'.
+#   Defaults to 'http://127.0.0.1:9696'
 #
 # [*neutron_url_timeout*]
 #   (optional) Timeout value for connecting to neutron in seconds.
-#   Defaults to '30'.
+#   Defaults to '30'
 #
 # [*neutron_admin_tenant_name*]
 #   (optional) Tenant name for connecting to Neutron network services in
-#   admin context through the OpenStack Identity service. Defaults to 'services'.
+#   admin context through the OpenStack Identity service.
+#   Defaults to 'services'
 #
 # [*neutron_default_tenant_id*]
 #   (optional) Default tenant id when creating neutron networks
@@ -29,23 +31,25 @@
 #
 # [*neutron_region_name*]
 #   (optional) Region name for connecting to neutron in admin context
-#   through the OpenStack Identity service. Defaults to 'RegionOne'.
+#   through the OpenStack Identity service.
+#   Defaults to 'RegionOne'
 #
 # [*neutron_admin_username*]
 #   (optional) Username for connecting to Neutron network services in admin context
-#   through the OpenStack Identity service. Defaults to 'neutron'.
+#   through the OpenStack Identity service.
+#   Defaults to 'neutron'
 #
 # [*neutron_ovs_bridge*]
 #   (optional) Name of Integration Bridge used by Open vSwitch
-#   Defaults to 'br-int'.
+#   Defaults to 'br-int'
 #
 # [*neutron_extension_sync_interval*]
 #   (optional) Number of seconds before querying neutron for extensions
-#   Defaults to '600'.
+#   Defaults to '600'
 #
 # [*neutron_ca_certificates_file*]
 #   (optional) Location of ca certicates file to use for neutronclient requests.
-#   Defaults to 'None'.
+#   Defaults to 'None'
 #
 # [*neutron_admin_auth_url*]
 #   (optional) Points to the OpenStack Identity server IP and port.
@@ -55,15 +59,28 @@
 #
 # [*security_group_api*]
 #   (optional) The full class name of the security API class.
-#   Defaults to 'neutron' which configures Nova to use Neutron for
-#   security groups. Set to 'nova' to use standard Nova security groups.
+#   The default configures Nova to use Neutron for security groups.
+#   Set to 'nova' to use standard Nova security groups.
+#   Defaults to 'neutron'
 #
 # [*firewall_driver*]
 #   (optional) Firewall driver.
-#   Defaults to nova.virt.firewall.NoopFirewallDriver. This prevents Nova
-#   from maintaining a firewall so it does not interfere with Neutron's.
-#   Set to 'nova.virt.firewall.IptablesFirewallDriver'
+#   This prevents nova from maintaining a firewall so it does not interfere
+#   with Neutron's. Set to 'nova.virt.firewall.IptablesFirewallDriver'
 #   to re-enable the Nova firewall.
+#   Defaults to 'nova.virt.firewall.NoopFirewallDriver'
+#
+# [*vif_plugging_is_fatal*]
+#   (optional) Fail to boot instance if vif plugging fails.
+#   This prevents nova from booting an instance if vif plugging notification
+#   is not received from neutron.
+#   Defaults to 'True'
+#
+# [*vif_plugging_timeout*]
+#   (optional) Number of seconds to wait for neutron vif plugging events.
+#   Set to '0' and vif_plugging_is_fatal to 'False' if vif plugging
+#   notification is not being used.
+#   Defaults to '300'
 #
 class nova::network::neutron (
   $neutron_admin_password,
@@ -79,7 +96,9 @@ class nova::network::neutron (
   $neutron_extension_sync_interval = '600',
   $neutron_ca_certificates_file    = undef,
   $security_group_api              = 'neutron',
-  $firewall_driver                 = 'nova.virt.firewall.NoopFirewallDriver'
+  $firewall_driver                 = 'nova.virt.firewall.NoopFirewallDriver',
+  $vif_plugging_is_fatal           = true,
+  $vif_plugging_timeout            = '300'
 ) {
 
   nova_config {
@@ -97,6 +116,8 @@ class nova::network::neutron (
     'DEFAULT/neutron_extension_sync_interval': value => $neutron_extension_sync_interval;
     'DEFAULT/security_group_api':              value => $security_group_api;
     'DEFAULT/firewall_driver':                 value => $firewall_driver;
+    'DEFAULT/vif_plugging_is_fatal':           value => $vif_plugging_is_fatal;
+    'DEFAULT/vif_plugging_timeout':            value => $vif_plugging_timeout;
   }
 
   if ! $neutron_ca_certificates_file {
