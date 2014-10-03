@@ -20,8 +20,8 @@ hammer environment create --name "production"
 hammer environment info --name "production"
 
 hammer os create --name CentOS --major 6 --minor 5 --description "CentOS 6.5" --family Redhat --architecture-ids 1 --medium-ids 1 --ptable-ids 6
-hammer template update --id 13 --operatingsystem-ids 1
-hammer template update --id 11 --operatingsystem-ids 1
+hammer template update --name "Kickstart default PXELinux" --operatingsystem-ids 1
+hammer template update --name "Kickstart default" --operatingsystem-ids 1
 
 # work around Puppet bug #2244 which is fixed in 3.x
 sudo mkdir -p /etc/puppet/environments/common/dummy/lib
