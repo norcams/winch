@@ -40,6 +40,7 @@ Vagrant.configure("2") do |config|
                 puppet.manifest_file  = "vagrant.pp"
                 puppet.hiera_config_path = "puppet/hiera.yaml"
                 puppet.working_directory = "/vagrant/puppet"
+            box.vm.provision :shell, :path => "vagrant/persistent-config.sh"
             end
         end
     end
