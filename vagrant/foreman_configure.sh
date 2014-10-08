@@ -15,6 +15,7 @@ hammer subnet create --name "management" \
 hammer subnet update --name "management" \
   --domain-ids 1 --dhcp-id 1 --tftp-id 1 --dns-id 1
 hammer subnet info --name "management"
+hammer subnet update --name management --from 172.16.33.20 --to 172.16.33.100
 
 hammer environment create --name "production"
 hammer environment info --name "production"
