@@ -12,9 +12,9 @@ hammer subnet create --name "management" \
   --mask "255.255.255.0" \
   --gateway "172.16.33.11" \
   --dns-primary "172.16.33.11"
-hammer subnet update --name "vagrant" \
+hammer subnet update --name "management" \
   --domain-ids 1 --dhcp-id 1 --tftp-id 1 --dns-id 1
-hammer subnet info --name "vagrant"
+hammer subnet info --name "management"
 
 hammer environment create --name "production"
 hammer environment info --name "production"
