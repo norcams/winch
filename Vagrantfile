@@ -40,7 +40,9 @@ Vagrant.configure("2") do |config|
                 puppet.manifest_file  = "vagrant.pp"
                 puppet.hiera_config_path = "puppet/hiera.yaml"
                 puppet.working_directory = "/vagrant/puppet"
+            # The following scripts will be executed on node manager
             box.vm.provision :shell, :path => "vagrant/manager-persistent-config.sh"
+            box.vm.provision :shell, :path => "vagrant/foreman.sh"
             end
         end
     end
