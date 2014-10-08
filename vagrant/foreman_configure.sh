@@ -7,7 +7,7 @@ hammer proxy info --name "manager"
 hammer domain create --name "winch.local" --dns-id 1
 hammer domain info --name "winch.local"
 
-hammer subnet create --name "vagrant" \
+hammer subnet create --name "management" \
   --network "172.16.33.0" \
   --mask "255.255.255.0" \
   --gateway "172.16.33.11" \
@@ -37,6 +37,14 @@ hammer os set-default-template --id $os_id --config-template-id $pxelinuxid
 # Get the partition table id
 parttableid=$(hammer partition-table list --per-page 10000 | grep "Kickstart default" | cut -d" " -f1)
 hammer os update --id $os_id --ptable-ids $parttableid
+
+# Import the puppet classes from puppet master
+hammer proxy import-classes --environment "production" --id 1
+
+# Get id for for winch compute class
+winchcompute=$(hammer puppet-class list --search "openstack::role::winch_compute" | grep "openstack::role::winch_compute" | cut -d" " -f1)
+# Create a host group for virtualbox compute nodes
+hammer hostgroup create --name "compute_vbox" --architecture "x86_64" --domain "winch.local" --environment "production" --operatingsystem-id $os_id --medium "CentOS mirror" --ptable "Kickstart default" --puppet-ca-proxy "manager" --puppet-proxy "manager" --puppetclass-ids $winchcompute --subnet "management"
 
 # work around Puppet bug #2244 which is fixed in 3.x
 sudo mkdir -p /etc/puppet/environments/common/dummy/lib
