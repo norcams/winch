@@ -18,3 +18,5 @@ VBoxManage storagectl "$VMNAME" --name "SATA Controller" \
     --add sata --controller IntelAHCI --hostiocache on --bootable on
 VBoxManage storageattach "$VMNAME" --storagectl "SATA Controller" \
     --type hdd --port 0 --device 0 --medium "$VMPATH/$VMNAME.vdi"
+
+VBoxManage showvminfo compute | grep "MAC" | cut -d"," -f1
