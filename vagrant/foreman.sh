@@ -11,6 +11,3 @@ echo
 echo "Administer->Settings->Provisioning:"
 echo "query_local_nameservers = true"
 echo
-echo "Hosts->Provisioning Templates->Kickstart default"
-echo "Add 'unsupported_hardware' as a property after 'install'"
-echo
