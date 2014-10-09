@@ -47,6 +47,8 @@ winchcompute=$(hammer puppet-class list --search "openstack::role::winch_compute
 # Create a host group for virtualbox compute nodes
 hammer hostgroup create --name "compute_vbox" --architecture "x86_64" --domain "winch.local" --environment "production" --operatingsystem-id $os_id --medium "CentOS mirror" --ptable "Kickstart default" --puppet-ca-proxy "manager" --puppet-proxy "manager" --puppetclass-ids $winchcompute --subnet "management"
 hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "enable-puppetlabs-repo" --value "True"
+hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "infrastructure" --value "vbox"
+hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "role" --value "compute"
 
 # work around Puppet bug #2244 which is fixed in 3.x
 sudo mkdir -p /etc/puppet/environments/common/dummy/lib
