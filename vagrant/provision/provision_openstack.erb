@@ -123,8 +123,8 @@ echo "updating system time"
 
 # **** Configure additional network interfaces as defined in "enable-addifs" parameter
 # **** The last IP byte for these interfaces will be the same as for the primary interface 
-# **** Format for this parameter is interfacename1;network/prefix:interfacename2;network/prefix etc
-# **** example: eth1;172.16.44.0/24:eth2;192.168.0.0/21
+# **** Format for this parameter is interfacename1_network/prefix:interfacename2_network/prefix etc
+# **** example: eth1_172.16.44.0/24:eth2_192.168.0.0/21
 
 <% if @host.params['enable-addifs'] -%>
 configure_addifs=<%=@host.params['enable-addifs'] %>
@@ -135,9 +135,9 @@ IFS=':' read -a ifnetarray <<< $configure_addifs
 
 for ifelement in "${ifnetarray[@]}"
     do
-        ifdevice=${ifelement%,*}
+        ifdevice=${ifelement%_*}
         ifprefix=$(echo "${ifelement#*/}")
-        ifnetwork=$(echo "$ifelement" | cut -f2 -d";")
+        ifnetwork=$(echo "$ifelement" | cut -f2 -d"_")
         ifhwaddr=$(/sbin/ip link show $ifdevice|grep link|sed -e 's/link\/ether//1'|sed 's/^ *//'|awk '{print $1}')
         iffoo=$(/sbin/ip route|grep default| cut -d" " -f5)
         ifipbyte=$(/sbin/ip addr show $iffoo|grep "inet "|sed -e 's/inet //1'|sed 's/^ *//'|awk '{print $1}'|cut -f1 -d"/"|cut -f4 -d".")
