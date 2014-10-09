@@ -47,11 +47,15 @@ VirtualBox
 VirtualBox will be our back-end virtualization engine for Vagrant. The
 Vagrant ecosystem is currently fast-moving so make sure to get the
 latest and greatest version directly from the *Downloads* page on
-`www.virutalbox.org <https://www.virtualbox.org/wiki/Downloads>`_.
+`www.virtualbox.org <https://www.virtualbox.org/wiki/Downloads>`_.
 
 The installation instructions for Linux includes steps to add the
 VirtualBox package repo to your package manager. This makes updating
 easier or even automatic in the future so I recommend that you do so.
+
+You should also install the extensions package for VirtualBox witch will
+provide proper PXE support for your virtual machines. This is needed if
+you're provisioning with foreman.
 
 By default VirtualBox will create all virtual machines in a folder named
 ``VirtualBox VMs`` in your home folder. Depending on your drive setup
