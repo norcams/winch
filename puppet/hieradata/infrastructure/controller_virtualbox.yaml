@@ -2,4 +2,6 @@
 ### Device names are different on non-vagrant boxes
 
 openstack::network::management::device: 'eth0'
-openstack::network::api::device: 'eth3'
+openstack::network::data::device: 'eth1
+openstack::network::api::device: 'eth2'
+openstack::network::external::device: 'eth3'
