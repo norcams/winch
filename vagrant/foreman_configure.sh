@@ -49,6 +49,7 @@ hammer hostgroup create --name "controller_vbox" --architecture "x86_64" --domai
 hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "enable-puppetlabs-repo" --value "True"
 hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "infrastructure" --value "vbox"
 hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "role" --value "controller"
+hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "enable-addifs" --value "eth1;172.16.44.0/24:eth2;192.168.11.0/24:eth3;192.168.22.0/24"
 
 # Get id for openstack compute class
 winchcompute=$(hammer puppet-class list --search "openstack::role::winch_compute" | grep "openstack::role::winch_compute" | cut -d" " -f1)
@@ -57,6 +58,7 @@ hammer hostgroup create --name "compute_vbox" --architecture "x86_64" --domain "
 hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "enable-puppetlabs-repo" --value "True"
 hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "infrastructure" --value "vbox"
 hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "role" --value "compute"
+hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "enable-addifs" --value "eth1;172.16.44.0/24"
 
 # work around Puppet bug #2244 which is fixed in 3.x
 sudo mkdir -p /etc/puppet/environments/common/dummy/lib
