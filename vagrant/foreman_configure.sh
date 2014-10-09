@@ -42,7 +42,15 @@ hammer os update --id $os_id --ptable-ids $parttableid
 # Import the puppet classes from puppet master
 hammer proxy import-classes --environment "production" --id 1
 
-# Get id for for winch compute class
+# Get id for openstack controller class
+winchcontroller=$(hammer puppet-class list --search "openstack::role::winch_controller" | grep "openstack::role::winch_controller" | cut -d" " -f1)
+# Create a host group for virtualbox controller nodes
+hammer hostgroup create --name "controller_vbox" --architecture "x86_64" --domain "winch.local" --environment "production" --operatingsystem-id $os_id --medium "CentOS mirror" --ptable "Kickstart default" --puppet-ca-proxy "manager" --puppet-proxy "manager" --puppetclass-ids $winchcontroller --subnet "management"
+hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "enable-puppetlabs-repo" --value "True"
+hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "infrastructure" --value "vbox"
+hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "role" --value "controller"
+
+# Get id for openstack compute class
 winchcompute=$(hammer puppet-class list --search "openstack::role::winch_compute" | grep "openstack::role::winch_compute" | cut -d" " -f1)
 # Create a host group for virtualbox compute nodes
 hammer hostgroup create --name "compute_vbox" --architecture "x86_64" --domain "winch.local" --environment "production" --operatingsystem-id $os_id --medium "CentOS mirror" --ptable "Kickstart default" --puppet-ca-proxy "manager" --puppet-proxy "manager" --puppetclass-ids $winchcompute --subnet "management"
