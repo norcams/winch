@@ -46,7 +46,7 @@ hammer proxy import-classes --environment "production" --id 1
 winchcontroller=$(hammer puppet-class list --search "openstack::role::winch_controller" | grep "openstack::role::winch_controller" | cut -d" " -f1)
 # Create a host group for virtualbox controller nodes
 hammer hostgroup create --name "controller_vbox" --architecture "x86_64" --domain "winch.local" --environment "production" --operatingsystem-id $os_id --medium "CentOS mirror" --ptable "Kickstart default" --puppet-ca-proxy "manager" --puppet-proxy "manager" --puppetclass-ids $winchcontroller --subnet "management"
-hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "enable-puppetlabs-repo" --value "True"
+hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "enable-puppetlabs-repo" --value "true"
 hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "infrastructure" --value "vbox"
 hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "role" --value "controller"
 hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "enable-addifs" --value "eth1_172.16.44.0/24:eth2_192.168.11.0/24:eth3_192.168.22.0/24"
@@ -55,7 +55,7 @@ hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "enable-addi
 winchcompute=$(hammer puppet-class list --search "openstack::role::winch_compute" | grep "openstack::role::winch_compute" | cut -d" " -f1)
 # Create a host group for virtualbox compute nodes
 hammer hostgroup create --name "compute_vbox" --architecture "x86_64" --domain "winch.local" --environment "production" --operatingsystem-id $os_id --medium "CentOS mirror" --ptable "Kickstart default" --puppet-ca-proxy "manager" --puppet-proxy "manager" --puppetclass-ids $winchcompute --subnet "management"
-hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "enable-puppetlabs-repo" --value "True"
+hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "enable-puppetlabs-repo" --value "true"
 hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "infrastructure" --value "vbox"
 hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "role" --value "compute"
 hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "enable-addifs" --value "eth1_172.16.44.0/24"
