@@ -12,7 +12,8 @@ There are some requirements before starting out.
 -  Basic knowledge of `git <http://git-scm.com/>`_ and `command line
    tools <http://cli.learncodethehardway.org/>`_
 -  A multi-core desktop or laptop computer running Linux or OSX with at
-   least 4gb of RAM
+   least 8gb of RAM
+-  IP forwarding enabled on your host computer
 -  A SSD drive for storing virtual machines
 
 If you are missing some of these things might still work but possibly be
