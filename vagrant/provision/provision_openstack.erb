@@ -131,7 +131,7 @@ configure_addifs=<%=@host.params['enable-addifs'] %>
 <% end -%>
 
 if [[ -n "$configure_addifs" ]]; then
-IFS=':' read -a ifnetarray <<< $configure_addifs
+IFS=':' read -a ifnetarray <<< "$configure_addifs"
 
 for ifelement in "${ifnetarray[@]}"
     do
