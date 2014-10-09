@@ -53,7 +53,7 @@ The installation instructions for Linux includes steps to add the
 VirtualBox package repo to your package manager. This makes updating
 easier or even automatic in the future so I recommend that you do so.
 
-You should also install the extensions package for VirtualBox witch will
+You should also install the extensions package for VirtualBox which will
 provide proper PXE support for your virtual machines. This is needed if
 you're provisioning with foreman.
 
