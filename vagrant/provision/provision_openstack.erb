@@ -27,7 +27,7 @@ install
 unsupported_hardware
 <%= @mediapath %><%= proxy_string %>
 lang <%= @host.params['lang'] || 'en_US.UTF-8' %>
-selinux --enforcing
+selinux --permissive
 keyboard us
 skipx
 network --bootproto <%= @static ? "static --ip=#{@host.ip} --netmask=#{@host.subnet.mask} --gateway=#{@host.subnet.gateway} --nameserver=#{[@host.subnet.dns_primary,@host.subnet.dns_secondary].reject{|n| n.blank?}.join(',')}" : 'dhcp' %> --hostname <%= @host %>
