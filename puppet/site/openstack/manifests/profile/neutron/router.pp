@@ -16,7 +16,7 @@ class openstack::profile::neutron::router {
   ### Router service installation
   class { '::neutron::agents::l3':
     debug                   => $::openstack::config::debug,
-    external_network_bridge => 'br-ex',
+    external_network_bridge => 'brex',
     enabled                 => true,
   }
 
@@ -63,7 +63,7 @@ class openstack::profile::neutron::router {
     }
   }
 
-  $external_bridge = 'br-ex'
+  $external_bridge = 'brex'
   $external_network = $::openstack::config::network_external
   $external_device = device_for_network($external_network)
   vs_bridge { $external_bridge:
