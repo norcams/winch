@@ -1,5 +1,5 @@
 #!/bin/bash
-export OS_USERNAME=demo
+export OS_USERNAME=test
 export OS_TENANT_NAME=test
 export OS_PASSWORD=abc123
 export OS_AUTH_URL=http://192.168.11.12:5000/v2.0/
