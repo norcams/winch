@@ -15,7 +15,7 @@ else
     VBoxManage modifyvm "$VMNAME" --memory 2048 --acpi on --cpus 2 --cpuexecutioncap 100 --boot1 disk --boot2 dvd
 
     VBoxManage modifyvm "$VMNAME" --nic1 hostonly --hostonlyadapter1 vboxnet0 --cableconnected1 on
-    VBoxManage modifyvm "$VMNAME" --macaddress1 auto --nictype2 82540EM
+    VBoxManage modifyvm "$VMNAME" --macaddress1 auto --nictype2 82540EM --nicpromisc1 allow-all
 
     VBoxManage modifyvm "$VMNAME" --nic2 hostonly --hostonlyadapter2 vboxnet1 --cableconnected2 on
     VBoxManage modifyvm "$VMNAME" --macaddress2 auto --nictype1 82540EM
@@ -24,7 +24,7 @@ else
     VBoxManage modifyvm "$VMNAME" --macaddress3 auto --nictype2 82540EM
 
     VBoxManage modifyvm "$VMNAME" --nic4 hostonly --hostonlyadapter4 vboxnet3 --cableconnected4 on
-    VBoxManage modifyvm "$VMNAME" --macaddress4 auto --nictype2 82540EM
+    VBoxManage modifyvm "$VMNAME" --macaddress4 auto --nictype2 82540EM --nicpromisc4 allow-all
 
     VBoxManage createhd --filename "$VMPATH/$VMNAME.vdi" --size 40960
     VBoxManage storagectl "$VMNAME" --name "SATA Controller" \
