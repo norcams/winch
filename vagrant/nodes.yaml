@@ -12,6 +12,8 @@ node_defaults:
 nodes:
     - name: manager
     - name: controller
+    - name: ceph01
+    - name: ceph02
     - name: compute
 
 networks:

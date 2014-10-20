@@ -34,6 +34,8 @@ Vagrant.configure("2") do |config|
             #box.vm.provision :shell, :path => "vagrant/install-puppet.sh"
             box.vm.provision :shell, :path => "vagrant/install-puppetlabsrepo.sh"
             box.vm.provision :shell, :path => "vagrant/virbr0-fix.sh"
+            # Add ceph repos and epel for ceph nodes only
+            box.vm.provision :shell, :path => "vagrant/ceph_add_repo.sh"
             box.vm.provision :puppet do |puppet|
                 puppet.manifests_path = "puppet/manifests"
                 puppet.module_path = [ "puppet/modules", "puppet/site" ]
