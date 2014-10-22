@@ -14,6 +14,10 @@ node ceph02 {
   include ::openstack::role::winch_ceph
 }
 
+node ceph03 {
+  include ::openstack::role::winch_ceph
+}
+
 node compute {
   include ::openstack::role::winch_compute
 }
