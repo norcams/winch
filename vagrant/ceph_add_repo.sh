@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Add ceph repos and hosts entries if the hostname starts with ceph
+
 machinename=$(hostname | cut -d"." -f1)
 if [ $(echo "${machinename:0:4}") == 'ceph' ]; then
 
@@ -58,5 +60,8 @@ priority=2
 gpgcheck=1
 type=rpm-md
 gpgkey=https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc" > /etc/yum.repos.d/ceph-extras.repo
+
+    echo "172.16.33.13 ceph01.winch.local ceph01
+172.16.33.14 ceph02.winch.local ceph02" >> /etc/hosts
 
 fi
