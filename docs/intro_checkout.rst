@@ -38,7 +38,7 @@ Project folder structure
 Vagrantfile
 ~~~~~~~~~~~
 
-winch uses a fairly advanced Vagrantfile that loads configuration for
+Winch uses a fairly advanced Vagrantfile that loads configuration for
 multiple VMs. To be able to quickly change VM settings have a look 
 at the nodes.yaml file inside the vagrant folder. Here we've specified
 several node settings for different VMs, like CPU, memory, networks and so
@@ -73,7 +73,7 @@ updated to support this version.
 
 tests
 ~~~~~~~
-This folder contains of a series of testscripts. When executed chronologically the system will have done everything from importing an image to launching an instance with external connectivity. These tests have been made to verify OpenStack functionality and to ensure that all components of the system is working as intended. If an error should occur during one of the tests, it is much easier to retrace your steps to find out exactly where it went wrong.
+This folder contains a series of testscripts. When executed chronologically the system will have done everything from importing an image to launching an instance with external connectivity. These tests have been made to verify OpenStack functionality and to ensure that all components of the system is working as intended. If an error should occur during one of the tests, it is much easier to retrace your steps to find out exactly where it went wrong.
 
 vagrant
 ~~~~~~~
