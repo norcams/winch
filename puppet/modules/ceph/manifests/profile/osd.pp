@@ -21,14 +21,14 @@ class ceph::profile::osd {
   require ceph::profile::base
 
   # this supports providing the key manually
-  if $ceph::profile::params::bootstrap_osd_key {
-    if ! defined(Ceph::Key['client.bootstrap-osd']) {
-      ceph::key { 'client.bootstrap-osd':
-        keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-        secret       => $ceph::profile::params::bootstrap_osd_key,
-      }
-    }
-  }
+#  if $ceph::profile::params::bootstrap_osd_key {
+#    if ! defined(Ceph::Key['client.bootstrap-osd']) {
+#      ceph::key { 'client.bootstrap-osd':
+#        keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+#        secret       => $ceph::profile::params::bootstrap_osd_key,
+#      }
+#    }
+#  }
 
   class { 'ceph::osds':
     args => $ceph::profile::params::osds,
