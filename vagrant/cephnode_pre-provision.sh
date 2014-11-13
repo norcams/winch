@@ -66,5 +66,5 @@ thismachine=$(hostname -s)
 172.16.33.14 ceph02.winch.local ceph02
 172.16.33.15 ceph03.winch.local ceph03
 127.0.0.1   $thismachine.winch.local $thismachine localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" >> /etc/hosts
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" > /etc/hosts
 fi
