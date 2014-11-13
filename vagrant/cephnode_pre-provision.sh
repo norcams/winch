@@ -1,65 +1,43 @@
 #!/bin/bash
-
 # Add ceph repos and hosts entries if the hostname starts with ceph
 
 machinename=$(hostname | cut -d"." -f1)
 if [ $(echo "${machinename:0:4}") == 'ceph' ]; then
 
-    sudo yum -y install http://ftp.uninett.no/linux/epel/6/i386/epel-release-6-8.noarch.rpm
+    sudo yum -y install http://ftp.uninett.no/linux/epel/7/x86_64/e/epel-release-7-2.noarch.rpm
 
-    echo "[ceph]
+    echo "[Ceph]
 name=Ceph packages for $basearch
-baseurl=http://ceph.com/rpm-firefly/el6//\$basearch
+baseurl=http://ceph.com/rpm-firefly/rhel7/$basearch
 enabled=1
-priority=2
 gpgcheck=1
 type=rpm-md
 gpgkey=https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc
+priority=1
 
-[ceph-noarch]
+[Ceph-noarch]
 name=Ceph noarch packages
-baseurl=http://ceph.com/rpm-firefly/el6//noarch
+baseurl=http://ceph.com/rpm-firefly/rhel7/noarch
 enabled=1
-priority=2
 gpgcheck=1
 type=rpm-md
 gpgkey=https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc
+priority=1
 
 [ceph-source]
 name=Ceph source packages
-baseurl=http://ceph.com/rpm-firefly/el6//SRPMS
-enabled=0
-priority=2
-gpgcheck=1
-type=rpm-md
-gpgkey=https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc" > /etc/yum.repos.d/ceph.repo
-
-    echo "[ceph-extras]
-name=Ceph Extras Packages
-baseurl=http://ceph.com/packages/ceph-extras/rpm/rhel6/\$basearch
+baseurl=http://ceph.com/rpm-firefly/rhel7/SRPMS
 enabled=1
-priority=2
 gpgcheck=1
 type=rpm-md
 gpgkey=https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc
+priority=1" > /etc/yum.repos.d/ceph.repo
 
-[ceph-extras-noarch]
-name=Ceph Extras noarch
-baseurl=http://ceph.com/packages/ceph-extras/rpm/rhel6/noarch
+    echo "[Ceph-el7]
+name=Ceph-el7
+baseurl=http://eu.ceph.com/rpms/rhel7/noarch/
 enabled=1
-priority=2
-gpgcheck=1
-type=rpm-md
-gpgkey=https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc
-
-[ceph-extras-source]
-name=Ceph Extras Sources
-baseurl=http://ceph.com/packages/ceph-extras/rpm/rhel6/SRPMS
-enabled=1
-priority=2
-gpgcheck=1
-type=rpm-md
-gpgkey=https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc" > /etc/yum.repos.d/ceph-extras.repo
+gpgcheck=0" > /etc/yum.repos.d/ceph-el7.repo
 
 thismachine=$(hostname -s)
     echo "172.16.33.13 ceph01.winch.local ceph01
