@@ -18,6 +18,50 @@ updated to reflect the current status of the project.
 This will make a full clone of the source repository and store it on
 your local computer.
 
+Committing changes to GitHub
+----------------------------
+
+When a change is made to the repository on your local computer it is time to 
+commit the change to GitHub. This is done in three steps: 
+
+::
+
+    git add docs/intro_checkout.rst
+    git commit -m "Added some more documentation"
+    git push
+
+
+
+::
+
+    git pull
+
+Always perform a git pull command to check for updates in the repository. Files
+may have changed since the last time you checked out the repository.     
+
+Checking out other branches
+---------------------------
+
+There are several branches under winch. To keep track on which branch
+you're currently working on, the git branch command is useful.
+
+::
+
+    git branch -a
+    * master
+    remotes/origin/HEAD -> origin/master
+    remotes/origin/ceph
+    remotes/origin/foreman
+    remotes/origin/master
+    remotes/origin/workshop
+
+To check out another branch. Use the following command:
+
+::
+
+    git checkout foreman
+    
+
 Project folder structure
 ------------------------
 
