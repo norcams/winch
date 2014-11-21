@@ -38,7 +38,7 @@ resources for each service.
 Keystone - Identity Service
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- `Keystone - the OpenStack Identity service <http://docs.openstack.org/developer/keystone/>`_ (docs.openstack.org)
+- `Keystone <http://docs.openstack.org/developer/keystone/>`_ (docs.openstack.org)
 
 Glance - Image service
 ~~~~~~~~~~~~~~~~~~~~~~
