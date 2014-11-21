@@ -56,6 +56,7 @@ Neutron - Networking
 
 - `Neutron <http://docs.openstack.org/developer/neutron/>`_ (docs.openstack.org)
 - `Network design <http://docs.openstack.org/openstack-ops/content/network_design.html>`_ (docs.openstack.org)
+- `Neutron hybrid deployment and performance analysis <https://www.openstack.org/summit/openstack-summit-hong-kong-2013/session-videos/presentation/neutron-hybrid-deployment-and-performance-analysis>`_ (Nov 2013, Openstack Summit Hong Kong)
 
 Storage -  Cinder (block) and Swift (object)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
