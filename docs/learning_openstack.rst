@@ -36,19 +36,29 @@ A short description and a collection of learning
 resources for each service.
 
 Keystone - Identity Service
-~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- `Keystone - the OpenStack Identity service <http://docs.openstack.org/developer/keystone/>`_ (docs.openstack.org)
 
 Glance - Image service
-~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+
+- `Glance - Image service <http://docs.openstack.org/developer/glance/>`_ (docs.openstack.org)
 
 Nova - Compute
-~~~~
+~~~~~~~~~~~~~~
+
+- `Nova <http://docs.openstack.org/developer/nova/>`_ (docs.openstack.org)
+- `Compute nodes <http://docs.openstack.org/openstack-ops/content/compute_nodes.html>`_ (docs.openstack.org)
 
 Neutron - Networking
-~~~~
+~~~~~~~~~~~~~~~~~~~~
+
+- `Neutron <http://docs.openstack.org/developer/neutron/>`_ (docs.openstack.org)
+- `Network design <http://docs.openstack.org/openstack-ops/content/network_design.html>`_ (docs.openstack.org)
 
 Storage -  Cinder (block) and Swift (object)
-~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - `Storage concepts and summary <http://docs.openstack.org/trunk/openstack-ops/content/storage_decision.html>`_ (docs.openstack.org)
 
@@ -56,10 +66,21 @@ Storage -  Cinder (block) and Swift (object)
 
 
 Horizon - Dashboard
-~~~~
+~~~~~~~~~~~~~~~~~~~
+
+- `Horizon Dashboard <http://docs.openstack.org/developer/horizon/>`_ (docs.openstack.org)
+
 
 Ceilometer - Telemetry
-~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+
+- `Ceilometer <http://docs.openstack.org/developer/ceilometer/>`_ (docs.openstack.org)
 
 Heat - Orchestration
-~~~~
+~~~~~~~~~~~~~~~~~~~~
+
+- `Heat <http://docs.openstack.org/developer/heat/>`_ (docs.openstack.org)
+
+
+
+
