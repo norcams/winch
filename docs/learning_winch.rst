@@ -3,6 +3,10 @@ Learning Winch
 
 WIP
 
+Requirements
+------------
+- A local copy of the winch project from GitHub
+- VirtualBox and vagrant installed on your computer
 
 There are two different ways to deploy OpenStack using the winch project:
 
@@ -11,14 +15,7 @@ There are two different ways to deploy OpenStack using the winch project:
 Depending on your machine configuration vagrant allows you to have an OpenStack enviroment
 up and running within a few minutes. If you are only just getting started with winch this
 approach is the most useful. The provision process happens on screen allowing you to view every
-step of the way from an empty box to a fully manageable OpenStack component.
-
-Once this approach is complete you should have installed one controller node, and one compute node.
-
-Requirements
-------------
-- A local copy of the winch project from GitHub
-- VirtualBox and vagrant installed on your computer
+step of the way from an empty box to a fully manageable OpenStack component. Once this approach is complete you should have installed one controller node, and one compute node.
 
 Before spawning any virtual machines you need to be inside the winch folder. To check if any of the machines are already running, run vagrant status:
 
