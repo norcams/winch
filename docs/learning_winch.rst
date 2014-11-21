@@ -25,14 +25,15 @@ Before spawning any virtual machines you need to be inside the winch folder. To 
     controller      not created (virtualbox)
     compute         not created (virtualbox)
 
-To spawn the controller node simply type:
+Spawn the controller node first, then continue with compute node once the controller node finishes.
 
 ::
 
     vagrant up controller
+    vagrant up compute
 
-Vagrant will start provisioning the machine based on the vagrantfile which we explained
-earlier. After the RPM packages and repositories have been updated the puppet modules will
+Vagrant will start provisioning the machines based on the vagrantfile which we explained
+earlier. After the RPM packages and repositories have been installed the puppet modules will
 be applied. If anything should go wrong either during installation or when applying the 
 puppet modules it is possible to run the provisioning process again. A fault may occur one
 out of ten times so this step is usually not necessary.
@@ -40,12 +41,6 @@ out of ten times so this step is usually not necessary.
 ::
 
     vagrant provision controller
-
-To spawn the compute node repeat the same process as before, by replacing controller with compute.
-
-::
-
-    vagrant up compute
 
 When the installation process is complete you will have a running OpenStack enviroment. 
 The next step is to login with SSH and run the predefined tests to verify that the installation
@@ -56,18 +51,18 @@ is working as intended.
     vagrant ssh controller
 
 
+Become root and navigate to /vagrant/tests/. More to come!
 
 
+If you're deploying OpenStack for the very first time chances are you'll make mistakes as
+you go along. This is why vagrant is useful. If you do any serious damage or flip to many
+switches along the way simply destroy the machine and start over.
 
+::
 
-
-
-
-
-If you're deploing OpenStack for the very first time chances are you'll make mistakes as
-you go along.
-
-
+    vagrant destroy controller compute
+    Are you sure you want to destroy the 'controller' VM? [y/N] y
+    Are you sure you want to destroy the 'compute' VM? [y/N] y
 
 2. Using Foreman
 ----------------
