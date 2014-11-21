@@ -18,5 +18,6 @@ anything!
    intro_vagrant
    intro_checkout
    learning_openstack
+   learning_winch
 
 .. _current documentation: https://winch.readthedocs.org/
