@@ -78,27 +78,15 @@ class ceph::repo (
       Exec['apt_update'] -> Package<| tag == 'ceph' |>
     }
 
+
     'RedHat': {
       $enabled = $ensure ? { present => '1', absent => '0', default => absent, }
-      yumrepo { 'ext-epel-6.8':
-        # puppet versions prior to 3.5 do not support ensure, use enabled instead
-        enabled    => $enabled,
-        descr      => 'External EPEL 6.8',
-        name       => 'ext-epel-6.8',
-        baseurl    => absent,
-        gpgcheck   => '0',
-        gpgkey     => absent,
-        mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
-        priority   => '20', # prefer ceph repos over EPEL
-        tag        => 'ceph',
-      }
-
       yumrepo { 'ext-ceph':
         # puppet versions prior to 3.5 do not support ensure, use enabled instead
         enabled    => $enabled,
         descr      => "External Ceph ${release}",
         name       => "ext-ceph-${release}",
-        baseurl    => "http://ceph.com/rpm-${release}/el6/\$basearch",
+        baseurl    => "http://ceph.com/rpm-${release}/el7/\$basearch",
         gpgcheck   => '1',
         gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         mirrorlist => absent,
@@ -111,7 +99,7 @@ class ceph::repo (
         enabled    => $enabled,
         descr      => 'External Ceph noarch',
         name       => "ext-ceph-${release}-noarch",
-        baseurl    => "http://ceph.com/rpm-${release}/el6/noarch",
+        baseurl    => "http://ceph.com/rpm-${release}/el7/noarch",
         gpgcheck   => '1',
         gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         mirrorlist => absent,
@@ -125,7 +113,7 @@ class ceph::repo (
           enabled    => $enabled,
           descr      => 'External Ceph Extras',
           name       => 'ext-ceph-extras',
-          baseurl    => 'http://ceph.com/packages/ceph-extras/rpm/rhel6/$basearch',
+          baseurl    => 'http://ceph.com/packages/ceph-extras/rpm/rhel7/$basearch',
           gpgcheck   => '1',
           gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
           mirrorlist => absent,
@@ -141,7 +129,7 @@ class ceph::repo (
           enabled    => $enabled,
           descr      => 'FastCGI basearch packages for Ceph',
           name       => 'ext-ceph-fastcgi',
-          baseurl    => 'http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel6-x86_64-basic/ref/master',
+          baseurl    => 'http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel7-x86_64-basic/ref/master',
           gpgcheck   => '1',
           gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc',
           mirrorlist => absent,
