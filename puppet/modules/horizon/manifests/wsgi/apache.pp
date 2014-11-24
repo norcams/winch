@@ -7,6 +7,11 @@
 #  [*bind_address*]
 #    (optional) Bind address in Apache for Horizon. (Defaults to '0.0.0.0')
 #
+#  [*server_aliases*]
+#    (optional) List of names which should be defined as ServerAlias directives
+#    in vhost.conf.
+#    Defaults to ::fqdn.
+#
 #  [*listen_ssl*]
 #    (optional) Enable SSL support in Apache. (Defaults to false)
 #
@@ -35,36 +40,48 @@
 #    (optional) A hash of extra paramaters for apache::wsgi class.
 #    Defaults to {}
 class horizon::wsgi::apache (
-  $bind_address    = undef,
-  $fqdn            = $::fqdn,
-  $servername      = $::fqdn,
-  $listen_ssl      = false,
-  $ssl_redirect    = true,
-  $horizon_cert    = undef,
-  $horizon_key     = undef,
-  $horizon_ca      = undef,
-  $wsgi_processes  = '3',
-  $wsgi_threads    = '10',
-  $priority        = '15',
-  $extra_params    = {},
+  $bind_address        = undef,
+  $fqdn                = undef,
+  $servername          = $::fqdn,
+  $server_aliases      = $::fqdn,
+  $listen_ssl          = false,
+  $ssl_redirect        = true,
+  $horizon_cert        = undef,
+  $horizon_key         = undef,
+  $horizon_ca          = undef,
+  $wsgi_processes      = '3',
+  $wsgi_threads        = '10',
+  $priority            = '15',
+  $vhost_conf_name     = 'horizon_vhost',
+  $vhost_ssl_conf_name = 'horizon_ssl_vhost',
+  $extra_params        = {},
 ) {
 
   include ::horizon::params
   include ::apache
 
-  if $::osfamily == 'RedHat' {
-    class { 'apache::mod::wsgi':
-      wsgi_socket_prefix => '/var/run/wsgi'
-    }
+  if $fqdn {
+    warning('Parameter fqdn is deprecated. Please use parameter server_aliases for setting ServerAlias directives in vhost.conf.')
+    $final_server_aliases = $fqdn
   } else {
-    include ::apache::mod::wsgi
+    $final_server_aliases = $server_aliases
   }
 
+  include ::apache::mod::wsgi
+
   # We already use apache::vhost to generate our own
-  # configuration file, let's remove the configuration
+  # configuration file, let's clean the configuration
   # embedded within the package
   file { $::horizon::params::httpd_config_file:
-    ensure => absent
+    ensure  => present,
+    content => "#
+# This file has been cleaned by Puppet.
+#
+# OpenStack Horizon configuration has been moved to:
+# - ${priority}-${vhost_conf_name}.conf
+# - ${priority}-${vhost_ssl_conf_name}.conf
+#",
+    require => Package[$::horizon::params::package_name]
   }
 
 
@@ -125,10 +142,9 @@ class horizon::wsgi::apache (
     require      => [ File[$::horizon::params::logdir], Package['horizon'] ],
   }
 
-  $default_vhost_conf = {
-    ip                   => $bind_address,
+  $default_vhost_conf_no_ip = {
     servername           => $servername,
-    serveraliases        => os_any2array($fqdn),
+    serveraliases        => os_any2array($final_server_aliases),
     docroot              => '/var/www/',
     access_log_file      => 'horizon_access.log',
     error_log_file       => 'horizon_error.log',
@@ -153,13 +169,23 @@ class horizon::wsgi::apache (
     redirectmatch_status => 'permanent',
   }
 
-  ensure_resource('apache::vhost', 'horizon_vhost', merge ($default_vhost_conf, $extra_params, {
+  # Only add the 'ip' element to the $default_vhost_conf hash if it was explicitly
+  # specified in the instantiation of the class.  This is because ip => undef gets
+  # changed to ip => '' via the Puppet function API when ensure_resource is called.
+  # See https://bugs.launchpad.net/puppet-horizon/+bug/1371345
+  if $bind_address {
+    $default_vhost_conf = merge($default_vhost_conf_no_ip, { ip => $bind_address })
+  } else {
+    $default_vhost_conf = $default_vhost_conf_no_ip
+  }
+
+  ensure_resource('apache::vhost', $vhost_conf_name, merge ($default_vhost_conf, $extra_params, {
     redirectmatch_regexp => "${redirect_match} ${redirect_url}",
   }))
-  ensure_resource('apache::vhost', 'horizon_ssl_vhost',merge ($default_vhost_conf, $extra_params, {
+  ensure_resource('apache::vhost', $vhost_ssl_conf_name, merge ($default_vhost_conf, $extra_params, {
     access_log_file      => 'horizon_ssl_access.log',
     error_log_file       => 'horizon_ssl_error.log',
-    priority             => '15',
+    priority             => $priority,
     ssl                  => true,
     port                 => 443,
     ensure               => $ensure_ssl_vhost,

@@ -196,6 +196,9 @@ describe 'horizon::wsgi::apache' do
     end
 
     it_behaves_like 'apache for horizon'
+    it {
+      should contain_class('apache::mod::wsgi').with(:wsgi_socket_prefix => '/var/run/wsgi')
+    }
   end
 
   context 'on Debian platforms' do
@@ -208,7 +211,7 @@ describe 'horizon::wsgi::apache' do
 
     let :platforms_params do
       { :http_service      => 'apache2',
-        :httpd_config_file => '/etc/apache2/conf.d/openstack-dashboard.conf',
+        :httpd_config_file => '/etc/apache2/conf-available/openstack-dashboard.conf',
         :root_url          => '/horizon',
         :apache_user       => 'www-data',
         :apache_group      => 'www-data',
