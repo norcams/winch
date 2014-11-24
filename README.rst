@@ -1,7 +1,7 @@
 winch
 =====
 
-*winch installs compute hosts*
+*winch installs openstack juno*
 
 This is a project to integrate Puppet, The Foreman and OpenStack. It is
 similar in some ways to https://github.com/redhat-openstack/astapor but
