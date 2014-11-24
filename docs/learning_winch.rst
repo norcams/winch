@@ -7,6 +7,7 @@ Requirements
 ------------
 - A local copy of the winch project from GitHub
 - VirtualBox and vagrant installed on your computer
+- Knowledge about the OpenStack components
 
 There are two different ways to deploy OpenStack using the winch project:
 
@@ -25,7 +26,7 @@ Before spawning any virtual machines you need to be inside the winch folder. To 
     controller      not created (virtualbox)
     compute         not created (virtualbox)
 
-Spawn the controller node first, then continue with compute node once the controller node finishes.
+Spawn the controller node first, then continue with the compute node:
 
 ::
 
@@ -50,13 +51,21 @@ is working as intended.
 
     vagrant ssh controller
 
+Become root and navigate to /vagrant/tests. All the tests needs to be executed with an OpenStack user.
+Source the 00-testuser.sh file and execute all tests in chronological order.
 
-Become root and navigate to /vagrant/tests/. More to come!
+::
 
+    source 00-testuser.sh
+    sh 01-import_image.sh...
+    
+When complete you will have an instance running in your newly created OpenStack cloud! To setup
+more networks, routers and instances be sure to checkout the Horizon dashboard. Currently this 
+is running on http://192.168.11.12/dashboard. Use the credentials in 00-testuser.sh.
 
 If you're deploying OpenStack for the very first time chances are you'll make mistakes as
 you go along. This is why vagrant is useful. If you do any serious damage or flip to many
-switches along the way simply destroy the machine and start over.
+switches along the way simply destroy the machines and start over.
 
 ::
 
