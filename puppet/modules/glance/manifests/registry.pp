@@ -84,8 +84,13 @@
 #    (optional) Syslog facility to receive log lines.
 #    Defaults to LOG_USER.
 #
+#  [*manage_service*]
+#    (optional) If Puppet should manage service startup / shutdown.
+#    Defaults to true.
+#
 #  [*enabled*]
-#    (optional) Should the service be enabled. Defaults to true.
+#    (optional) Should the service be enabled.
+#    Defaults to true.
 #
 #  [*purge_config*]
 #    (optional) Whether to create only the specified config values in
@@ -105,9 +110,7 @@
 #   Defaults to false, not set
 #
 #  [*mysql_module*]
-#  (optional) The version of puppet-mysql to use. Tested versions
-#  include 0.9 and 2.2
-#  Defaults to '0.9'
+#  (optional) Deprecated. Does nothing.
 #
 class glance::registry(
   $keystone_password,
@@ -130,18 +133,23 @@ class glance::registry(
   $pipeline              = 'keystone',
   $use_syslog            = false,
   $log_facility          = 'LOG_USER',
+  $manage_service        = true,
   $enabled               = true,
   $purge_config          = false,
   $cert_file             = false,
   $key_file              = false,
   $ca_file               = false,
-  $mysql_module          = '0.9',
   # DEPRECATED PARAMETERS
+  $mysql_module          = undef,
   $sql_idle_timeout      = false,
   $sql_connection        = false,
 ) inherits glance {
 
   require keystone::python
+
+  if $mysql_module {
+    warning('The mysql_module parameter is deprecated. The latest 2.x mysql module will be used.')
+  }
 
   if ( $glance::params::api_package_name != $glance::params::registry_package_name ) {
     ensure_packages([$glance::params::registry_package_name])
@@ -178,12 +186,8 @@ class glance::registry(
 
   if $database_connection_real {
     if($database_connection_real =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
-      if ($mysql_module >= 2.2) {
-        require 'mysql::bindings'
-        require 'mysql::bindings::python'
-      } else {
-        require 'mysql::python'
-      }
+      require 'mysql::bindings'
+      require 'mysql::bindings::python'
     } elsif($database_connection_real =~ /postgresql:\/\/\S+:\S+@\S+\/\S+/) {
 
     } elsif($database_connection_real =~ /sqlite:\/\//) {
@@ -192,7 +196,7 @@ class glance::registry(
       fail("Invalid db connection ${database_connection_real}")
     }
     glance_registry_config {
-      'database/connection':   value => $database_connection_real;
+      'database/connection':   value => $database_connection_real, secret => true;
       'database/idle_timeout': value => $database_idle_timeout_real;
     }
   }
@@ -245,7 +249,7 @@ class glance::registry(
     glance_registry_config {
       'keystone_authtoken/admin_tenant_name': value => $keystone_tenant;
       'keystone_authtoken/admin_user'       : value => $keystone_user;
-      'keystone_authtoken/admin_password'   : value => $keystone_password;
+      'keystone_authtoken/admin_password'   : value => $keystone_password, secret => true;
     }
   }
 
@@ -319,21 +323,23 @@ class glance::registry(
           '/etc/glance/glance-registry-paste.ini']:
   }
 
-  if $enabled {
 
-    Exec['glance-manage db_sync'] ~> Service['glance-registry']
+  if $manage_service {
+    if $enabled {
+      Exec['glance-manage db_sync'] ~> Service['glance-registry']
 
-    exec { 'glance-manage db_sync':
-      command     => $::glance::params::db_sync_command,
-      path        => '/usr/bin',
-      user        => 'glance',
-      refreshonly => true,
-      logoutput   => on_failure,
-      subscribe   => [Package[$glance::params::registry_package_name], File['/etc/glance/glance-registry.conf']],
+      exec { 'glance-manage db_sync':
+        command     => $::glance::params::db_sync_command,
+        path        => '/usr/bin',
+        user        => 'glance',
+        refreshonly => true,
+        logoutput   => on_failure,
+        subscribe   => [Package[$glance::params::registry_package_name], File['/etc/glance/glance-registry.conf']],
+      }
+      $service_ensure = 'running'
+    } else {
+      $service_ensure = 'stopped'
     }
-    $service_ensure = 'running'
-  } else {
-    $service_ensure = 'stopped'
   }
 
   service { 'glance-registry':

@@ -118,8 +118,6 @@ Limitations
 
 * Only supports configuring the file, swift and rbd storage backends.
 
-* The Glance Openstack service depends on a sqlalchemy database. If you are using puppetlabs-mysql to achieve this, there is a parameter called mysql_module that can be used to swap between the two supported versions: 0.9 and 2.2. This is needed because the puppetlabs-mysql module was rewritten and the custom type names have changed between versions.
-
 Development
 -----------
 
@@ -134,16 +132,6 @@ Contributors
 
 Release Notes
 -------------
-
-**4.1.0**
-
-* Added multiple rabbit hosts support.
-* Added image_cache_dir parameter.
-* Deprecated old SQL parameters.
-* Fixed the Glance add_image parser for new client.
-* Fixed values in get_glance_image_attrs.
-* Fixed 'could not find user glance' bug.
-* Pinned major gems.
 
 **4.0.0**
 
