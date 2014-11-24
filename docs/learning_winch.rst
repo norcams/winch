@@ -7,7 +7,7 @@ Requirements
 ------------
 - A local copy of the winch project from GitHub
 - VirtualBox and vagrant installed on your computer
-- Knowledge about the OpenStack components
+- Knowledge about the OpenStack components and IP forwarding
 
 There are two different ways to deploy OpenStack using the winch project:
 
@@ -52,16 +52,17 @@ is working as intended.
     vagrant ssh controller
 
 Become root and navigate to /vagrant/tests. All the tests needs to be executed with an OpenStack user.
-Source the 00-testuser.sh file and execute all tests in chronological order.
-
+Run the 00-testuser.sh script to create the a keystone file for authentication. Source this file in order to run the rest of the testscripts. 
 ::
 
-    source 00-testuser.sh
+    source /root/keystonerc_admin
     sh 01-import_image.sh...
     
 When complete you will have an instance running in your newly created OpenStack cloud! To setup
 more networks, routers and instances be sure to checkout the Horizon dashboard. Currently this 
-is running on http://192.168.11.12/dashboard. Use the credentials in 00-testuser.sh.
+is running on http://192.168.11.12/dashboard. Use the credentials in the kyestone file. In order 
+to get instances in your cloud to talk to the outside world, IP forwarding needs to be enabled on
+your host machine. 
 
 If you're deploying OpenStack for the very first time chances are you'll make mistakes as
 you go along. This is why vagrant is useful. If you do any serious damage or flip to many
@@ -73,6 +74,60 @@ switches along the way simply destroy the machines and start over.
     Are you sure you want to destroy the 'controller' VM? [y/N] y
     Are you sure you want to destroy the 'compute' VM? [y/N] y
 
+**Summary**
+
+After deploying OpenStack with vagrant your setup should consist of the following:
+
+- A controller node
+- A compute node
+- One test instance running Cirros with external connectivity
+- 3 users that can login to the Horizon dashboard
+- Testsubnet and a testruter
+ 
+
 2. Using Foreman
 ----------------
+
+The second way to install OpenStack within the winch project is to use Forman. This approach takes
+a little while longer than vagrant, mainly because Foreman installs the controller and the compute
+nodes from scratch. 
+
+Instead of running around with a CD to install your production enviroment Foreman
+is all about making manual repetitive tasks automated. Foreman can install an operating system on bare-metal automatically allowing the administrator to configure every step of the process. In winch Foreman runs on a separated machine called manager. Provisioning this machine is the very first step in this
+approach.
+
+::
+
+    vagrant up manager
+    
+    
+Provision of this machine takes a little while. This is because the provision script inside the vagrant folder does everything from fetching the repository to the installation and configuration of Foreman. It is recommended to have a look at the different installation scripts to get a feel on whats going on. The foreman.sh script consists of the following:
+
+::
+
+    foreman_puppet.sh
+    foreman_add_repo.sh
+    foreman_install.sh
+    foreman_puppetmaster-config.sh
+    foreman_configure.sh
+    foreman_netfwd.sh
+
+After the machine has been installed make sure to note down the Foreman password that appears on screen
+right before it starts with the puppet modules.
+
+::
+
+
+    Foreman is running at https://manager.winch.local
+      Initial credentials are admin / ************
+
+
+These credentials can be used if you want to checkout the Foreman webpanel.
+
+
+
+
+
+
+
 
