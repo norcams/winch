@@ -6,7 +6,8 @@ describe 'cinder::api' do
     {:keystone_password => 'foo'}
   end
   let :facts do
-    {:osfamily => 'Debian'}
+    {:osfamily       => 'Debian',
+     :processorcount => 8 }
   end
 
   describe 'with only required params' do
@@ -25,6 +26,9 @@ describe 'cinder::api' do
       )
       should contain_cinder_config('DEFAULT/osapi_volume_listen').with(
        :value => '0.0.0.0'
+      )
+      should contain_cinder_config('DEFAULT/osapi_volume_workers').with(
+       :value => '8'
       )
       should contain_cinder_config('DEFAULT/default_volume_type').with(
        :ensure => 'absent'

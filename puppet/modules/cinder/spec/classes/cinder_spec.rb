@@ -14,7 +14,7 @@ describe 'cinder' do
     end
 
     it { should contain_class('cinder::params') }
-    it { should contain_class('mysql::python') }
+    it { should contain_class('mysql::bindings::python') }
 
     it 'should contain default config' do
       should contain_cinder_config('DEFAULT/rpc_backend').with(
@@ -52,11 +52,28 @@ describe 'cinder' do
       should contain_cinder_config('database/idle_timeout').with(
         :value => '3600'
       )
+      should contain_cinder_config('database/min_pool_size').with(
+        :value => '1'
+      )
+      should contain_cinder_config('database/max_pool_size').with_ensure('absent')
+      should contain_cinder_config('database/max_retries').with(
+        :value => '10'
+      )
+      should contain_cinder_config('database/retry_interval').with(
+        :value => '10'
+      )
+      should contain_cinder_config('database/max_overflow').with_ensure('absent')
       should contain_cinder_config('DEFAULT/verbose').with(
         :value => false
       )
       should contain_cinder_config('DEFAULT/debug').with(
         :value => false
+      )
+      should contain_cinder_config('DEFAULT/storage_availability_zone').with(
+        :value => 'nova'
+      )
+      should contain_cinder_config('DEFAULT/default_availability_zone').with(
+        :value => 'nova'
       )
       should contain_cinder_config('DEFAULT/api_paste_config').with(
         :value => '/etc/cinder/api-paste.ini'

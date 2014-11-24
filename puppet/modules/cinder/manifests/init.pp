@@ -9,6 +9,27 @@
 #   Timeout when db connections should be reaped.
 #   (Optional) Defaults to 3600.
 #
+# [database_min_pool_size]
+#   Minimum number of SQL connections to keep open in a pool.
+#   (Optional) Defaults to 1.
+#
+# [database_max_pool_size]
+#   Maximum number of SQL connections to keep open in a pool.
+#   (Optional) Defaults to undef.
+#
+# [database_max_retries]
+#   Maximum db connection retries during startup.
+#   Setting -1 implies an infinite retry count.
+#   (Optional) Defaults to 10.
+#
+# [database_retry_interval]
+#   Interval between retries of opening a sql connection.
+#   (Optional) Defaults to 10.
+#
+# [database_max_overflow]
+#   If set, use this value for max_overflow with sqlalchemy.
+#   (Optional) Defaults to undef.
+#
 # [*rabbit_use_ssl*]
 #   (optional) Connect over SSL for RabbitMQ
 #   Defaults to false
@@ -65,9 +86,17 @@
 #   Defaults to false, not set_
 #
 # [*mysql_module*]
-#   (optional) Puppetlabs-mysql module version to use
-#   Tested versions include 0.9 and 2.2
-#   Defaults to '0.9'
+#   (optional) Deprecated. Does nothing.
+#
+# [*storage_availability_zone*]
+#   (optional) Availability zone of the node.
+#   Defaults to 'nova'
+#
+# [*default_availability_zone*]
+#   (optional) Default availability zone for new volumes.
+#   If not set, the storage_availability_zone option value is used as
+#   the default for new volumes.
+#   Defaults to false
 #
 # [sql_connection]
 #   DEPRECATED
@@ -77,6 +106,11 @@
 class cinder (
   $database_connection         = 'sqlite:////var/lib/cinder/cinder.sqlite',
   $database_idle_timeout       = '3600',
+  $database_min_pool_size      = '1',
+  $database_max_pool_size      = undef,
+  $database_max_retries        = '10',
+  $database_retry_interval     = '10',
+  $database_max_overflow       = undef,
   $rpc_backend                 = 'cinder.openstack.common.rpc.impl_kombu',
   $control_exchange            = 'openstack',
   $rabbit_host                 = '127.0.0.1',
@@ -116,8 +150,10 @@ class cinder (
   $log_dir                     = '/var/log/cinder',
   $verbose                     = false,
   $debug                       = false,
-  $mysql_module                = '0.9',
+  $storage_availability_zone   = 'nova',
+  $default_availability_zone   = false,
   # DEPRECATED PARAMETERS
+  $mysql_module                = undef,
   $sql_connection              = undef,
   $sql_idle_timeout            = undef,
 ) {
@@ -126,6 +162,10 @@ class cinder (
 
   Package['cinder'] -> Cinder_config<||>
   Package['cinder'] -> Cinder_api_paste_ini<||>
+
+  if $mysql_module {
+    warning('The mysql_module parameter is deprecated. The latest 2.x mysql module will be used.')
+  }
 
   if $sql_connection {
     warning('The sql_connection parameter is deprecated, use database_connection instead.')
@@ -269,22 +309,49 @@ class cinder (
     }
   }
 
+  if ! $default_availability_zone {
+    $default_availability_zone_real = $storage_availability_zone
+  } else {
+    $default_availability_zone_real = $default_availability_zone
+  }
+
   cinder_config {
-    'database/connection':         value => $database_connection_real, secret => true;
-    'database/idle_timeout':       value => $database_idle_timeout_real;
-    'DEFAULT/verbose':             value => $verbose;
-    'DEFAULT/debug':               value => $debug;
-    'DEFAULT/api_paste_config':    value => $api_paste_config;
-    'DEFAULT/rpc_backend':         value => $rpc_backend;
+    'database/connection':               value => $database_connection_real, secret => true;
+    'database/idle_timeout':             value => $database_idle_timeout_real;
+    'database/min_pool_size':            value => $database_min_pool_size;
+    'database/max_retries':              value => $database_max_retries;
+    'database/retry_interval':           value => $database_retry_interval;
+    'DEFAULT/verbose':                   value => $verbose;
+    'DEFAULT/debug':                     value => $debug;
+    'DEFAULT/api_paste_config':          value => $api_paste_config;
+    'DEFAULT/rpc_backend':               value => $rpc_backend;
+    'DEFAULT/storage_availability_zone': value => $storage_availability_zone;
+    'DEFAULT/default_availability_zone': value => $default_availability_zone_real;
+  }
+
+  if $database_max_pool_size {
+    cinder_config {
+      'database/max_pool_size': value => $database_max_pool_size;
+    }
+  } else {
+    cinder_config {
+      'database/max_pool_size': ensure => absent;
+    }
+  }
+
+  if $database_max_overflow {
+    cinder_config {
+      'database/max_overflow': value => $database_max_overflow;
+    }
+  } else {
+    cinder_config {
+      'database/max_overflow': ensure => absent;
+    }
   }
 
   if($database_connection_real =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
-    if ($mysql_module >= 2.2) {
-      require 'mysql::bindings'
-      require 'mysql::bindings::python'
-    } else {
-      require 'mysql::python'
-    }
+    require 'mysql::bindings'
+    require 'mysql::bindings::python'
   } elsif($database_connection_real =~ /postgresql:\/\/\S+:\S+@\S+\/\S+/) {
 
   } elsif($database_connection_real =~ /sqlite:\/\//) {

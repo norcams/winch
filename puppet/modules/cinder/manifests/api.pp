@@ -48,6 +48,10 @@
 #   (optional) The cinder api port
 #   Defaults to 5000
 #
+# [*service_workers*]
+#   (optional) Number of cinder-api workers
+#   Defaults to $::processorcount
+#
 # [*package_ensure*]
 #   (optional) The state of the package
 #   Defaults to present
@@ -75,8 +79,8 @@
 # [*default_volume_type*]
 #   (optional) default volume type to use.
 #   This should contain the name of the default volume type to use.
-#   If this parameter is not set when multi-backend is enabled, then cinder will
-#   fail to create a volume.
+#   If not configured, it produces an error when creating a volume
+#   without specifying a type.
 #   Defaults to 'false'.
 class cinder::api (
   $keystone_password,
@@ -90,6 +94,7 @@ class cinder::api (
   $keystone_auth_uri          = false,
   $os_region_name             = undef,
   $service_port               = '5000',
+  $service_workers            = $::processorcount,
   $package_ensure             = 'present',
   $bind_host                  = '0.0.0.0',
   $enabled                    = true,
@@ -101,11 +106,14 @@ class cinder::api (
 ) {
 
   include cinder::params
+  include cinder::policy
 
   Cinder_config<||> ~> Service['cinder-api']
   Cinder_api_paste_ini<||> ~> Service['cinder-api']
+  Class['cinder::policy'] ~> Service['cinder-api']
 
   if $::cinder::params::api_package {
+    Package['cinder-api'] -> Class['cinder::policy']
     Package['cinder-api'] -> Cinder_config<||>
     Package['cinder-api'] -> Cinder_api_paste_ini<||>
     Package['cinder-api'] -> Service['cinder-api']
@@ -145,7 +153,8 @@ class cinder::api (
   }
 
   cinder_config {
-    'DEFAULT/osapi_volume_listen': value => $bind_host
+    'DEFAULT/osapi_volume_listen':  value => $bind_host;
+    'DEFAULT/osapi_volume_workers': value => $service_workers;
   }
 
   if $os_region_name {
