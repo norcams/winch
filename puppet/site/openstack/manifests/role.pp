@@ -5,3 +5,4 @@ class openstack::role {
 class ceph::role {
   include ceph::profile::base
 }
+

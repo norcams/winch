@@ -17,10 +17,10 @@ openstack::network::neutron::private: '10.0.0.0/24'
 
 ######## Fixed IPs (controllers)
 
-openstack::controller::address::api: '192.168.11.12'
-openstack::controller::address::management: '172.16.33.12'
-openstack::storage::address::api: '192.168.11.12'
-openstack::storage::address::management: '172.16.33.12'
+openstack::controller::address::api: '192.168.11.4'
+openstack::controller::address::management: '172.16.33.4'
+openstack::storage::address::api: '192.168.11.5'
+openstack::storage::address::management: '172.16.33.5'
 
 ######## Database
 
@@ -93,7 +93,7 @@ openstack::ceilometer::meteringsecret: 'ceilometersecretkey'
 
 ######## Heat
 openstack::heat::password: 'zap-bang'
-openstack::heat::encryption_key: 'heatsecretkey'
+openstack::heat::encryption_key: 'heatsecretkey123'
 
 
 ######## Horizon

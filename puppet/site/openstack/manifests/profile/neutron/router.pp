@@ -52,17 +52,6 @@ class openstack::profile::neutron::router {
     enabled => true,
   }
 
-  # Temporarily fix a bug on RHEL packaging
-  if $::osfamily == 'RedHat' {
-    file { '/usr/lib/python2.6/site-packages/neutronclient/client.py':
-      ensure  => present,
-      source  => 'puppet:///modules/openstack/client.py',
-      mode    => '0644',
-      notify  => Service['neutron-metadata-agent'],
-      require => Package['openstack-neutron'],
-    }
-  }
-
   $external_bridge = 'brex'
   $external_network = $::openstack::config::network_external
   $external_device = device_for_network($external_network)
@@ -73,7 +62,6 @@ class openstack::profile::neutron::router {
     vs_port { $external_device:
       ensure  => present,
       bridge  => $external_bridge,
-      keep_ip => true,
     }
   } else {
     # External bridge already has the external device's IP, thus the external
