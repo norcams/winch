@@ -8,7 +8,7 @@ if [ $(echo "${machinename:0:4}") == 'ceph' ]; then
 
     echo "[Ceph]
 name=Ceph packages for $basearch
-baseurl=http://ceph.com/rpm-firefly/rhel7/$basearch
+baseurl=http://ceph.com/rpm-firefly/el7/\$basearch
 enabled=1
 gpgcheck=1
 type=rpm-md
@@ -17,7 +17,7 @@ priority=1
 
 [Ceph-noarch]
 name=Ceph noarch packages
-baseurl=http://ceph.com/rpm-firefly/rhel7/noarch
+baseurl=http://ceph.com/rpm-firefly/el7/noarch
 enabled=1
 gpgcheck=1
 type=rpm-md
@@ -26,7 +26,7 @@ priority=1
 
 [ceph-source]
 name=Ceph source packages
-baseurl=http://ceph.com/rpm-firefly/rhel7/SRPMS
+baseurl=http://ceph.com/rpm-firefly/el7/SRPMS
 enabled=1
 gpgcheck=1
 type=rpm-md
