@@ -137,6 +137,42 @@ describe 'nova::keystone::auth' do
     it { should_not contain_keystone_endpoint('RegionOne/nova_ec2') }
   end
 
+  describe 'when disabling user configuration' do
+    before do
+      params.merge!( :configure_user => false )
+    end
+
+    it { should_not contain_keystone_user('nova') }
+
+    it { should contain_keystone_user_role('nova@services') }
+
+    it { should contain_keystone_service('nova').with(
+      :ensure => 'present',
+      :type        => 'compute',
+      :description => 'Openstack Compute Service'
+    )}
+  end
+
+  describe 'when disabling user and user role configuration' do
+    let :params do
+      {
+        :configure_user      => false,
+        :configure_user_role => false,
+        :password            => 'nova_password'
+      }
+    end
+
+    it { should_not contain_keystone_user('nova') }
+
+    it { should_not contain_keystone_user_role('nova@services') }
+
+    it { should contain_keystone_service('nova').with(
+      :ensure => 'present',
+      :type        => 'compute',
+      :description => 'Openstack Compute Service'
+    )}
+  end
+
   describe 'when configuring nova-api and the keystone endpoint' do
     let :pre_condition do
       "class { 'nova::api': admin_password => 'test' }
@@ -154,6 +190,27 @@ describe 'nova::keystone::auth' do
     end
 
     it { should contain_keystone_endpoint('RegionOne/nova').with_notify('Service[nova-api]') }
+  end
+
+  describe 'when overriding service names' do
+
+    let :params do
+      {
+        :service_name    => 'nova_service',
+        :service_name_v3 => 'nova_service_v3',
+        :password        => 'nova_password'
+      }
+    end
+
+    it { should contain_keystone_user('nova') }
+    it { should contain_keystone_user_role('nova@services') }
+    it { should contain_keystone_service('nova_service') }
+    it { should contain_keystone_service('nova_service_v3') }
+    it { should contain_keystone_service('nova_service_ec2') }
+    it { should contain_keystone_endpoint('RegionOne/nova_service') }
+    it { should contain_keystone_endpoint('RegionOne/nova_service_v3') }
+    it { should contain_keystone_endpoint('RegionOne/nova_service_ec2') }
+
   end
 
 end

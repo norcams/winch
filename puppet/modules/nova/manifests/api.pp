@@ -68,6 +68,10 @@
 #   (optional) A comma separated list of apis to enable
 #   Defaults to 'ec2,osapi_compute,metadata'
 #
+# [*keystone_ec2_url*]
+#   (optional) The keystone url where nova should send requests for ec2tokens
+#   Defaults to false
+#
 # [*volume_api_class*]
 #   (optional) The name of the class that nova will use to access volumes. Cinder is the only option.
 #   Defaults to 'nova.volume.cinder.API'
@@ -81,13 +85,18 @@
 #   (optional) Number of workers for OpenStack API service
 #   Defaults to $::processorcount
 #
+# [*ec2_workers*]
+#   (optional) Number of workers for EC2 service
+#   Defaults to $::processorcount
+#
 # [*metadata_workers*]
 #   (optional) Number of workers for metadata service
 #   Defaults to $::processorcount
 #
 # [*conductor_workers*]
-#   (optional) Number of workers for OpenStack Conductor service
-#   Defaults to $::processorcount
+#   (optional) DEPRECATED. Use workers parameter of nova::conductor
+#   Class instead.
+#   Defaults to undef
 #
 # [*sync_db*]
 #   (optional) Run nova-manage db sync on api nodes after installing the package.
@@ -107,6 +116,30 @@
 #   (optional) The rate limiting factory to use
 #   Defaults to 'nova.api.openstack.compute.limits:RateLimitingMiddleware.factory'
 #
+# [*osapi_v3*]
+#   (optional) Enable or not Nova API v3
+#   Defaults to false
+#
+# [*validate*]
+#   (optional) Whether to validate the service is working after any service refreshes
+#   Defaults to false
+#
+# [*validation_options*]
+#   (optional) Service validation options
+#   Should be a hash of options defined in openstacklib::service_validation
+#   If empty, defaults values are taken from openstacklib function.
+#   Default command list nova flavors.
+#   Require validate set at True.
+#   Example:
+#   nova::api::validation_options:
+#     nova-api:
+#       command: check_nova.py
+#       path: /usr/bin:/bin:/usr/sbin:/sbin
+#       provider: shell
+#       tries: 5
+#       try_sleep: 10
+#   Defaults to {}
+#
 class nova::api(
   $admin_password,
   $enabled               = false,
@@ -124,31 +157,39 @@ class nova::api(
   $api_bind_address      = '0.0.0.0',
   $metadata_listen       = '0.0.0.0',
   $enabled_apis          = 'ec2,osapi_compute,metadata',
+  $keystone_ec2_url      = false,
   $volume_api_class      = 'nova.volume.cinder.API',
   $use_forwarded_for     = false,
   $osapi_compute_workers = $::processorcount,
+  $ec2_workers           = $::processorcount,
   $metadata_workers      = $::processorcount,
-  $conductor_workers     = $::processorcount,
   $sync_db               = true,
   $neutron_metadata_proxy_shared_secret = undef,
+  $osapi_v3              = false,
   $ratelimits            = undef,
   $ratelimits_factory    =
     'nova.api.openstack.compute.limits:RateLimitingMiddleware.factory',
+  $validate              = false,
+  $validation_options    = {},
   # DEPRECATED PARAMETER
   $workers               = undef,
+  $conductor_workers     = undef,
 ) {
 
   include nova::params
+  include nova::policy
   require keystone::python
   include cinder::client
 
   Package<| title == 'nova-api' |> -> Nova_paste_api_ini<| |>
 
   Package<| title == 'nova-common' |> -> Class['nova::api']
+  Package<| title == 'nova-common' |> -> Class['nova::policy']
 
   Nova_paste_api_ini<| |> ~> Exec['post-nova_config']
 
   Nova_paste_api_ini<| |> ~> Service['nova-api']
+  Class['nova::policy'] ~> Service['nova-api']
 
   if $auth_strategy {
     warning('The auth_strategy parameter is deprecated and has no effect.')
@@ -159,6 +200,10 @@ class nova::api(
     $osapi_compute_workers_real = $workers
   } else {
     $osapi_compute_workers_real = $osapi_compute_workers
+  }
+
+  if $conductor_workers {
+    warning('The conductor_workers parameter is deprecated and has no effect. Use workers parameter of nova::conductor class instead.')
   }
 
   nova::generic_service { 'api':
@@ -178,29 +223,31 @@ class nova::api(
     'DEFAULT/metadata_listen':       value => $metadata_listen;
     'DEFAULT/osapi_volume_listen':   value => $api_bind_address;
     'DEFAULT/osapi_compute_workers': value => $osapi_compute_workers_real;
+    'DEFAULT/ec2_workers':           value => $ec2_workers;
     'DEFAULT/metadata_workers':      value => $metadata_workers;
-    'conductor/workers':             value => $conductor_workers;
     'DEFAULT/use_forwarded_for':     value => $use_forwarded_for;
+    'osapi_v3/enabled':              value => $osapi_v3;
   }
 
   if ($neutron_metadata_proxy_shared_secret){
     nova_config {
-      'DEFAULT/service_neutron_metadata_proxy': value => true;
-      'DEFAULT/neutron_metadata_proxy_shared_secret':
+      'neutron/service_metadata_proxy': value => true;
+      'neutron/metadata_proxy_shared_secret':
         value => $neutron_metadata_proxy_shared_secret;
     }
   } else {
     nova_config {
-      'DEFAULT/service_neutron_metadata_proxy':       value  => false;
-      'DEFAULT/neutron_metadata_proxy_shared_secret': ensure => absent;
+      'neutron/service_metadata_proxy':       value  => false;
+      'neutron/metadata_proxy_shared_secret': ensure => absent;
     }
   }
 
   if $auth_uri {
-    nova_config { 'keystone_authtoken/auth_uri': value => $auth_uri; }
+    $auth_uri_real = $auth_uri
   } else {
-    nova_config { 'keystone_authtoken/auth_uri': value => "${auth_protocol}://${auth_host}:5000/"; }
+    $auth_uri_real = "${auth_protocol}://${auth_host}:5000/"
   }
+  nova_config { 'keystone_authtoken/auth_uri': value => $auth_uri_real; }
 
   if $auth_version {
     nova_config { 'keystone_authtoken/auth_version': value => $auth_version; }
@@ -225,6 +272,16 @@ class nova::api(
   } else {
     nova_config {
       'keystone_authtoken/auth_admin_prefix': ensure => absent;
+    }
+  }
+
+  if $keystone_ec2_url {
+    nova_config {
+      'DEFAULT/keystone_ec2_url': value => $keystone_ec2_url;
+    }
+  } else {
+    nova_config {
+      'DEFAULT/keystone_ec2_url': ensure => absent;
     }
   }
 
@@ -276,6 +333,16 @@ class nova::api(
     'filter:authtoken/admin_user':        ensure => absent;
     'filter:authtoken/admin_password':    ensure => absent;
     'filter:authtoken/auth_admin_prefix': ensure => absent;
+  }
+
+  if $validate {
+    $defaults = {
+      'nova-api' => {
+        'command'  => "nova --os-auth-url ${auth_uri_real} --os-tenant-name ${admin_tenant_name} --os-username ${admin_user} --os-password ${admin_password} flavor-list",
+      }
+    }
+    $validation_options_hash = merge ($defaults, $validation_options)
+    create_resources('openstacklib::service_validation', $validation_options_hash, {'subscribe' => 'Service[nova-api]'})
   }
 
 }

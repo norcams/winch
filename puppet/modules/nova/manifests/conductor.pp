@@ -16,10 +16,15 @@
 #   (optional) The state of the nova conductor package
 #   Defaults to 'present'
 #
+# [*workers*]
+#   (optional) Number of workers for OpenStack Conductor service
+#   Defaults to undef (i.e. parameter will not be present)
+#
 class nova::conductor(
   $enabled        = false,
   $manage_service = true,
-  $ensure_package = 'present'
+  $ensure_package = 'present',
+  $workers        = undef,
 ) {
 
   include nova::params
@@ -32,4 +37,9 @@ class nova::conductor(
     ensure_package => $ensure_package,
   }
 
+  if $workers {
+    nova_config {
+      'conductor/workers': value => $workers;
+    }
+  }
 }

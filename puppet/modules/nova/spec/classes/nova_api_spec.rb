@@ -28,8 +28,10 @@ describe 'nova::api' do
         should contain_package('nova-api').with(
           :name   => platform_params[:nova_api_package],
           :ensure => 'present',
-          :notify => 'Service[nova-api]'
+          :notify => 'Service[nova-api]',
+          :tag    => ['openstack', 'nova']
         )
+        should_not contain_exec('validate_nova_api')
       end
 
       it 'configures keystone_authtoken middleware' do
@@ -59,13 +61,17 @@ describe 'nova::api' do
         should contain_nova_config('DEFAULT/metadata_listen').with('value' => '0.0.0.0')
         should contain_nova_config('DEFAULT/osapi_volume_listen').with('value' => '0.0.0.0')
         should contain_nova_config('DEFAULT/osapi_compute_workers').with('value' => '5')
+        should contain_nova_config('DEFAULT/ec2_workers').with('value' => '5')
         should contain_nova_config('DEFAULT/metadata_workers').with('value' => '5')
-        should contain_nova_config('conductor/workers').with('value' => '5')
+      end
+
+      it 'do not configure v3 api' do
+        should contain_nova_config('osapi_v3/enabled').with('value' => false)
       end
 
       it 'unconfigures neutron_metadata proxy' do
-        should contain_nova_config('DEFAULT/service_neutron_metadata_proxy').with(:value => false)
-        should contain_nova_config('DEFAULT/neutron_metadata_proxy_shared_secret').with(:ensure => 'absent')
+        should contain_nova_config('neutron/service_metadata_proxy').with(:value => false)
+        should contain_nova_config('neutron/metadata_proxy_shared_secret').with(:ensure => 'absent')
       end
     end
 
@@ -102,14 +108,16 @@ describe 'nova::api' do
           :neutron_metadata_proxy_shared_secret => 'secrete',
           :osapi_compute_workers                => 1,
           :metadata_workers                     => 2,
-          :conductor_workers                    => 3,
+          :osapi_v3                             => true,
+          :keystone_ec2_url                     => 'https://example.com:5000/v2.0/ec2tokens',
         })
       end
 
       it 'installs nova-api package and service' do
         should contain_package('nova-api').with(
           :name   => platform_params[:nova_api_package],
-          :ensure => '2012.1-2'
+          :ensure => '2012.1-2',
+          :tag    => ['openstack', 'nova']
         )
         should contain_service('nova-api').with(
           :name      => platform_params[:nova_api_service],
@@ -150,9 +158,13 @@ describe 'nova::api' do
         should contain_nova_config('DEFAULT/use_forwarded_for').with('value' => false)
         should contain_nova_config('DEFAULT/osapi_compute_workers').with('value' => '1')
         should contain_nova_config('DEFAULT/metadata_workers').with('value' => '2')
-        should contain_nova_config('conductor/workers').with('value' => '3')
-        should contain_nova_config('DEFAULT/service_neutron_metadata_proxy').with('value' => true)
-        should contain_nova_config('DEFAULT/neutron_metadata_proxy_shared_secret').with('value' => 'secrete')
+        should contain_nova_config('neutron/service_metadata_proxy').with('value' => true)
+        should contain_nova_config('neutron/metadata_proxy_shared_secret').with('value' => 'secrete')
+        should contain_nova_config('DEFAULT/keystone_ec2_url').with('value' => 'https://example.com:5000/v2.0/ec2tokens')
+      end
+
+      it 'configure nova api v3' do
+        should contain_nova_config('osapi_v3/enabled').with('value' => true)
       end
     end
 
@@ -171,6 +183,45 @@ describe 'nova::api' do
         it { expect { should contain_nova_config('keystone_authtoken/auth_admin_prefix') }.to \
           raise_error(Puppet::Error, /validate_re\(\): "#{auth_admin_prefix}" does not match/) }
       end
+    end
+
+    context 'while validating the service with default command' do
+      before do
+        params.merge!({
+          :validate => true,
+        })
+      end
+      it { should contain_exec('execute nova-api validation').with(
+        :path        => '/usr/bin:/bin:/usr/sbin:/sbin',
+        :provider    => 'shell',
+        :tries       => '10',
+        :try_sleep   => '2',
+        :command     => 'nova --os-auth-url http://127.0.0.1:5000/ --os-tenant-name services --os-username nova --os-password passw0rd flavor-list',
+      )}
+
+      it { should contain_anchor('create nova-api anchor').with(
+        :require => 'Exec[execute nova-api validation]',
+      )}
+    end
+
+    context 'while validating the service with custom command' do
+      before do
+        params.merge!({
+          :validate            => true,
+          :validation_options  => { 'nova-api' => { 'command' => 'my-script' } }
+        })
+      end
+      it { should contain_exec('execute nova-api validation').with(
+        :path        => '/usr/bin:/bin:/usr/sbin:/sbin',
+        :provider    => 'shell',
+        :tries       => '10',
+        :try_sleep   => '2',
+        :command     => 'my-script',
+      )}
+
+      it { should contain_anchor('create nova-api anchor').with(
+        :require => 'Exec[execute nova-api validation]',
+      )}
     end
 
     context 'while not managing service state' do

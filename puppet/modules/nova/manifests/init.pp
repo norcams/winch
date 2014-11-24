@@ -235,9 +235,7 @@
 #   Defaults to '/bin/false'.
 #
 # [*mysql_module*]
-#   (optional) Mysql module version to use. Tested versions
-#   are 0.9 and 2.2
-#   Defaults to '0.9'
+#   (optional) Deprecated. Does nothing.
 #
 # [*notification_driver*]
 #   (optional) Driver or drivers to handle sending notifications.
@@ -284,6 +282,7 @@ class nova(
   $rabbit_userid            = 'guest',
   $rabbit_virtual_host      = '/',
   $rabbit_use_ssl           = false,
+  $rabbit_ha_queues         = undef,
   $kombu_ssl_ca_certs       = undef,
   $kombu_ssl_certfile       = undef,
   $kombu_ssl_keyfile        = undef,
@@ -323,12 +322,12 @@ class nova(
   $use_syslog               = false,
   $log_facility             = 'LOG_USER',
   $install_utilities        = true,
-  $mysql_module             = '0.9',
   $notification_driver      = [],
   $notification_topics      = 'notifications',
   $notify_api_faults        = false,
   $notify_on_state_change   = undef,
   # DEPRECATED PARAMETERS
+  $mysql_module             = undef,
   # this is how to query all resources from our clutser
   $nova_cluster_id          = undef,
   $sql_connection           = false,
@@ -336,6 +335,10 @@ class nova(
   $logdir                   = false,
   $os_region_name           = undef,
 ) inherits nova::params {
+
+  if $mysql_module {
+    warning('The mysql_module parameter is deprecated. The latest 2.x mysql module will be used.')
+  }
 
   if $nova_cluster_id {
     warning('The nova_cluster_id parameter is deprecated and has no effect.')
@@ -353,6 +356,19 @@ class nova(
     if !$key_file {
       fail('The key_file parameter is required when use_ssl is set to true')
     }
+  }
+
+  if $kombu_ssl_ca_certs and !$rabbit_use_ssl {
+    fail('The kombu_ssl_ca_certs parameter requires rabbit_use_ssl to be set to true')
+  }
+  if $kombu_ssl_certfile and !$rabbit_use_ssl {
+    fail('The kombu_ssl_certfile parameter requires rabbit_use_ssl to be set to true')
+  }
+  if $kombu_ssl_keyfile and !$rabbit_use_ssl {
+    fail('The kombu_ssl_keyfile parameter requires rabbit_use_ssl to be set to true')
+  }
+  if ($kombu_ssl_certfile and !$kombu_ssl_keyfile) or ($kombu_ssl_keyfile and !$kombu_ssl_certfile) {
+    fail('The kombu_ssl_certfile and kombu_ssl_keyfile parameters must be used together')
   }
 
   if $nova_group_id {
@@ -382,32 +398,33 @@ class nova(
 
   if $nova_public_key or $nova_private_key {
     file { '/var/lib/nova/.ssh':
-      ensure => directory,
-      mode   => '0700',
-      owner  => nova,
-      group  => nova,
+      ensure  => directory,
+      mode    => '0700',
+      owner   => 'nova',
+      group   => 'nova',
+      require => Package['nova-common'],
     }
 
     if $nova_public_key {
-      if ! $nova_public_key[key] or ! $nova_public_key[type] {
+      if ! $nova_public_key[key] or ! $nova_public_key['type'] {
         fail('You must provide both a key type and key data.')
       }
 
       ssh_authorized_key { 'nova-migration-public-key':
         ensure  => present,
         key     => $nova_public_key[key],
-        type    => $nova_public_key[type],
+        type    => $nova_public_key['type'],
         user    => 'nova',
         require => File['/var/lib/nova/.ssh'],
       }
     }
 
     if $nova_private_key {
-      if ! $nova_private_key[key] or ! $nova_private_key[type] {
+      if ! $nova_private_key[key] or ! $nova_private_key['type'] {
         fail('You must provide both a key type and key data.')
       }
 
-      $nova_private_key_file = $nova_private_key[type] ? {
+      $nova_private_key_file = $nova_private_key['type'] ? {
         'ssh-rsa'   => '/var/lib/nova/.ssh/id_rsa',
         'ssh-dsa'   => '/var/lib/nova/.ssh/id_dsa',
         'ssh-ecdsa' => '/var/lib/nova/.ssh/id_ecdsa',
@@ -415,15 +432,15 @@ class nova(
       }
 
       if ! $nova_private_key_file {
-        fail("Unable to determine name of private key file.  Type specified was '${nova_private_key[type]}' but should be one of: ssh-rsa, ssh-dsa, ssh-ecdsa.")
+        fail("Unable to determine name of private key file.  Type specified was '${nova_private_key['type']}' but should be one of: ssh-rsa, ssh-dsa, ssh-ecdsa.")
       }
 
       file { $nova_private_key_file:
         content => $nova_private_key[key],
         mode    => '0600',
-        owner   => nova,
-        group   => nova,
-        require => File['/var/lib/nova/.ssh'],
+        owner   => 'nova',
+        group   => 'nova',
+        require => [ File['/var/lib/nova/.ssh'], Package['nova-common'] ],
       }
     }
   }
@@ -435,12 +452,6 @@ class nova(
   # and before the post config resource
   Package['nova-common'] -> Nova_config<| |> -> File['/etc/nova/nova.conf']
   Nova_config<| |> ~> Exec['post-nova_config']
-
-  File {
-    require => Package['nova-common'],
-    owner   => 'nova',
-    group   => 'nova',
-  }
 
   # TODO - see if these packages can be removed
   # they should be handled as package deps by the OS
@@ -462,17 +473,22 @@ class nova(
 
   package { 'python-nova':
     ensure  => $ensure_package,
-    require => Package['python-greenlet']
+    require => Package['python-greenlet'],
+    tag     => ['openstack', 'nova'],
   }
 
   package { 'nova-common':
     ensure  => $ensure_package,
     name    => $::nova::params::common_package_name,
-    require => [Package['python-nova'], Anchor['nova-start']]
+    require => [Package['python-nova'], Anchor['nova-start']],
+    tag     => ['openstack', 'nova'],
   }
 
   file { '/etc/nova/nova.conf':
-    mode  => '0640',
+    mode    => '0640',
+    owner   => 'nova',
+    group   => 'nova',
+    require => Package['nova-common'],
   }
 
   # used by debian/ubuntu in nova::network_bridge to refresh
@@ -500,12 +516,8 @@ class nova(
   # that may need to be collected from a remote host
   if $database_connection_real {
     if($database_connection_real =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
-      if ($mysql_module >= 2.2) {
-        require 'mysql::bindings'
-        require 'mysql::bindings::python'
-      } else {
-        require 'mysql::python'
-      }
+      require 'mysql::bindings'
+      require 'mysql::bindings::python'
     } elsif($database_connection_real =~ /postgresql:\/\/\S+:\S+@\S+\/\S+/) {
 
     } elsif($database_connection_real =~ /sqlite:\/\//) {
@@ -523,7 +535,7 @@ class nova(
 
   if $image_service == 'nova.image.glance.GlanceImageService' {
     if $glance_api_servers {
-      nova_config { 'DEFAULT/glance_api_servers': value => $glance_api_servers }
+      nova_config { 'glance/api_servers': value => $glance_api_servers }
     }
   }
 
@@ -546,29 +558,31 @@ class nova(
     }
 
     if $rabbit_use_ssl {
+
       if $kombu_ssl_ca_certs {
-        nova_config { 'DEFAULT/kombu_ssl_ca_certs': value => $kombu_ssl_ca_certs }
+        nova_config { 'DEFAULT/kombu_ssl_ca_certs': value => $kombu_ssl_ca_certs; }
       } else {
-        nova_config { 'DEFAULT/kombu_ssl_ca_certs': ensure => absent}
+        nova_config { 'DEFAULT/kombu_ssl_ca_certs': ensure => absent; }
       }
 
-      if $kombu_ssl_certfile {
-        nova_config { 'DEFAULT/kombu_ssl_certfile': value => $kombu_ssl_certfile }
+      if $kombu_ssl_certfile or $kombu_ssl_keyfile {
+        nova_config {
+          'DEFAULT/kombu_ssl_certfile': value => $kombu_ssl_certfile;
+          'DEFAULT/kombu_ssl_keyfile':  value => $kombu_ssl_keyfile;
+        }
       } else {
-        nova_config { 'DEFAULT/kombu_ssl_certfile': ensure => absent}
-      }
-
-      if $kombu_ssl_keyfile {
-        nova_config { 'DEFAULT/kombu_ssl_keyfile': value => $kombu_ssl_keyfile }
-      } else {
-        nova_config { 'DEFAULT/kombu_ssl_keyfile': ensure => absent}
+        nova_config {
+          'DEFAULT/kombu_ssl_certfile': ensure => absent;
+          'DEFAULT/kombu_ssl_keyfile':  ensure => absent;
+        }
       }
 
       if $kombu_ssl_version {
-        nova_config { 'DEFAULT/kombu_ssl_version': value => $kombu_ssl_version }
+        nova_config { 'DEFAULT/kombu_ssl_version':  value => $kombu_ssl_version; }
       } else {
-        nova_config { 'DEFAULT/kombu_ssl_version': ensure => absent}
+        nova_config { 'DEFAULT/kombu_ssl_version':  ensure => absent; }
       }
+
     } else {
       nova_config {
         'DEFAULT/kombu_ssl_ca_certs': ensure => absent;
@@ -580,12 +594,19 @@ class nova(
 
     if $rabbit_hosts {
       nova_config { 'DEFAULT/rabbit_hosts':     value => join($rabbit_hosts, ',') }
-      nova_config { 'DEFAULT/rabbit_ha_queues': value => true }
     } else {
       nova_config { 'DEFAULT/rabbit_host':      value => $rabbit_host }
       nova_config { 'DEFAULT/rabbit_port':      value => $rabbit_port }
       nova_config { 'DEFAULT/rabbit_hosts':     value => "${rabbit_host}:${rabbit_port}" }
-      nova_config { 'DEFAULT/rabbit_ha_queues': value => false }
+    }
+    if $rabbit_ha_queues == undef {
+      if $rabbit_hosts {
+        nova_config { 'DEFAULT/rabbit_ha_queues': value => true }
+      } else {
+        nova_config { 'DEFAULT/rabbit_ha_queues': value => false }
+      }
+    } else {
+      nova_config { 'DEFAULT/rabbit_ha_queues': value => $rabbit_ha_queues }
     }
   }
 
@@ -619,7 +640,7 @@ class nova(
   # SSL Options
   if $use_ssl {
     nova_config {
-      'DEFAULT/enabled_ssl_apis' : value => $enabled_ssl_apis;
+      'DEFAULT/enabled_ssl_apis' : value => join($enabled_ssl_apis, ',');
       'DEFAULT/ssl_cert_file' :    value => $cert_file;
       'DEFAULT/ssl_key_file' :     value => $key_file;
     }
@@ -652,6 +673,9 @@ class nova(
     file { $log_dir_real:
       ensure  => directory,
       mode    => '0750',
+      owner   => 'nova',
+      group   => 'nova',
+      require => Package['nova-common'],
     }
     nova_config { 'DEFAULT/log_dir': value => $log_dir_real;}
   } else {

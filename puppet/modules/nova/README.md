@@ -39,7 +39,7 @@ Setup
 
 ### Beginning with nova
 
-To utilize the nova module's functionality you will need to declare multiple resources.  The following is a modified excerpt from the [openstack module](https://github.com/stackfoge/puppet-openstack).  This is not an exhaustive list of all the components needed, we recommend you consult and understand the [openstack module](https://github.com/stackfoge/puppet-openstack) and the [core openstack](http://docs.openstack.org) documentation.
+To utilize the nova module's functionality you will need to declare multiple resources.  The following is a modified excerpt from the [openstack module](https://github.com/stackforge/puppet-openstack).  This is not an exhaustive list of all the components needed, we recommend you consult and understand the [openstack module](https://github.com/stackforge/puppet-openstack) and the [core openstack](http://docs.openstack.org) documentation.
 
 ```puppet
 class { 'nova':
@@ -74,7 +74,6 @@ Limitations
 
 * Supports libvirt, xenserver and vmware compute drivers.
 * Tested on EL and Debian derivatives.
-* The Nova Openstack service depends on a sqlalchemy database. If you are using puppetlabs-mysql to achieve this, there is a parameter called mysql_module that can be used to swap between the two supported versions: 0.9 and 2.2. This is needed because the puppetlabs-mysql module was rewritten and the custom type names have changed between versions.
 
 Development
 -----------
@@ -90,15 +89,6 @@ Contributors
 
 Release Notes
 -------------
-
-**4.1.0**
-
-* Added API v3 endpoint support.
-* Added configuration of rbd keyring name.
-* Added support for run Nova SSL endpoints.
-* Updated RabbitMQ dependency.
-* Updated mysql charset to UTF8.
-* Pinned major gems.
 
 **4.0.0**
 
@@ -171,7 +161,7 @@ Release Notes
 
 **2.0.0**
 
-* Upstream is now part of stackfoge.
+* Upstream is now part of stackforge.
 * The ini_file type is now used by nova_config.
 * Support for nova-conductor added.
 * Networks can now be labeled by Class['nova::manage::network'].

@@ -18,7 +18,8 @@ describe 'nova' do
         )
         should contain_package('nova-common').with(
           :name    => platform_params[:nova_common_package],
-          :ensure  => 'present'
+          :ensure  => 'present',
+          :tag    => ['openstack', 'nova']
         )
       end
 
@@ -70,7 +71,7 @@ describe 'nova' do
 
       it 'configures image service' do
         should contain_nova_config('DEFAULT/image_service').with_value('nova.image.glance.GlanceImageService')
-        should contain_nova_config('DEFAULT/glance_api_servers').with_value('localhost:9292')
+        should contain_nova_config('glance/api_servers').with_value('localhost:9292')
       end
 
       it 'configures auth_strategy' do
@@ -121,6 +122,7 @@ describe 'nova' do
           :rabbit_userid            => 'rabbit_user',
           :rabbit_port              => '5673',
           :rabbit_password          => 'password',
+          :rabbit_ha_queues         => 'undef',
           :lock_path                => '/var/locky/path',
           :state_path               => '/var/lib/nova2',
           :service_down_time        => '120',
@@ -170,7 +172,7 @@ describe 'nova' do
 
       it 'configures image service' do
         should contain_nova_config('DEFAULT/image_service').with_value('nova.image.local.LocalImageService')
-        should_not contain_nova_config('DEFAULT/glance_api_servers')
+        should_not contain_nova_config('glance/api_servers')
       end
 
       it 'configures auth_strategy' do
@@ -313,6 +315,16 @@ describe 'nova' do
       end
     end
 
+    context 'with rabbit_ha_queues set to true' do
+      let :params do
+        { :rabbit_ha_queues => 'true' }
+      end
+
+      it 'configures rabbit' do
+        should contain_nova_config('DEFAULT/rabbit_ha_queues').with_value(true)
+      end
+    end
+
     context 'with amqp_durable_queues parameter' do
       let :params do
         { :rabbit_hosts => ['rabbit:5673'],
@@ -333,27 +345,7 @@ describe 'nova' do
       end
     end
 
-    context 'with rabbit_use_ssl parameter' do
-      let :params do
-        { :rabbit_hosts   => ['rabbit:5673'],
-          :rabbit_use_ssl => 'true' }
-      end
-
-      it 'configures rabbit' do
-        should_not contain_nova_config('DEFAULT/rabbit_host')
-        should_not contain_nova_config('DEFAULT/rabbit_port')
-        should contain_nova_config('DEFAULT/rabbit_hosts').with_value('rabbit:5673')
-        should contain_nova_config('DEFAULT/rabbit_ha_queues').with_value(true)
-        should contain_nova_config('DEFAULT/rabbit_use_ssl').with_value(true)
-        should contain_nova_config('DEFAULT/amqp_durable_queues').with_value(false)
-        should contain_nova_config('DEFAULT/kombu_ssl_ca_certs').with_ensure('absent')
-        should contain_nova_config('DEFAULT/kombu_ssl_certfile').with_ensure('absent')
-        should contain_nova_config('DEFAULT/kombu_ssl_keyfile').with_ensure('absent')
-        should contain_nova_config('DEFAULT/kombu_ssl_version').with_value('SSLv3')
-      end
-    end
-
-    context 'with amqp ssl parameters' do
+    context 'with rabbit ssl enabled with kombu' do
       let :params do
         { :rabbit_hosts       => ['rabbit:5673'],
           :rabbit_use_ssl     => 'true',
@@ -369,6 +361,39 @@ describe 'nova' do
         should contain_nova_config('DEFAULT/kombu_ssl_certfile').with_value('/etc/certfile')
         should contain_nova_config('DEFAULT/kombu_ssl_keyfile').with_value('/etc/key')
         should contain_nova_config('DEFAULT/kombu_ssl_version').with_value('TLSv1')
+      end
+    end
+
+    context 'with rabbit ssl enabled without kombu' do
+      let :params do
+        { :rabbit_hosts       => ['rabbit:5673'],
+          :rabbit_use_ssl     => 'true', }
+      end
+
+      it 'configures rabbit' do
+        should contain_nova_config('DEFAULT/rabbit_use_ssl').with_value(true)
+        should contain_nova_config('DEFAULT/kombu_ssl_ca_certs').with_ensure('absent')
+        should contain_nova_config('DEFAULT/kombu_ssl_certfile').with_ensure('absent')
+        should contain_nova_config('DEFAULT/kombu_ssl_keyfile').with_ensure('absent')
+        should contain_nova_config('DEFAULT/kombu_ssl_version').with_value('SSLv3')
+      end
+    end
+
+    context 'with rabbit ssl disabled' do
+      let :params do
+        {
+          :rabbit_password    => 'pass',
+          :rabbit_use_ssl     => false,
+          :kombu_ssl_version  => 'SSLv3',
+        }
+      end
+
+      it 'configures rabbit' do
+        should contain_nova_config('DEFAULT/rabbit_use_ssl').with_value('false')
+        should contain_nova_config('DEFAULT/kombu_ssl_ca_certs').with_ensure('absent')
+        should contain_nova_config('DEFAULT/kombu_ssl_certfile').with_ensure('absent')
+        should contain_nova_config('DEFAULT/kombu_ssl_keyfile').with_ensure('absent')
+        should contain_nova_config('DEFAULT/kombu_ssl_version').with_ensure('absent')
       end
     end
 
@@ -419,138 +444,138 @@ describe 'nova' do
     end
 
     context 'with ssh public key' do
-        let :params do
-            {
-                :nova_public_key => {'type' => 'ssh-rsa',
-                                     'key'  => 'keydata'}
-            }
-        end
+      let :params do
+        {
+          :nova_public_key => {'type' => 'ssh-rsa',
+                               'key'  => 'keydata'}
+        }
+      end
 
-        it 'should install ssh public key' do
-            should contain_ssh_authorized_key('nova-migration-public-key').with(
-                :ensure => 'present',
-                :key => 'keydata',
-                :type => 'ssh-rsa'
-            )
-        end
+      it 'should install ssh public key' do
+        should contain_ssh_authorized_key('nova-migration-public-key').with(
+          :ensure => 'present',
+          :key => 'keydata',
+          :type => 'ssh-rsa'
+        )
+      end
     end
 
     context 'with ssh public key missing key type' do
-        let :params do
-            {
-                :nova_public_key => {'type' => '',
-                                     'key'  => 'keydata'}
-            }
-        end
+      let :params do
+        {
+          :nova_public_key => {'type' => '',
+                               'key'  => 'keydata'}
+        }
+      end
 
-        it 'should raise an error' do
-            expect {
-                should contain_ssh_authorized_key('nova-migration-public-key').with(
-                    :ensure => 'present',
-                    :key => 'keydata',
-                    :type => ''
-                )
-            }.to raise_error Puppet::Error, /You must provide both a key type and key data./
-        end
+      it 'should raise an error' do
+        expect {
+          should contain_ssh_authorized_key('nova-migration-public-key').with(
+            :ensure => 'present',
+            :key => 'keydata',
+            :type => ''
+          )
+        }.to raise_error Puppet::Error, /You must provide both a key type and key data./
+      end
     end
 
     context 'with ssh public key missing key data' do
-        let :params do
-            {
-                :nova_public_key => {'type' => 'ssh-rsa',
-                                     'key'  => ''}
-            }
-        end
+      let :params do
+        {
+          :nova_public_key => {'type' => 'ssh-rsa',
+                               'key'  => ''}
+        }
+      end
 
-        it 'should raise an error' do
-            expect {
-                should contain_ssh_authorized_key('nova-migration-public-key').with(
-                    :ensure => 'present',
-                    :key => 'keydata',
-                    :type => ''
-                )
-            }.to raise_error Puppet::Error, /You must provide both a key type and key data./
-        end
+      it 'should raise an error' do
+        expect {
+          should contain_ssh_authorized_key('nova-migration-public-key').with(
+            :ensure => 'present',
+            :key => 'keydata',
+            :type => ''
+          )
+        }.to raise_error Puppet::Error, /You must provide both a key type and key data./
+      end
     end
 
     context 'with ssh private key' do
-        let :params do
-            {
-                :nova_private_key => {'type' => 'ssh-rsa',
-                                     'key'  => 'keydata'}
-            }
-        end
+      let :params do
+        {
+          :nova_private_key => {'type' => 'ssh-rsa',
+                                'key'  => 'keydata'}
+        }
+      end
 
-        it 'should install ssh private key' do
-            should contain_file('/var/lib/nova/.ssh/id_rsa').with(
-                :content => 'keydata'
-            )
-        end
+      it 'should install ssh private key' do
+        should contain_file('/var/lib/nova/.ssh/id_rsa').with(
+          :content => 'keydata'
+        )
+      end
     end
 
     context 'with ssh private key missing key type' do
-        let :params do
-            {
-                :nova_private_key => {'type' => '',
-                                     'key'  => 'keydata'}
-            }
-        end
+      let :params do
+        {
+          :nova_private_key => {'type' => '',
+                                'key'  => 'keydata'}
+        }
+      end
 
-        it 'should raise an error' do
-            expect {
-                should contain_file('/var/lib/nova/.ssh/id_rsa').with(
-                    :content => 'keydata'
-                )
-            }.to raise_error Puppet::Error, /You must provide both a key type and key data./
-        end
+      it 'should raise an error' do
+        expect {
+          should contain_file('/var/lib/nova/.ssh/id_rsa').with(
+            :content => 'keydata'
+          )
+        }.to raise_error Puppet::Error, /You must provide both a key type and key data./
+      end
     end
 
     context 'with ssh private key having incorrect key type' do
-        let :params do
-            {
-                :nova_private_key => {'type' => 'invalid',
-                                     'key'  => 'keydata'}
-            }
-        end
+      let :params do
+        {
+          :nova_private_key => {'type' => 'invalid',
+                                'key'  => 'keydata'}
+        }
+      end
 
-        it 'should raise an error' do
-            expect {
-                should contain_file('/var/lib/nova/.ssh/id_rsa').with(
-                    :content => 'keydata'
-                )
-            }.to raise_error Puppet::Error, /Unable to determine name of private key file./
-        end
+      it 'should raise an error' do
+        expect {
+          should contain_file('/var/lib/nova/.ssh/id_rsa').with(
+            :content => 'keydata'
+          )
+        }.to raise_error Puppet::Error, /Unable to determine name of private key file./
+      end
     end
 
     context 'with ssh private key missing key data' do
-        let :params do
-            {
-                :nova_private_key => {'type' => 'ssh-rsa',
-                                     'key'  => ''}
-            }
-        end
+      let :params do
+        {
+          :nova_private_key => {'type' => 'ssh-rsa',
+                                'key'  => ''}
+        }
+      end
 
-        it 'should raise an error' do
-            expect {
-                should contain_file('/var/lib/nova/.ssh/id_rsa').with(
-                    :content => 'keydata'
-                )
-            }.to raise_error Puppet::Error, /You must provide both a key type and key data./
-        end
+      it 'should raise an error' do
+        expect {
+          should contain_file('/var/lib/nova/.ssh/id_rsa').with(
+            :content => 'keydata'
+          )
+        }.to raise_error Puppet::Error, /You must provide both a key type and key data./
+      end
     end
 
     context 'with SSL socket options set' do
       let :params do
         {
           :use_ssl          => true,
-          :enabled_ssl_apis => ['ec2'],
+          :enabled_ssl_apis => ['ec2', 'osapi_compute'],
           :cert_file        => '/path/to/cert',
           :ca_file          => '/path/to/ca',
           :key_file         => '/path/to/key',
         }
       end
 
-      it { should contain_nova_config('DEFAULT/enabled_ssl_apis').with_value(['ec2']) }
+      it { should contain_nova_config('DEFAULT/enabled_ssl_apis').with_value('ec2,osapi_compute') }
       it { should contain_nova_config('DEFAULT/ssl_ca_file').with_value('/path/to/ca') }
       it { should contain_nova_config('DEFAULT/ssl_cert_file').with_value('/path/to/cert') }
       it { should contain_nova_config('DEFAULT/ssl_key_file').with_value('/path/to/key') }

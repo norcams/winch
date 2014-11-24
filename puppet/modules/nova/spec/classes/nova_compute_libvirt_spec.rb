@@ -16,7 +16,8 @@ describe 'nova::compute::libvirt' do
 
       it { should contain_package('nova-compute-kvm').with(
         :ensure => 'present',
-        :before => 'Package[nova-compute]'
+        :before => 'Package[nova-compute]',
+        :tag    => ['openstack', 'nova']
       ) }
 
       it { should contain_package('libvirt').with(
@@ -53,7 +54,8 @@ describe 'nova::compute::libvirt' do
           :remove_unused_base_images                  => true,
           :remove_unused_kernels                      => true,
           :remove_unused_resized_minimum_age_seconds  => 3600,
-          :remove_unused_original_minimum_age_seconds => 3600
+          :remove_unused_original_minimum_age_seconds => 3600,
+          :libvirt_service_name                       => 'custom_service'
         }
       end
 
@@ -65,6 +67,13 @@ describe 'nova::compute::libvirt' do
       it { should contain_nova_config('DEFAULT/remove_unused_original_minimum_age_seconds').with_value(3600)}
       it { should contain_nova_config('libvirt/remove_unused_kernels').with_value(true)}
       it { should contain_nova_config('libvirt/remove_unused_resized_minimum_age_seconds').with_value(3600)}
+      it { should contain_service('libvirt').with(
+        :name     => 'custom_service',
+        :enable   => true,
+        :ensure   => 'running',
+        :require  => 'Package[libvirt]',
+        :before   => 'Service[nova-compute]'
+      )}
     end
 
     describe 'with deprecated params' do
@@ -86,6 +95,7 @@ describe 'nova::compute::libvirt' do
 
         it { should contain_class('nova::migration::libvirt')}
         it { should contain_nova_config('DEFAULT/vncserver_listen').with_value('0.0.0.0')}
+        it { should contain_file_line('/etc/default/libvirt-bin libvirtd opts').with(:line => 'libvirtd_opts="-d -l"') }
       end
 
       context 'with vncserver_listen not set to 0.0.0.0' do
@@ -96,6 +106,16 @@ describe 'nova::compute::libvirt' do
 
         it { expect { should contain_class('nova::compute::libvirt') }.to \
           raise_error(Puppet::Error, /For migration support to work, you MUST set vncserver_listen to '0.0.0.0'/) }
+      end
+
+      context 'with custom libvirt service name on Debian plateforms' do
+        let :params do
+          { :libvirt_service_name  => 'libvirtd',
+            :vncserver_listen      => '0.0.0.0',
+            :migration_support     => true }
+        end
+        it { should contain_file_line('/etc/default/libvirtd libvirtd opts').with(:line => 'libvirtd_opts="-d -l"') }
+
       end
     end
   end

@@ -18,7 +18,8 @@ describe 'nova::compute' do
           :enable    => false
         })
         should contain_package('nova-compute').with({
-          :name => platform_params[:nova_compute_package]
+          :name => platform_params[:nova_compute_package],
+          :tag  => ['openstack', 'nova']
         })
       end
 
@@ -33,6 +34,8 @@ describe 'nova::compute' do
       it { should contain_package('pm-utils').with(
         :ensure => 'present'
       ) }
+
+      it { should contain_nova_config('DEFAULT/force_raw_images').with(:value => true) }
     end
 
     context 'with overridden parameters' do
@@ -40,7 +43,8 @@ describe 'nova::compute' do
         { :enabled            => true,
           :ensure_package     => '2012.1-2',
           :vncproxy_host      => '127.0.0.1',
-          :network_device_mtu => 9999 }
+          :network_device_mtu => 9999,
+          :force_raw_images   => false }
       end
 
       it 'installs nova-compute package and service' do
@@ -52,7 +56,8 @@ describe 'nova::compute' do
         })
         should contain_package('nova-compute').with({
           :name   => platform_params[:nova_compute_package],
-          :ensure => '2012.1-2'
+          :ensure => '2012.1-2',
+          :tag    => ['openstack', 'nova']
         })
       end
 
@@ -67,6 +72,8 @@ describe 'nova::compute' do
           'http://127.0.0.1:6080/vnc_auto.html'
         )
       end
+
+      it { should contain_nova_config('DEFAULT/force_raw_images').with(:value => false) }
     end
 
     context 'with neutron_enabled set to false' do
@@ -139,6 +146,13 @@ describe 'nova::compute' do
 
       it { should contain_nova_config('DEFAULT/instance_usage_audit').with_value(true) }
       it { should contain_nova_config('DEFAULT/instance_usage_audit_period').with_value('year') }
+    end
+    context 'with vnc_keymap set to fr' do
+      let :params do
+        { :vnc_keymap => 'fr', }
+      end
+
+      it { should contain_nova_config('DEFAULT/vnc_keymap').with_value('fr') }
     end
   end
 

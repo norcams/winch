@@ -40,6 +40,10 @@
 #   (optional) The path at the end of the uri for communication with the VNC proxy server
 #   Defaults to './vnc_auto.html'
 #
+# [*vnc_keymap*]
+#   (optional) The keymap to use with VNC (ls -alh /usr/share/qemu/keymaps to list available keymaps)
+#   Defaults to 'en-us'
+#
 # [*force_config_drive*]
 #   (optional) Whether to force the config drive to be attached to all VMs
 #   Defaults to false
@@ -65,6 +69,10 @@
 #   Time period must be hour, day, month or year
 #   Defaults to 'month'
 #
+#  [*force_raw_images*]
+#   (optional) Force backing images to raw format.
+#   Defaults to true
+#
 class nova::compute (
   $enabled                       = false,
   $manage_service                = true,
@@ -75,12 +83,14 @@ class nova::compute (
   $vncproxy_protocol             = 'http',
   $vncproxy_port                 = '6080',
   $vncproxy_path                 = '/vnc_auto.html',
+  $vnc_keymap                    = 'en-us',
   $force_config_drive            = false,
   $virtio_nic                    = false,
   $neutron_enabled               = true,
   $network_device_mtu            = undef,
   $instance_usage_audit          = false,
-  $instance_usage_audit_period   = 'month'
+  $instance_usage_audit_period   = 'month',
+  $force_raw_images              = true,
 ) {
 
   include nova::params
@@ -98,6 +108,7 @@ class nova::compute (
   nova_config {
     'DEFAULT/vnc_enabled':                   value => $vnc_enabled;
     'DEFAULT/vncserver_proxyclient_address': value => $vncserver_proxyclient_address;
+    'DEFAULT/vnc_keymap':                    value => $vnc_keymap;
   }
 
   if $neutron_enabled != true {
@@ -152,5 +163,9 @@ class nova::compute (
 
   package { 'pm-utils':
     ensure => present,
+  }
+
+  nova_config {
+    'DEFAULT/force_raw_images': value => $force_raw_images;
   }
 }
