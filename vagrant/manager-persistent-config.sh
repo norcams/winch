@@ -3,7 +3,7 @@
 if [ "$(hostname | cut -d"." -f1)" == 'manager' ]; then
 
     yum -y update
-    yum -y install kernel-devel-2.6.32-431.el6.x86_64
+    yum -y install kernel-devel-$(uname -r)
     yum -y install gcc kernel-devel kernel-headers dkms make bzip2 perl
 
     /etc/init.d/vboxadd setup
