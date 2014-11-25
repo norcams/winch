@@ -15,4 +15,6 @@ while read line; do
 done < /etc/puppet/puppet.conf_orig >> /etc/puppet/puppet.conf
 
 # Restart httpd to apply changes to puppet master
-/sbin/service httpd restart
+#/sbin/service httpd restart
+/bin/systemctl enable httpd.service
+/bin/systemctl restart httpd.service
