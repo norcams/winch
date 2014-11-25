@@ -17,3 +17,6 @@ if [ "$(hostname | cut -d"." -f1)" == 'manager' ]; then
     echo 'sh /vagrant/vagrant/foreman_netfwd.sh' >> /etc/rc.local
 
 fi
+
+# Enable rc.local
+/bin/chmod +x /etc/rc.d/rc.local
