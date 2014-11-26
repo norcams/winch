@@ -37,15 +37,17 @@ Vagrant.configure("2") do |config|
             box.vm.provision :shell, :path => "vagrant/virbr0-fix.sh"
             # Add ceph repo and configure hosts file for ceph nodes only
             box.vm.provision :shell, :path => "vagrant/cephnode_pre-provision.sh"
-            box.vm.provision :puppet do |puppet|
-                puppet.manifests_path = "puppet/manifests"
-                puppet.module_path = [ "puppet/modules", "puppet/site" ]
-                puppet.manifest_file  = "vagrant.pp"
-                puppet.hiera_config_path = "puppet/hiera.yaml"
-                puppet.working_directory = "/vagrant/puppet"
-            # The following scripts will be executed on node manager
             box.vm.provision :shell, :path => "vagrant/manager-persistent-config.sh"
             box.vm.provision :shell, :path => "vagrant/foreman.sh"
+            unless node['name'] === "manager"
+                box.vm.provision :puppet do |puppet|
+                    puppet.manifests_path = "puppet/manifests"
+                    puppet.module_path = [ "puppet/modules", "puppet/site" ]
+                    puppet.manifest_file  = "vagrant.pp"
+                    puppet.hiera_config_path = "puppet/hiera.yaml"
+                    puppet.working_directory = "/vagrant/puppet"
+                end
+            # The following scripts will be executed on node manager
             end
         end
     end
