@@ -1,7 +1,7 @@
 node_defaults:
     cpus: 2
     memory: 2048
-    box: centos70
+    box: 'norcams/centos7'
     domain: winch.local
     networks:
         - management
@@ -35,5 +35,3 @@ networks:
 
 boxes:
     centos65: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.5_chef-provisionerless.box
-    #centos70: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-7.0_chef-provisionerless.box
-    centos70: http://folk.uib.no/edpto/winch_centos-7.0.box
