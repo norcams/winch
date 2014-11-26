@@ -11,7 +11,9 @@ node_defaults:
 
 nodes:
     - name: manager
+      box: centos65
     - name: controller
+      memory: 3072
     - name: ceph01
     - name: ceph02
     - name: ceph03
