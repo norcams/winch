@@ -111,6 +111,10 @@ Provision of this machine takes a little while. This is because the provision sc
     foreman_puppetmaster-config.sh
     foreman_configure.sh
     foreman_netfwd.sh
+
+::
+
+
     Foreman is running at https://manager.winch.local
       Initial credentials are admin / changeme
 
