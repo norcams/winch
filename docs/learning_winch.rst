@@ -119,14 +119,30 @@ right before it starts with the puppet modules.
 
 
     Foreman is running at https://manager.winch.local
-      Initial credentials are admin / ************
+      Initial credentials are admin / changeme
 
 
-These credentials can be used if you want to checkout the Foreman webpanel.
+These credentials can be used if you want to checkout the Foreman web panel. After the installation the web panel
+will consist of two host groups and puppet modules for each of the components. The host groups specify different
+settings for each component and allows scalability if more nodes are added to the installation at a later point. To
+create the controller and compute node run the create scripts inside the vagrant folder:
 
+::
 
+    sh create-vbox-controller.sh
+    sh create-vbox-compute
 
+These scripts will create two empty machines in VirtualBox and register them in Foreman with the appropriate settings. This step
+is absolutely necessary to get the machines automatically installed. Start with installing the controller node before moving onto
+the compute node. Launch the virtual machine and make sure F12 is pressed during post, then continue with booting from PXE. The machine
+will boot up and Foreman will install the machine automatically.Once the machine is complete it will start to run the puppet modules. 
+During this process it's probably a good idea to tail the syslog to see if everything works as intended. When the puppet apply is finished, 
+continue with installting the compute node.
 
+After both machines have been installed, log on and run the OpenStack tests to verify functionality and to make sure all parts of the system is 
+working as intended. Note that forwarding traffic from instances and to the outside world is a bit more tricky than in the previous section. One way to
+go about this is to give an IP address to the brex interface on the controller and connecting the interface to a bridge. Then your host machine need IP forwarding
+enabled in order to push traffic back and forth to the instances in your cloud.
 
 
 
