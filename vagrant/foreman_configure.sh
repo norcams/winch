@@ -23,7 +23,7 @@ hammer environment info --name "production"
 hammer template create --name "Kickstart_openstack" --type provision --file /vagrant/vagrant/provision/provision_openstack.erb
 
 #hammer os create --name CentOS --major 6 --minor 6 --description "CentOS 6.6" --family Redhat --architecture-ids 1 --medium-ids 1 --ptable-ids 7
-hammer os create --name CentOS --major 7 --minor 0 --description "CentOS 7.0" --family Redhat --architecture-ids 1 --medium-ids 1 --ptable-ids 7
+hammer os create --name CentOS --major 7 --minor 0.1406 --description "CentOS 7.0" --family Redhat --architecture-ids 1 --medium-ids 1 --ptable-ids 7
 
 # Get ID of the created OS
 #os_id=$(hammer os list | grep "CentOS 6.5" | cut -d" " -f1)
