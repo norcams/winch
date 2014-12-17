@@ -111,19 +111,12 @@ Provision of this machine takes a little while. This is because the provision sc
     foreman_puppetmaster-config.sh
     foreman_configure.sh
     foreman_netfwd.sh
-
-After the machine has been installed make sure to note down the Foreman password that appears on screen
-right before it starts with the puppet modules.
-
-::
-
-
     Foreman is running at https://manager.winch.local
       Initial credentials are admin / changeme
 
 
-These credentials can be used if you want to checkout the Foreman web panel. After the installation the web panel
-will consist of two host groups and puppet modules for each of the components. The host groups specify different
+Use the default credentials to checkout the Foreman webpanel after the installation. Foreman should now 
+consist of two host groups and puppet modules for each of the components. The host groups specify different
 settings for each component and allows scalability if more nodes are added to the installation at a later point. To
 create the controller and compute node run the create scripts inside the vagrant folder:
 
@@ -145,5 +138,13 @@ go about this is to give an IP address to the brex interface on the controller a
 enabled in order to push traffic back and forth to the instances in your cloud.
 
 
+**Summary**
 
+After deploying OpenStack with Foreman your setup should be much more scalable consisting of:
 
+- A manager node running Foreman (consisting of one puppetmaster & host groups for each component)
+- A controller node built with Foreman
+- A compute node built with Foreman
+- One test instance running Cirros with external connectivity
+- 3 users that can login to the Horizon dashboard
+- Testsubnet and a testruter
