@@ -4,7 +4,7 @@
 machinename=$(hostname | cut -d"." -f1)
 if [ $(echo "${machinename:0:4}") == 'ceph' ]; then
 
-    sudo yum -y install http://ftp.uninett.no/linux/epel/7/x86_64/e/epel-release-7-2.noarch.rpm
+    sudo yum -y install http://ftp.uninett.no/linux/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
 
     echo "[Ceph]
 name=Ceph packages for $basearch
