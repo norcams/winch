@@ -121,6 +121,18 @@ echo "updating system time"
 /usr/sbin/ntpdate -sub <%= @host.params['ntp-server'] || '0.fedora.pool.ntp.org' %>
 /usr/sbin/hwclock --systohc
 
+# **** Disable the new naming scheme for network interfaces and enable ethX scheme
+# **** when BIOSDEVNAME scheme is not available
+
+# Override udev net-rules
+mkdir -p /etc/udev/rules.d/60-net.rules
+
+# Add "net.ifnames=0"
+/usr/bin/sed -i -e 's/quiet/net.ifnames=0 quiet/' /etc/default/grub
+/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg
+
+rm -f /etc/sysconfig/network-scripts/ifcfg-e*
+
 # **** Configure additional network interfaces as defined in "enable-addifs" parameter
 # **** The last IP byte for these interfaces will be the same as for the primary interface 
 # **** Format for this parameter is interfacename1_network/prefix:interfacename2_network/prefix etc
@@ -139,7 +151,7 @@ for ifelement in "${ifnetarray[@]}"
         ifprefix=$(echo "${ifelement#*/}")
         ifnetwork=$(echo "$ifelement" | cut -f2 -d"_")
         ifhwaddr=$(/sbin/ip link show $ifdevice|grep link|sed -e 's/link\/ether//1'|sed 's/^ *//'|awk '{print $1}')
-        iffoo=$(/sbin/ip route|grep default| cut -d" " -f5)
+        iffoo=$(/sbin/ip route|grep default| cut -d" " -f5 | head -n 1)
         ifipbyte=$(/sbin/ip addr show $iffoo|grep "inet "|sed -e 's/inet //1'|sed 's/^ *//'|awk '{print $1}'|cut -f1 -d"/"|cut -f4 -d".")
         ifipaddress="$(echo "$ifnetwork" | cut -f1,2,3 -d ".").$ifipbyte"
         ifnetmask=$(/bin/ipcalc -m $ifipaddress/$ifprefix|sed 's/NETMASK=//')
