@@ -36,9 +36,9 @@ else
     echo "Registering host in foreman"
     vagrant ssh manager -c "$hammercommand"
 
-    hammercommand="sudo hammer host update --name compute.winch.local --interface='type=Nic::Managed,mac=$macaddress2,identifier='eth1',subnet_id=2,ip=172.16.44.20,managed=0'"
+#    hammercommand="sudo hammer host update --name compute.winch.local --interface='type=Nic::Managed,mac=$macaddress2,identifier='eth1',subnet_id=2,ip=172.16.44.20,managed=0'"
 
-    echo "Registering additional network interfaces"
-    vagrant ssh manager -c "$hammercommand"
+#    echo "Registering additional network interfaces"
+#    vagrant ssh manager -c "$hammercommand"
 
 fi
