@@ -38,7 +38,7 @@ hammer subnet update --name external --from 192.168.22.20 --to 192.168.22.100
 hammer environment create --name "production"
 hammer environment info --name "production"
 
-#hammer template create --name "Kickstart_openstack" --type provision --file /vagrant/vagrant/provision/provision_openstack.erb
+hammer template create --name "Kickstart_openstack" --type provision --file /vagrant/vagrant/provision/provision_openstack.erb
 hammer template create --name "Kickstart default PXELinux ifs" --type provision --file /vagrant/vagrant/provision/provision_kickstart_ifs.erb
 
 #hammer os create --name CentOS --major 6 --minor 6 --description "CentOS 6.6" --family Redhat --architecture-ids 1 --medium-ids 1 --ptable-ids 7
@@ -49,8 +49,8 @@ hammer os create --name CentOS --major 7 --minor 0.1406 --description "CentOS 7.
 os_id=1
 
 hammer template update --name "Kickstart default PXELinux ifs" --operatingsystem-ids $os_id
-#hammer template update --name "Kickstart_openstack" --operatingsystem-ids $os_id
-hammer template update --name "Kickstart default" --operatingsystem-ids $os_id
+hammer template update --name "Kickstart_openstack" --operatingsystem-ids $os_id
+#hammer template update --name "Kickstart default" --operatingsystem-ids $os_id
 
 # Get the provision template id
 templateid=$(hammer template list --per-page 10000 | grep "Kickstart_openstack"|cut -d" " -f1)
@@ -72,7 +72,7 @@ hammer hostgroup create --name "controller_vbox" --architecture "x86_64" --domai
 hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "enable-puppetlabs-repo" --value "true"
 hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "infrastructure" --value "vbox"
 hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "role" --value "controller"
-#hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "enable-addifs" --value "eth1_172.16.44.0/24:eth2_192.168.11.0/24:eth3_192.168.22.0/24"
+hammer hostgroup set-parameter --hostgroup "controller_vbox" --name "enable-addifs" --value "eth1_172.16.44.0/24:eth2_192.168.11.0/24:eth3_192.168.22.0/24"
 
 # Get id for openstack compute class
 winchcompute=$(hammer puppet-class list --search "openstack::role::winch_compute" | grep "openstack::role::winch_compute" | cut -d" " -f1)
@@ -81,7 +81,7 @@ hammer hostgroup create --name "compute_vbox" --architecture "x86_64" --domain "
 hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "enable-puppetlabs-repo" --value "true"
 hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "infrastructure" --value "vbox"
 hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "role" --value "compute"
-#hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "enable-addifs" --value "eth1_172.16.44.0/24"
+hammer hostgroup set-parameter --hostgroup "compute_vbox" --name "enable-addifs" --value "eth1_172.16.44.0/24"
 
 # work around Puppet bug #2244 which is fixed in 3.x
 sudo mkdir -p /etc/puppet/environments/common/dummy/lib
