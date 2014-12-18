@@ -29,9 +29,16 @@ else
 
     # Define host in foreman
     # Find the MAC address for the primary interface
-    macaddress=$(vboxmanage showvminfo compute --machinereadable | grep macaddress1 | cut -d"\"" -f 2)
-    hammercommand="sudo hammer host create --architecture x86_64 --domain winch.local --environment production --hostgroup compute_vbox --mac $macaddress --medium CentOS\ mirror --name compute --ptable Kickstart\ default --provision-method build --puppet-ca-proxy-id 1 --puppet-proxy-id 1 --subnet management --root-password 'Test123!'"
+    macaddress1=$(vboxmanage showvminfo compute --machinereadable | grep macaddress1 | cut -d"\"" -f 2)
+    macaddress2=$(vboxmanage showvminfo compute --machinereadable | grep macaddress2 | cut -d"\"" -f 2)
+    hammercommand="sudo hammer host create --architecture x86_64 --domain winch.local --environment production --hostgroup compute_vbox --mac $macaddress1 --medium CentOS\ mirror --name compute --ptable Kickstart\ default --provision-method build --puppet-ca-proxy-id 1 --puppet-proxy-id 1 --subnet management --root-password 'Test123!'"
 
     echo "Registering host in foreman"
     vagrant ssh manager -c "$hammercommand"
+
+    hammercommand="sudo hammer host update --name compute.winch.local --interface='type=Nic::Managed,mac=$macaddress2,identifier='eth1',subnet_id=2,ip=172.16.44.20,managed=0'"
+
+    echo "Registering additional network interfaces"
+    vagrant ssh manager -c "$hammercommand"
+
 fi
