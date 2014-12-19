@@ -134,7 +134,7 @@ is absolutely necessary to get the machines automatically installed. Start with 
 the compute node. Launch the virtual machine and make sure F12 is pressed during post, then continue with booting from PXE. The machine
 will boot up and Foreman will install the machine automatically.Once the machine is complete it will start to run the puppet modules. 
 During this process it's probably a good idea to tail the syslog to see if everything works as intended. When the puppet apply is finished, 
-continue with installting the compute node.
+continue with installing the compute node.
 
 After both machines have been installed, log on and run the OpenStack tests to verify functionality and to make sure all parts of the system is 
 working as intended. Note that forwarding traffic from instances and to the outside world is a bit more tricky than in the previous section. One way to
