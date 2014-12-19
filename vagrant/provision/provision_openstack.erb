@@ -124,14 +124,13 @@ echo "updating system time"
 # **** Disable the new naming scheme for network interfaces and enable ethX scheme
 # **** when BIOSDEVNAME scheme is not available
 
-# Override udev net-rules
+# Override udev net-rules on el7
+<% if @host.operatingsystem.family == 'Redhat' and @host.operatingsystem.major.to_i >= 7 -%>
 mkdir -p /etc/udev/rules.d/60-net.rules
-
 # Add "net.ifnames=0"
 /usr/bin/sed -i -e 's/quiet/net.ifnames=0 quiet/' /etc/default/grub
 /usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg
-
-rm -f /etc/sysconfig/network-scripts/ifcfg-e*
+<% end -%>
 
 # **** Configure additional network interfaces as defined in "enable-addifs" parameter
 # **** The last IP byte for these interfaces will be the same as for the primary interface 
@@ -166,6 +165,11 @@ HWADDR=\"$ifhwaddr\"" > /etc/sysconfig/network-scripts/ifcfg-$ifdevice
     done
     /sbin/ifup $ifdevice
 fi
+
+# **** Disable NetworkManager on el7
+<% if @host.operatingsystem.family == 'Redhat' and @host.operatingsystem.major.to_i >= 7 -%>
+/usr/bin/systemctl disable NetworkManager.service
+<% end -%>
 
 <% if @host.info["parameters"]["realm"] && @host.otp && @host.realm && @host.realm.realm_type == "FreeIPA" -%>
 <%= snippet "freeipa_register" %>
