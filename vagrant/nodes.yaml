@@ -1,7 +1,7 @@
 node_defaults:
     cpus: 2
     memory: 2048
-    box: 'norcams/centos7'
+    box: 'norcams/base'
     domain: winch.local
     networks:
         - management
