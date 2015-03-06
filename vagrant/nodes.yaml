@@ -16,6 +16,7 @@ nodes:
     - name: ceph02
     - name: ceph03
     - name: compute
+    - name: logstash
 
 networks:
     api:
