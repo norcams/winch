@@ -45,8 +45,8 @@ openstack::rabbitmq::password: 'pose-vix'
 openstack::keystone::admin_token: 'sosp-kyl'
 openstack::keystone::admin_email: 'nobody@example.com'
 openstack::keystone::admin_password: 'fyby-tet'
-openstack::keystone::verbose: 'True'
-openstack::keystone::debug: 'True'
+openstack::keystone::verbose: 'False'
+openstack::keystone::debug: 'False'
 
 openstack::keystone::tenants:
     "test":
@@ -74,14 +74,14 @@ openstack::keystone::users:
 ######## Glance
 
 openstack::glance::password: 'na-mu-va'
-openstack::glance::verbose: 'True'
-openstack::glance::debug: 'True'
+openstack::glance::verbose: 'False'
+openstack::glance::debug: 'False'
 
 ######## Cinder
 
 openstack::cinder::password: 'zi-co-se'
-openstack::cinder::verbose: 'True'
-openstack::cinder::debug: 'True'
+openstack::cinder::verbose: 'False'
+openstack::cinder::debug: 'False'
 
 openstack::cinder::volume_size: '4G'
 
@@ -94,28 +94,28 @@ openstack::swift::hash_suffix: 'pop-bang'
 
 openstack::nova::libvirt_type: 'qemu'
 openstack::nova::password: 'quuk-paj'
-openstack::nova::verbose: 'True'
-openstack::nova::debug: 'True'
+openstack::nova::verbose: 'False'
+openstack::nova::debug: 'False'
 
 ######## Neutron
 
 openstack::neutron::password: 'whi-rtuz'
 openstack::neutron::shared_secret: 'by-sa-bo'
-openstack::neutron::verbose: 'True'
-openstack::neutron::debug: 'True'
+openstack::neutron::verbose: 'False'
+openstack::neutron::debug: 'False'
 
 ######## Ceilometer
 openstack::ceilometer::mongo::password: 'whi-truz'
 openstack::ceilometer::password: 'whi-truz'
 openstack::ceilometer::meteringsecret: 'ceilometersecretkey'
-openstack::ceilometer::verbose: 'True'
-openstack::ceilometer::debug: 'True'
+openstack::ceilometer::verbose: 'False'
+openstack::ceilometer::debug: 'False'
 
 ######## Heat
 openstack::heat::password: 'zap-bang'
 openstack::heat::encryption_key: 'heatsecretkey'
-openstack::heat::verbose: 'True'
-openstack::heat::debug: 'True'
+openstack::heat::verbose: 'False'
+openstack::heat::debug: 'False'
 
 ######## Horizon
 
@@ -140,8 +140,8 @@ openstack::tempest::heat_available      : false
 openstack::tempest::swift_available     : false
 
 ######## Log levels
-openstack::verbose: 'True'
-openstack::debug: 'True'
+openstack::verbose: 'False'
+openstack::debug: 'False'
 
 ######## Ceph
 ceph::profile::params::release: 'firefly'
