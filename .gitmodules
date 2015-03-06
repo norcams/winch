@@ -1,3 +1,6 @@
 [submodule "puppet/modules/puppet-logstash"]
 	path = puppet/modules/puppet-logstash
 	url = https://github.com/elasticsearch/puppet-logstash
+[submodule "puppet/modules/puppet-lib-file_concat"]
+	path = puppet/modules/puppet-lib-file_concat
+	url = https://github.com/electrical/puppet-lib-file_concat
