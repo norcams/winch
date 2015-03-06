@@ -1,0 +1,3 @@
+OPENSTACK_PID ( %{POSINT:pid:int})?
+OPENSTACK_PROG (?:[\w._/%-]+) 
+%{GREEDYDATA:message}|%{RAW_TRACE:msg}
