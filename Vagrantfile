@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
             box.vm.provision :puppet do |puppet|
                 puppet.manifests_path = "puppet/manifests"
                 puppet.module_path = [ "puppet/modules", "puppet/site" ]
-                puppet.manifest_file  = "vagrant.pp"
+                puppet.manifest_file  = "logstash.pp"
                 puppet.hiera_config_path = "puppet/hiera.yaml"
                 puppet.working_directory = "/vagrant/puppet"
             # The following scripts will be executed on node manager

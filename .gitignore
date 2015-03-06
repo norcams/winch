@@ -4,5 +4,5 @@
 *.swp
 *.img
 *.pem
-puppet/modules/
+#puppet/modules/
 docs/_*/
