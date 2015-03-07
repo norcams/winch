@@ -4,6 +4,9 @@
 [submodule "puppet/modules/elasticsearch"]
 	path = puppet/modules/elasticsearch
 	url = https://github.com/elasticsearch/puppet-elasticsearch
-[submodule "puppet/modules/puppet-lib-file_concat"]
-	path = puppet/modules/puppet-lib-file_concat
+[submodule "puppet/modules/file_concat"]
+	path = puppet/modules/file_concat
 	url = https://github.com/electrical/puppet-lib-file_concat
+[submodule "puppet/modules/puppi"]
+	path = puppet/modules/puppi
+	url = https://github.com/example42/puppi
