@@ -13,3 +13,6 @@
 [submodule "puppet/modules/stdmod"]
 	path = puppet/modules/stdmod
 	url = https://github.com/stdmod/stdmod
+[submodule "puppet/modules/puppet-kibana4"]
+	path = puppet/modules/puppet-kibana4
+	url = https://github.com/lesaux/puppet-kibana4

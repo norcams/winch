@@ -1,0 +1,24 @@
+{
+  "name": "lesaux-kibana4",
+  "version": "0.0.7",
+  "author": "lesaux",
+  "summary": "Kibana 4 installation",
+  "license": "Apache-2.0",
+  "source": "https://github.com/lesaux/puppet-kibana4.git",
+  "project_page": "https://github.com/lesaux/puppet-kibana4",
+  "issues_url": "https://github.com/lesaux/puppet-kibana4/issues",
+  "operatingsystem_support": [
+    {
+    "operatingsystem":"RedHat",
+    "operatingsystemrelease":[ "5.0", "6.0", "7.0" ]
+    },
+    {
+    "operatingsystem": "Ubuntu",
+    "operatingsystemrelease": [ "12.04", "10.04" ]
+    }
+   ],
+  "dependencies": [
+    {"name":"camptocamp-archive","version_requirement":">= 0.1.0 <1.0.0"}
+  ]
+}
+
