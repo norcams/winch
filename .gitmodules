@@ -1,6 +1,6 @@
 [submodule "puppet/modules/logstash"]
 	path = puppet/modules/logstash
 	url = https://github.com/elasticsearch/puppet-logstash
-[submodule "puppet/modules/puppet-elasticsearch"]
-	path = puppet/modules/puppet-elasticsearch
+[submodule "puppet/modules/elasticsearch"]
+	path = puppet/modules/elasticsearch
 	url = https://github.com/elasticsearch/puppet-elasticsearch
