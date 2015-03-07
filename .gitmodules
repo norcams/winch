@@ -13,6 +13,9 @@
 [submodule "puppet/modules/stdmod"]
 	path = puppet/modules/stdmod
 	url = https://github.com/stdmod/stdmod
-[submodule "puppet/modules/puppet-kibana4"]
-	path = puppet/modules/puppet-kibana4
+[submodule "puppet/modules/kibana4"]
+	path = puppet/modules/kibana4
 	url = https://github.com/lesaux/puppet-kibana4
+[submodule "puppet/modules/puppet-archive"]
+	path = puppet/modules/puppet-archive
+	url = https://github.com/camptocamp/puppet-archive
