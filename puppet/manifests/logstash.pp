@@ -52,31 +52,19 @@ class { 'logstash':
 }
 
 file { '/etc/logstash/conf.d/logstash.conf':
-  ensure  => '/vagrant/logstash.conf',
+  ensure  => '/vagrant/conf/logstash.conf',
   require => [ Class['logstash'] ],
 }
 
 file { '/opt/logstash/patterns/openstack_pattern':
-  ensure  => '/vagrant/openstack_pattern',
+  ensure  => '/vagrant/conf/openstack_pattern',
   require => [ Class['logstash'] ],
 }
 
 file { '/opt/logstash/patterns/yum_pattern':
-  ensure  => '/vagrant/yum_pattern',
+  ensure  => '/vagrant/conf/yum_pattern',
   require => [ Class['logstash'] ],
 }
-
-# Kibana
-#class { 'kibana':
-#  elasticsearch_url  => "http://192.168.11.17:9200",
-#  webserver => 'apache',
-#  install_url => 'https://download.elasticsearch.org/kibana/kibana/kibana-4.0.0-linux-x64.zip',
-#}
-
-#exec {'start kibana':
-#command => '/opt/kibana-4.0.0-linux-x64/bin/kibana & ',
-# require => [ Class['kibana']]
-#}
 
 class { '::kibana4':
   package_ensure    => '4.0.0-linux-x64',
