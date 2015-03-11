@@ -77,3 +77,24 @@ class { '::kibana4':
   kibana4_uid       => 200,
   elasticsearch_url => 'http://localhost:9200',
 }
+
+# Start services
+exec {'start logstash':
+  command => 'service logstash start',
+  require => [ Class['logstash']]
+}
+
+es_instance_conn_validator { 'monitoring-01' :
+  server => '192.168.11.17',
+  port   => '9200',
+}
+
+exec {'start elasticsearch':
+  command => 'service elasticsearch-monitoring-01 start',
+  require => es_instance_conn_validator['monitoring-01']
+}
+
+exec {'start kibana': 	
+  command => 'service kibana4 start', 	
+  require => es_instance_conn_validator['monitoring-01']
+}
