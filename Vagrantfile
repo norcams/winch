@@ -20,6 +20,10 @@ Vagrant.configure("2") do |config|
                 ip = settings['networks'][n]['net'] + ".#{i+11}"
                 auto_config = settings['networks'][n]['auto_config']
                 box.vm.network :private_network, ip: ip, auto_config: auto_config
+                box.vm.network :forwarded_port, guest: 80, host: 5650
+#               box.vm.network :forwarded_port, guest: 5601, host: 5601
+#               box.vm.network :forwarded_port, guest: 9200, host: 9200
+#               box.vm.network :forwarded_port, guest: 9300, host: 9300
             end
 
             box.vm.provider :virtualbox do |vb|
@@ -39,7 +43,7 @@ Vagrant.configure("2") do |config|
             box.vm.provision :puppet do |puppet|
                 puppet.manifests_path = "puppet/manifests"
                 puppet.module_path = [ "puppet/modules", "puppet/site" ]
-                puppet.manifest_file  = "logstash.pp"
+                puppet.manifest_file  = "vagrant.pp"
                 puppet.hiera_config_path = "puppet/hiera.yaml"
                 puppet.working_directory = "/vagrant/puppet"
             # The following scripts will be executed on node manager
