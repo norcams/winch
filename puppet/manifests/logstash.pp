@@ -66,6 +66,17 @@ file { '/opt/logstash/patterns/yum_pattern':
   require => [ Class['logstash'] ],
 }
 
+# Until we have the rsyslog puppet module, use these configs
+file { '/etc/rsyslog.conf':
+  ensure  => '/vagrant/conf/rsyslog.conf',
+  require => [ Class['logstash'] ],
+}
+
+file { '/etc/rsyslog.d/reception.conf':
+  ensure  => '/vagrant/conf/reception.conf',
+  require => [ Class['logstash'] ],
+}
+
 class { '::kibana4':
   package_ensure    => '4.0.0-linux-x64',
   package_provider  => 'archive',
@@ -97,4 +108,8 @@ exec {'start elasticsearch':
 exec {'start kibana': 	
   command => 'service kibana4 start', 	
   require => es_instance_conn_validator['monitoring-01']
+}
+
+exec {'restart rsyslog':
+  command => 'service rsyslog restart'
 }
