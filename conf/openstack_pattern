@@ -2,4 +2,7 @@ OPENSTACK_PID ( %{POSINT:pid:int})?
 OPENSTACK_PROG (?:[\w._/%-]+) 
 %{GREEDYDATA:message}|%{RAW_TRACE:msg}
 
-OPENSTACK_REQ_LIST (\[(?:(req-%{UUID}|%{UUID}|%{BASE16NUM}|None|-|%{SPACE}))+\])?
+LOGLEVEL1 ([A-a]lert|ALERT|[A-a]udit|AUDIT|[T|t]race|TRACE|[D|d]ebug|DEBUG|[N|n]otice|NOTICE|[I|i]nfo|INFO|[W|w]arn?(?:ing)?|WARN?(?:ING)?|[E|e]rr?(?:or)?|ERR?(?:OR)?|[C|c]rit?(?:ical)?|CRIT?(?:ICAL)?|[F|f]atal|FATAL|[S|s]evere|SEVERE|EMERG(?:ENCY)?|[Ee]merg(?:ency)?)
+
+REQ_LIST (\[(?:(req-%{UUID:request_id_list}|%{UUID:request_id_list}|%{BASE16NUM}|None|-|%{SPACE}))+\])?
+ID (\[(?:(instance: %{UUID:openstack_instance_id}))+\])?
