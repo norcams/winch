@@ -1,3 +1,5 @@
 OPENSTACK_PID ( %{POSINT:pid:int})?
 OPENSTACK_PROG (?:[\w._/%-]+) 
 %{GREEDYDATA:message}|%{RAW_TRACE:msg}
+
+OPENSTACK_REQ_LIST (\[(?:(req-%{UUID}|%{UUID}|%{BASE16NUM}|None|-|%{SPACE}))+\])?
