@@ -6,3 +6,5 @@ LOGLEVEL1 ([A-a]lert|ALERT|[A-a]udit|AUDIT|[T|t]race|TRACE|[D|d]ebug|DEBUG|[N|n]
 
 REQ_LIST (\[(?:(req-%{UUID:request_id_list}|%{UUID:request_id_list}|%{BASE16NUM}|None|-|%{SPACE}))+\])?
 ID (\[(?:(instance: %{UUID:openstack_instance_id}))+\])?
+
+RESOURCE (%{WORD:Free_resources} %{WORD:Free_resources} %{NOTSPACE} %{INT:Free})|(%{WORD:Free_resources} %{NOTSPACE} %{INT:Free_VCPUS})
