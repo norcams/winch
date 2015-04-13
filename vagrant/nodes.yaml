@@ -1,6 +1,6 @@
 node_defaults:
     cpus: 2
-    memory: 2048
+    memory: 1024
     box: centos65
     domain: winch.local
     networks:
@@ -17,6 +17,7 @@ nodes:
     - name: ceph03
     - name: compute
     - name: logstash
+    - name: graphite
 
 networks:
     api:
