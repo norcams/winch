@@ -36,7 +36,7 @@ class { 'graphite':
 }
 
 apache::vhost { 'grafana.my.domain':
-  servername      => 'grafana.my.domain',
+  servername      => '192.168.11.18',
   port            => 80,
   docroot         => '/opt/grafana',
   error_log_file  => 'grafana_error.log',
@@ -52,7 +52,7 @@ apache::vhost { 'grafana.my.domain':
   ]
 }->
 class {'grafana':
-  graphite_host      => 'graphite.my.domain',
-  elasticsearch_host => 'elasticsearach.my.domain',
+  graphite_host      => '192.168.11.18',
+  elasticsearch_host => '192.168.11.17',
   elasticsearch_port => 9200,
 }
