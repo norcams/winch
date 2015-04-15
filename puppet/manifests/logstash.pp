@@ -37,6 +37,8 @@ elasticsearch::instance { 'monitoring-01':
   'cluster.name' => 'vagrant_elasticsearch',
   'index.number_of_replicas' => '0',
   'index.number_of_shards'   => '1',
+  'http.cors.allow-origin': '*'
+  'http.cors.enabled': true
   'network.host' => '0.0.0.0'
 },        # Configuration hash
   init_defaults => { }, # Init defaults hash
