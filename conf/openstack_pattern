@@ -2,10 +2,20 @@ OPENSTACK_PID ( %{POSINT:pid:int})?
 OPENSTACK_PROG (?:[\w._/%-]+) 
 %{GREEDYDATA:message}|%{RAW_TRACE:msg}
 
-LOGLEVEL1 ([A-a]lert|ALERT|[A-a]udit|AUDIT|[T|t]race|TRACE|[D|d]ebug|DEBUG|[N|n]otice|NOTICE|[I|i]nfo|INFO|[W|w]arn?(?:ing)?|WARN?(?:ING)?|[E|e]rr?(?:or)?|ERR?(?:OR)?|[C|c]rit?(?:ical)?|CRIT?(?:ICAL)?|[F|f]atal|FATAL|[S|s]evere|SEVERE|EMERG(?:ENCY)?|[Ee]merg(?:ency)?)
+OPENSTACK_LOGLEVEL ([A-a]lert|ALERT|[A-a]udit|AUDIT|[T|t]race|TRACE|[D|d]ebug|DEBUG|[N|n]otice|NOTICE|[I|i]nfo|INFO|[W|w]arn?(?:ing)?|WARN?(?:ING)?|[E|e]rr?(?:or)?|ERR?(?:OR)?|[C|c]rit?(?:ical)?|CRIT?(?:ICAL)?|[F|f]atal|FATAL|[S|s]evere|SEVERE|EMERG(?:ENCY)?|[Ee]merg(?:ency)?)
 
 REQ_LIST (\[(?:(req-%{UUID:request_id_list}|%{UUID:request_id_list}|%{BASE16NUM}|None|-|%{SPACE}))+\])?
 ID (\[(?:(instance: %{UUID:openstack_instance_id}))+\])?
 
+# Nova resource usage
 RESOURCE_DISK_RAM (%{WORD} %{WORD} %{NOTSPACE} %{INT:Free_disk_ram_count})
 RESOURCE_CPU (%{WORD} %{NOTSPACE} %{INT:Free_vcpus_count})
+COMPUTE_SERVICE (%{WORD} %{WORD} %{WORD} %{WORD} %{NOTSPACE})
+BASE_FILE (%{NOTSPACE} %{NOTSPACE} %{NOTSPACE})
+
+# Glance
+GLANCE_IMAGE_MESSAGE (%{WORD} %{WORD} %{WORD} %{WORD}|%{WORD} %{WORD} %{WORD})
+
+# Neutron
+NEUTRON_ACCEPT_MESSAGE (%{NOTSPACE} %{WORD} %{NOTSPACE} %{INT})
+NEUTRON_PORT_UPDATE (%{WORD} %{UUID:neutron_port_id} %{WORD}%{NOTSPACE})
