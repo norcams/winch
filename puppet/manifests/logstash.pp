@@ -37,11 +37,14 @@ elasticsearch::instance { 'monitoring-01':
   'cluster.name' => 'vagrant_elasticsearch',
   'index.number_of_replicas' => '0',
   'index.number_of_shards'   => '1',
-  'http.cors.allow-origin': '*'
-  'http.cors.enabled': true
   'network.host' => '0.0.0.0'
 },        # Configuration hash
   init_defaults => { }, # Init defaults hash
+}
+
+elasticsearch::plugin{'royrusso/elasticsearch-HQ':
+  module_dir => 'HQ',
+  instances  => 'monitoring-01'
 }
 
 # Logstash
@@ -52,6 +55,7 @@ class { 'logstash':
   repo_version => '1.4',
   require      => [ Class['install_prereqs'], Class['elasticsearch'] ],
 }
+
 
 file { '/etc/logstash/conf.d/logstash.conf':
   ensure  => '/vagrant/conf/logstash.conf',
