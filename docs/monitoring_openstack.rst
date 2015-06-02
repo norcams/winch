@@ -15,7 +15,7 @@ Requirements
 Logstash
 --------
 
-Logstash is an open source tool for receiving, processing and outputting logs. It supports all types of logs and have been used in winch to sentralize, process and extract information coming from OpenStack. All information are saved in an Elasticsearch backend, and visualized with Kibana and other tools. Logstash uses a configuration file where all inputs, filters and outputs are specified. See below.
+Logstash is an open source tool for receiving, processing and outputting logs. It supports all types of logs and have been used in winch to sentralize, process and extract information coming from OpenStack. All information are saved in an Elasticsearch backend, and visualized with Kibana and other tools. Logstash uses a configuration file where all inputs, filters and outputs are specified. `See configuration details <http://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/conf/logstash.conf>`_.
 
 The most efficient way to send data to Logstash is by using UDP. But in order to check that filteres were working correctly during testing of Logstash the input parameter have been configured to use logfiles rather than UDP. This enabled reruns of the same data over and over in case any filters were misconfigured. All inputs used have been configured this way.
 
@@ -25,10 +25,26 @@ The most efficient way to send data to Logstash is by using UDP. But in order to
                 path => "/var/log/openstack/nova/nova.log"
                 type => "nova"
         }
+        
+All incoming information has been assigned to a type, and by doing this we can make a filter that extracts information whenever a new line of type "nova" appear in the logfile. For example are the grok-filters below extracting available resources in all compute nodes, which are later sent to Graphite for graphing.
+        
+::
 
-Incoming information can be assigned to a type, and by doing this we can make a filter that extracts information whenever a new line of type "nova" 
-appear in the logfile.
+    if [type] == "nova" {
+        grok {
+			break_on_match => true
+			match => [
+			 "message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{RESOURCE_DISK_RAM:Free_disk_ram}",
+			 "message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{RESOURCE_CPU:Free_vcpus}"
+			]
+		}
+	}
 
+**Matched events in nova**
+
+* Available resources on all compute nodes
+* All events related to instances
+* All API requests 
 
 **Installation method**
 
