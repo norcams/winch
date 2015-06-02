@@ -11,6 +11,7 @@ Requirements
 ------------
 - A running OpenStack environment
 - Knowledge about rsyslog forwarding / receiving
+- Knowledge about writing custom filters using the `grok-debugger <https://grokdebug.herokuapp.com/>`_.
 
 Logstash
 --------
@@ -26,7 +27,7 @@ The most efficient way to send data to Logstash is by using UDP. But in order to
                 type => "nova"
         }
         
-All incoming information has been assigned to a type, and by doing this we can make a filter that extracts information whenever a new line of type "nova" appear in the logfile. For example are the grok-filters below extracting available resources in all compute nodes, which are later sent to Graphite for graphing.
+All incoming information has been assigned to a type, and by doing this we can make a filter that extracts information whenever a new line of that type appear in the logfile. For example are the second and third grok-filter below extracting available resources in all compute nodes, and this is later sent to Graphite for graphing. The same is done with all API requests and API response times.
         
 ::
 
@@ -34,22 +35,89 @@ All incoming information has been assigned to a type, and by doing this we can m
         grok {
 			break_on_match => true
 			match => [
+			 "message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{ID} %{GREEDYDATA:openstack_instance_action}"
 			 "message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{RESOURCE_DISK_RAM:Free_disk_ram}",
 			 "message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{RESOURCE_CPU:Free_vcpus}"
+			 "message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{IP:IP} %{NOVA_INSTANCE_REQUEST:nova_api_request} %{NOTSPACE} %{NOTSPACE} %{INT:nova_response_code} %{NOTSPACE} %{INT} %{NOTSPACE} %{NUMBER:nova_response_time}",
+			 "message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{IP:IP} %{QUOTEDSTRING:nova_api_request} %{NOTSPACE} %{INT:nova_response_code} %{NOTSPACE} %{INT} %{NOTSPACE} %{NUMBER:nova_response_time}",
+			 "message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{BASE_FILE} %{PATH:openstack_basefile_path}"
 			]
 		}
 	}
+	
+All instance related events in OpenStack are also tracked. This allows an administrator to follow an instance throught it's lifecycle, from creation to deletion. Here's a summary of all the events that gets extracted in Logstash:
 
-**Matched events in nova**
+
+**Nova**
 
 * Available resources on all compute nodes
 * All events related to instances
-* All API requests 
+* API requests, API responses and API response times
 
-**Installation method**
+**Neutron**
 
-* Puppet module with a manifest file
+* Segment IDs and network IDs
+* Accept messages
+* API requests, API responses and API response times
+
+**Glance**
+
+* All events related to images
+* API requests, API responses and API response times
+
+**Keystone, Cinder & Heat**
+
+* General messages
+* API requests, API responses and API response times
+
+To drop unwanted messages or services, regular expressions can be applied in the Logstash configuration directly. The current drop filters consists of the following entries:
+
+::
+
+     if [message] =~ /(?i)Compute_service record|Auditing locally|Loading compute driver|wsgi starting up|Stopping WSGI server|WSGI server has stopped|Skipping periodic task|nova.openstack.common.service|Connected to AMQP server|keystoneclient.middleware.auth_token|Starting new HTTP connection|Returning detailed image list|SIGTERM/ {
+                drop {}
+     }
+
+This is just one of the many ways regular expressions can be used. Another example is `line 107 <http://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/conf/logstash.conf#L107>`_ where regular expressions have been used, and a special filter is applied if this expression returns true.
+
+The Logstash configuration also has a resource filter if any of the services exceeds it's quota. A special filter is applied and the message is tagged so that we can keep a track of these messages more easily. Additionally the configuration also consists of a **greedy** filter that match everything that is not matched elsewhere. This could be messages about loaded extensions, traceback events or just a general _grokparsefailure. These messages are tagged with their own tags respectively, allowing us to go back and adjust filters if necessary.
+
+::
+
+    # All matching filter for grokparsefailures, traceback & extensions
+	if "_grokparsefailure" in [tags] {
+		if ([message] =~"Traceback") {
+			grok {
+				match => ["message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{GREEDYDATA:openstack_trace}"]
+				add_tag => "openstack_trace"
+				remove_tag => "_grokparsefailure"
+			}	
+		} else if ([message] =~ /(?i)Loaded extension/) {
+			grok {
+				match => ["message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{GREEDYDATA:openstack_extension}"]
+				add_tag => "extension_loaded"
+				remove_tag => "_grokparsefailure"
+			}	
+		} else {
+			grok {
+				match => ["message", "%{HOSTNAME:openstack_hostname} %{TIMESTAMP_ISO8601:timestamp} %{POSINT:openstack_pid} %{OPENSTACK_LOGLEVEL:openstack_loglevel} %{OPENSTACK_PROG:openstack_program}%{REQ_LIST} %{GREEDYDATA:openstack_message}"]
+				add_tag => "openstack_logs"
+				add_tag => "unmatched_event"
+				remove_tag => "_grokparsefailure"
+			}
+		}
+	}
+
+**How to install Logstash**
+
+* Puppet module with a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
+* Requires OpenJDK
 * Installed alongside with Elasticsearch and Kibana
+* Installes Logstash as a service.
+* Logstash configuration files are located in */etc/logstash/conf.d/*
+* Logstash grok-patterns are located in */opt/logstash/patterns/*
+* Custom OpenStack pattern has been `used <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/conf/openstack_pattern>`_.. Otherwise check out the default patterns `here <https://grokdebug.herokuapp.com/patterns>`_.
+
 
 Elasticsearch
 -------------
@@ -64,7 +132,7 @@ Only some functions in statsd have been used in this setup. However Statsd provi
 Graphite
 --------
 
-**Installation method**
+**How to install Graphite**
 
 * Puppet module with a manifest file
 * Installed alongside with Grafana
