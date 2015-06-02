@@ -78,7 +78,7 @@ To drop unwanted messages or services, regular expressions can be applied in the
                 drop {}
      }
 
-This is just one of the many ways regular expressions can be used. Another example is `line 107 <http://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/conf/logstash.conf#L107>`_ where regular expressions have been used, and a special filter is applied if this expression returns true.
+This is just one of the many ways regular expressions can be used. Another example is `line 107 <http://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/conf/logstash.conf#L107>`_ where regular expressions have been used, and a special filter is applied if the expression returns true.
 
 The Logstash configuration also has a resource filter if any of the services exceeds it's quota. A special filter is applied and the message is tagged so that we can keep a track of these messages more easily. Additionally the configuration also consists of a **greedy** filter that match everything that is not matched elsewhere. This could be messages about loaded extensions, traceback events or just a general _grokparsefailure. These messages are tagged with their own tags respectively, allowing us to go back and adjust filters if necessary.
 
@@ -111,13 +111,18 @@ The Logstash configuration also has a resource filter if any of the services exc
 **How to install Logstash**
 
 * Puppet module with a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
-* Requires OpenJDK
-* Installed alongside with Elasticsearch and Kibana
+* Installed alongside with `Elasticsearch <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#elasticsearch
+>`_ and `Kibana <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#kibana
+>`_
 * Installes Logstash as a service.
 * Logstash configuration files are located in */etc/logstash/conf.d/*
 * Logstash grok-patterns are located in */opt/logstash/patterns/*
 * Custom OpenStack pattern has been `used <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/conf/openstack_pattern>`_.. Otherwise check out the default patterns `here <https://grokdebug.herokuapp.com/patterns>`_.
 
+**Further work**
+
+* More fine tuned filters like `sexilog <https://github.com/sexilog/sexilog/tree/master/logstash/conf.d>`_
+* Separate input, filters and output configuration files for easier maintenance0
 
 Elasticsearch
 -------------
