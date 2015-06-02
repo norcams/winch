@@ -156,6 +156,12 @@ Elasticsearch saves all the data from Logstash and separates every field in the 
 Kibana
 ------
 
+Kibana is a frontend to Elasticsearch and visualizes the information gathered with Logstash. When starting Kibana for the first time make sure to setup the index pattern, which in this case is *logstash-**. Without an index pattern no data will be visible.
+
+#![image](https://raw.githubusercontent.com/norcams/winch/stable/icehouse-centos6-monitoring/docs/public/index-pattern.png)
+
+
+
 Statsd
 ------
 Only some functions in statsd have been used in this setup. However Statsd provides expanded visualization functionality.
