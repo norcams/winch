@@ -111,18 +111,16 @@ The Logstash configuration also has a resource filter if any of the services exc
 **How to install Logstash**
 
 * Puppet module with a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
-* Installed alongside with `Elasticsearch <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#elasticsearch
->`_ and `Kibana <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#kibana
->`_
+* Installed alongside with `Elasticsearch <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#elasticsearch>`_ and `Kibana <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#kibana>`_
 * Installes Logstash as a service.
 * Logstash configuration files are located in */etc/logstash/conf.d/*
 * Logstash grok-patterns are located in */opt/logstash/patterns/*
-* Custom OpenStack pattern has been `used <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/conf/openstack_pattern>`_.. Otherwise check out the default patterns `here <https://grokdebug.herokuapp.com/patterns>`_.
+* Custom OpenStack pattern has been `used <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/conf/openstack_pattern>`_. Otherwise check out the default patterns `here <https://grokdebug.herokuapp.com/patterns>`_.
 
 **Further work**
 
 * More fine tuned filters like `sexilog <https://github.com/sexilog/sexilog/tree/master/logstash/conf.d>`_
-* Separate input, filters and output configuration files for easier maintenance0
+* Separate input, filters and output configuration files for easier maintenance
 
 Elasticsearch
 -------------
@@ -163,4 +161,4 @@ Grafana
 
 Dashing
 -------
-There are two dashboards that have been configured to work with OpenStack: dashing-ceph and dashing-openstack.
+There are two dashboards that have been configured to work with OpenStack: dashing-ceph and dashing-openstack.x
