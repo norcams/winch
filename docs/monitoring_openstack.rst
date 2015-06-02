@@ -108,11 +108,10 @@ The Logstash configuration also has a resource filter if any of the services exc
 		}
 	}
 
-**How to install Logstash**
+**Logstash summary**
 
-* Puppet module with a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
+* Installed with a Puppet module with a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
 * Installed alongside with `Elasticsearch <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#elasticsearch>`_ and `Kibana <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#kibana>`_
-* Installes Logstash as a service.
 * Logstash configuration files are located in */etc/logstash/conf.d/*
 * Logstash grok-patterns are located in */opt/logstash/patterns/*
 * Custom OpenStack pattern has been `used <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/conf/openstack_pattern>`_. Otherwise check out the default patterns `here <https://grokdebug.herokuapp.com/patterns>`_.
@@ -125,6 +124,35 @@ The Logstash configuration also has a resource filter if any of the services exc
 Elasticsearch
 -------------
 
+Elasticsearch serves as the backend for all the processed data that comes from Logstash. For now there's only one cluster with a single node that has been defined in the output of the configuration:
+
+::
+
+        elasticsearch {
+		host => "localhost:9200"
+		protocol => "http"
+		cluster => "vagrant_elasticsearch"
+		manage_template => true
+	}
+
+Elasticsearch saves all the data from Logstash and separates every field in the incoming messages. For instance, if a field value looks like *"Instance spawned successfully"*: Then the term will be broken into three different values *"Instance"*, *"spawned"* and *"successfully"*. Since this behavior is by default, Elasticsearch has been configured to display both the separate fields and the raw messages. This enables the administrators to see data in many different ways and count events that occur often. For example can we count which instances that are generating the most data, or how often a specific API request gets executed. This change was done manually by adding two lines in the Elasticsearch template located in */opt/logstash/lib/logstash/outputs/elasticsearch/elasticsearch/elasticsearch-template.json*:
+
+::
+
+              "{name}" : {"type": "string", "index" : "analyzed", "omit_norms" : true, "index_options" : "docs"},
+              "{name}.raw" : {"type": "string", "index" : "not_analyzed", "ignore_above" : 256}
+              
+
+**Elasticsearch summary**
+
+* Installed with a Puppet module and a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
+* Installed alongside with `Logstash <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#logstash>`_ and `Kibana <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#kibana>`_'
+* Elasticsearch settings located in /etc/elasticsearch/
+* Runs at port 9200
+
+
+
+
 Kibana
 ------
 
@@ -135,13 +163,15 @@ Only some functions in statsd have been used in this setup. However Statsd provi
 Graphite
 --------
 
+
+
+In Graphite there are primarly two files that are important in the monitoring setup. Storage-schemas.conf and storage-aggregation.conf, these
+files explain how long the graphs are stored, and how they are stored. Both are located in /opt/graphite/conf/. Storage-schemas.conf looks as follows:
+
 **How to install Graphite**
 
 * Puppet module with a manifest file
 * Installed alongside with Grafana
-
-In Graphite there are primarly two files that are important in the monitoring setup. Storage-schemas.conf and storage-aggregation.conf, these
-files explain how long the graphs are stored, and how they are stored. Both are located in /opt/graphite/conf/. Storage-schemas.conf looks as follows:
 
 ::
 
@@ -161,4 +191,4 @@ Grafana
 
 Dashing
 -------
-There are two dashboards that have been configured to work with OpenStack: dashing-ceph and dashing-openstack.x
+There are two dashboards that have been configured to work with OpenStack: dashing-ceph and dashing-openstack.
