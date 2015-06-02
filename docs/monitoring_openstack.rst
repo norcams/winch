@@ -135,7 +135,9 @@ Elasticsearch serves as the backend for all the processed data that comes from L
 		manage_template => true
 	}
 
-Elasticsearch saves all the data from Logstash and separates every field in the incoming messages. For instance, if a field value looks like *"Instance spawned successfully"*: Then the term will be broken into three different values *"Instance"*, *"spawned"* and *"successfully"*. Since this behavior is by default, Elasticsearch has been configured to display both the separate fields and the raw messages. This enables the administrators to see data in many different ways and count events that occur often. For example can we count which instances that are generating the most data, or how often a specific API request gets executed. This change was done manually by adding two lines in the Elasticsearch template located in */opt/logstash/lib/logstash/outputs/elasticsearch/elasticsearch/elasticsearch-template.json*:
+Elasticsearch saves all the data from Logstash and separates every field in the incoming messages. For instance, if a field value looks like *"Instance spawned successfully"*: Then the term will be broken into three different values *"Instance"*, *"spawned"* and *"successfully"*. 
+
+Since this behavior is by default, Elasticsearch has been configured to display both the separate fields and the raw messages. This enables the administrators to see data in many different ways and count events that occur often. For example can we count which instances that are generating the most data, or how often a specific API request gets executed. This change was done manually by adding two lines in the Elasticsearch template located in */opt/logstash/lib/logstash/outputs/elasticsearch/elasticsearch/elasticsearch-template.json*:
 
 ::
 
@@ -146,25 +148,115 @@ Elasticsearch saves all the data from Logstash and separates every field in the 
 **Elasticsearch summary**
 
 * Installed with a Puppet module and a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
-* Installed alongside with `Logstash <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#logstash>`_ and `Kibana <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#kibana>`_'
+* Installed alongside with `Logstash <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#logstash>`_ and `Kibana <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#kibana>`_
 * Elasticsearch settings located in /etc/elasticsearch/
 * Runs at port 9200
 
 
 
+Kibana WIP 
+----------
 
-Kibana
-------
+Kibana is a frontend to Elasticsearch and visualizes the information gathered with Logstash. When starting Kibana for the first time make sure to setup the index pattern, which in this case is *logstash-**. Without an index pattern no data will be visible. 
 
-Kibana is a frontend to Elasticsearch and visualizes the information gathered with Logstash. When starting Kibana for the first time make sure to setup the index pattern, which in this case is *logstash-**. Without an index pattern no data will be visible.
+WIP
 
-#![image](https://raw.githubusercontent.com/norcams/winch/stable/icehouse-centos6-monitoring/docs/public/index-pattern.png)
+**Kibana summary**
 
+* Installed with a Puppet module and a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
+* Installed alongside with `Logstash <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#logstash>`_ and `Elasticsearch <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#elasticsearch>`_
+* Needs a running Elasticsearch cluster in order to run
+* Runs at port 5601
 
 
 Statsd
 ------
-Only some functions in statsd have been used in this setup. However Statsd provides expanded visualization functionality.
+Statsd provides expanded visualization functionality and is used together with Logstash in order to send API stats to Graphite. This is done by the following Logstash configuration:
+
+::
+
+	if ([nova_api_request] =~ /(?i)"GET|"POST|"DELETE|"HEAD/) {
+		statsd {
+			timing => [
+				"nova.api.response", "%{nova_response_time}",
+				"nova.api.response.code.%{nova_response_code}", "%{nova_response_time}"
+			]
+			increment => "%{nova_response_code}"
+		}
+	}
+
+	if ([glance_api_request] =~ /(?i)"GET|"POST|"DELETE|"HEAD/) {
+		statsd {
+			timing => [
+				"glance.api.response", "%{glance_response_time}",
+				"glance.api.response.code.%{glance_response_code}", "%{glance_response_time}"
+			]
+			increment => "%{glance_response_code}"
+		}	
+	}
+
+	if ([neutron_api_request] =~ /(?i)"GET|"POST|"DELETE|"HEAD/) {
+	        statsd {
+        	        timing => [
+				"neutron.api.response", "%{neutron_response_time}",
+				"neutron.api.response.code.%{neutron_response_code}", "%{neutron_response_time}"
+			]
+			increment => "%{neutron_response_code}"
+        	}
+	}
+
+	if ([keystone_api_request] =~ /(?i)"GET|"POST|"DELETE|"HEAD/) {
+	        statsd {
+        	        timing => [
+				"keystone.api.response", "%{keystone_response_time}",
+				"keystone.api.response.code.%{keystone_response_code}", "%{keystone_response_time}"
+			]
+			increment => "%{keystone_response_code}"
+	        }
+	}
+
+	if ([cinder_api_request] =~ /(?i)"GET|"POST|"DELETE|"HEAD/) {
+	        statsd {
+        	        timing => [
+				"cinder.api.response", "%{cinder_response_time}",
+				"cinder.api.response.code.%{cinder_response_code}", "%{cinder_response_time}"
+			]
+			increment => "%{cinder_response_code}"
+	        }
+	}
+
+	if ([heat_api_request] =~ /(?i)"GET|"POST|"DELETE|"HEAD/) {
+	        statsd {
+	                timing => [
+				"heat.api.response", "%{heat_response_time}",
+				"heat.api.response.code.%{heat_response_code}", "%{heat_response_time}"
+			]
+			increment => "%{heat_response_code}"
+	        }
+	}
+    
+
+Statsd needs very limited configuration to run, and the easiest approach is to install Statsd on the same node as Logstash. Below is the configuration used in this project:
+
+::
+
+   {
+      graphitePort: 2003, 
+      graphiteHost: "192.168.11.19", 
+      port: 8125, 
+      backends: [ "./backends/graphite" ], 
+      graphite: {
+        legacyNamespace: false
+       }
+    }
+
+
+
+**Statsd summary**
+
+* Currently installed manually by cloning `Etsy's project on Github file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_ and by applying the above configuration
+* Needs node.js in order to run *(e.g: node stats.js exampleConfig.js &)*
+
 
 Graphite
 --------
