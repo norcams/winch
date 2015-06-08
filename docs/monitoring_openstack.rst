@@ -272,7 +272,7 @@ The puppet module that installs Graphite lacks a few things. The puppet module c
 
     fi
     
-Graphite's apache configuration also needs a little tweak in order to work properly (this can probably be fixed in the manifest file). I've added the changes manually. These lines should be declared before the VirtualHost
+Graphite's apache configuration also needs a little tweak in order to work properly (this can probably be fixed in the manifest file). I've added the changes manually. These lines should be declared before the VirtualHost in /etc/httpd/conf.d/25-graphite.winch.local.conf:
 
 ::
 
@@ -285,6 +285,7 @@ Graphite's apache configuration also needs a little tweak in order to work prope
 And this should be declared inside the VirtualHost:
 
 ::
+
     WSGIScriptAlias / /opt/graphite/conf/graphite.wsgi
 
 Further on the puppet module doesn't create the necessary log files for Graphite either. Another tiny script has been used to fix this:
@@ -315,7 +316,7 @@ Both are located in /opt/graphite/conf/, the storage-schemas.conf consists of th
     pattern = ^stats.*
     retentions = 10s:1d,1m:7d,10m:1y
 
-Stats is the namespace used for all metrics, gauges, counters and timers that comes from Logstash and Statsd. The retention specified means that all 10 second data are stored for 1 day, 1 minute data are stored for 7 days, and 10 minute data are stored for 1 year. These values can easily be adjusted to your own liking. The storage-aggregation.conf consists of:
+Stats is the namespace used for all metrics, gauges, counters and timers that comes from Logstash and Statsd. The retention specified means that all 10 second data are stored for 1 day, 1 minute data are stored for 7 days, and 10 minute data are stored for 1 year. These values can easily be adjusted to your own liking. The storage-aggregation.conf should consist of the following entries:
 
 ::
 
@@ -372,14 +373,106 @@ Stats is the namespace used for all metrics, gauges, counters and timers that co
 
    
 
-
-
 Grafana
 -------
 
+Since Graphite's webinterface feels rather old and outdated I've used Grafana to display graphs and dashboards more easily. Grafana is configured within the puppet module to read all it's data from the Graphite database, and provides a pretty slick UI when it comes to displaying graphs.Since both Graphite and Grafana are installed on the same machine some tweaks was necessary in the apache settings in order to access Grafana. In the /etc/httpd/conf.d/25-grafana.winch.local.conf the following have been commented out:
+
+::
+
+    #  <Directory "/opt/grafana">
+    #    Options None
+    #    AllowOverride None
+    #    Order Allow,Deny
+    #    Allow from All
+    #  </Directory>
+    
+The following have been added:
+
+::
+
+        Alias /grafana/ "/opt/grafana/"
+        <Location "/grafana/">
+        Options None
+        Order allow,deny
+        Allow from all
+
+        Require all granted
+        Satisfy Any
+        </Location>
+
+Besides the apache configuration the most imporant configuration file in Grafana is the config.js file located in /opt/grafana/. In this configuration Graphite is specified as the backend for Grafana (this is done by the puppet module automatically(. But in order to save dashboards made in Grafana, Elasticsearch needs to be configured as a backend as well. The following configuration snippet explains how this is done:
+
+::
+
+    function (Settings) {
+        return new Settings({
+    
+        // datasources, you can add multiple
+        datasources: {
+          graphite: {
+            type: 'graphite',
+            url: "http://192.168.11.19:80",
+            default: true
+          },
+    
+          elasticsearch: {
+            type: 'elasticsearch',
+            url: "http://192.168.11.17:9200",
+            index: 'grafana-dash',
+            grafanaDB: true,
+      },
+    
+Http.cors needs to be enabled in Elasticsearch in order to let Grafana save its dashboards here. By adding the following lines to the /etc/elasticsearch/monitoring-01/elasticsearch.yml we enable this option
+
+::
+
+    http.cors.enabled : true 
+    http.cors.allow-origin : "*"
+    
+
+**Grafana summary**
+
+* Installed with a Puppet module and a `Grafana manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/graphite.pp>`_
+* Installed alongside with `Graphite <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#graphite>`_ 
+* Reads data from the Graphite database.
+* Grafana Apache settings are specified in the puppet manifest file
+* Some settings should be fixed in order to avoid manual installation steps (perhaps use another puppet module?)
 
 
 
 Dashing
 -------
-There are two dashboards that have been configured to work with OpenStack: dashing-ceph and dashing-openstack.
+There are two dashboards that have been configured to work with OpenStack: dashing-ceph and dashing-openstack. 
+
+
+**Dashing Ceph**
+
+Start by git cloning rochaporto's dashing-ceph repository and follow the instructions on how to install dashing, rubygems, ruby-bundler and nodejs onto a monitoring node, for example node Logstash in winch:
+
+::
+        git clone https://github.com/rochaporto/dashing-ceph.git
+        
+Then provide the ceph-auth token in the *config.ru* file, and you're good to go. Start dashing by typing:
+
+::
+
+         dashing start -p 3000
+         
+You will get a dashboard displaying the health status, throughput and resources usage in your Ceph cluster.
+
+** Dashing OpenStack **
+
+Start by git cloning rochaporto's dashing-openstack repository onto a monitoring node, for example node Logstash in winch:
+
+::
+
+        git clone https://github.com/rochaporto/dashing-openstack.git
+        
+Then provide necessary details as Keystone API url and OpenStack admin-tenant details in *aviator.yml* and *config.yaml*. Start dashing the same way as before, and it will show a dashboard that displays the current OpenStack resources in use.   
+
+**Dashing summary**     
+
+* Needs a puppet `module <https://github.com/rochaporto/puppet-dashing>`_
+* Currently way to manual installation
+* Provides neat dashboards so that users / admins can get a quick overview over current resource usage
