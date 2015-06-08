@@ -451,6 +451,7 @@ There are two dashboards that have been configured to work with OpenStack: dashi
 Start by git cloning rochaporto's dashing-ceph repository and follow the instructions on how to install dashing, rubygems, ruby-bundler and nodejs onto a monitoring node, for example node Logstash in winch:
 
 ::
+
         git clone https://github.com/rochaporto/dashing-ceph.git
         
 Then provide the ceph-auth token in the *config.ru* file, and you're good to go. Start dashing by typing:
@@ -461,7 +462,7 @@ Then provide the ceph-auth token in the *config.ru* file, and you're good to go.
          
 You will get a dashboard displaying the health status, throughput and resources usage in your Ceph cluster.
 
-** Dashing OpenStack **
+**Dashing OpenStack**
 
 Start by git cloning rochaporto's dashing-openstack repository onto a monitoring node, for example node Logstash in winch:
 
