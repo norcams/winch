@@ -110,7 +110,7 @@ The Logstash configuration also has a resource filter if any of the services exc
 
 **Logstash summary**
 
-* Installed with a Puppet module with a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
+* Installed with a Puppet module with a ` Logstash manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
 * Installed alongside with `Elasticsearch <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#elasticsearch>`_ and `Kibana <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#kibana>`_
 * Logstash configuration files are located in */etc/logstash/conf.d/*
 * Logstash grok-patterns are located in */opt/logstash/patterns/*
@@ -147,7 +147,7 @@ Since this behavior is by default, Elasticsearch has been configured to display 
 
 **Elasticsearch summary**
 
-* Installed with a Puppet module and a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
+* Installed with a Puppet module and a `Logstash manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
 * Installed alongside with `Logstash <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#logstash>`_ and `Kibana <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#kibana>`_
 * Elasticsearch settings located in /etc/elasticsearch/
 * Runs at port 9200
@@ -157,13 +157,11 @@ Since this behavior is by default, Elasticsearch has been configured to display 
 Kibana WIP 
 ----------
 
-Kibana is a frontend to Elasticsearch and visualizes the information gathered with Logstash. When starting Kibana for the first time make sure to setup the index pattern, which in this case is *logstash-**. Without an index pattern no data will be visible. 
-
-WIP
+Kibana is a frontend to Elasticsearch and visualizes the information gathered with Logstash. When starting Kibana for the first time make sure to setup the index pattern, which in this case is *logstash-**. Without an index pattern no data will be visible. I first wanted to publish some dashboards in the branch on Github, but this process ended up being a whole lot of work. It's probably best that the intended users setup the dashboards themselves and configure them to their needs.
 
 **Kibana summary**
 
-* Installed with a Puppet module and a `manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
+* Installed with a Puppet module and a `Logstash manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_
 * Installed alongside with `Logstash <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#logstash>`_ and `Elasticsearch <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#elasticsearch>`_
 * Needs a running Elasticsearch cluster in order to run
 * Runs at port 5601
@@ -250,40 +248,135 @@ Statsd needs very limited configuration to run, and the easiest approach is to i
        }
     }
 
-
-
 **Statsd summary**
 
-* Currently installed manually by cloning `Etsy's project on Github file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_ and by applying the above configuration
+* Currently installed manually by cloning `Etsy's project on Github <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/logstash.pp>`_ and by applying the above configuration
 * Needs node.js in order to run *(e.g: node stats.js exampleConfig.js &)*
 
 
 Graphite
 --------
 
+The puppet module that installs Graphite lacks a few things. The puppet module complains about missing folders in the puppetrun. I've used the script below when provisioning in vagrant to fix this:
 
+::
 
-In Graphite there are primarly two files that are important in the monitoring setup. Storage-schemas.conf and storage-aggregation.conf, these
-files explain how long the graphs are stored, and how they are stored. Both are located in /opt/graphite/conf/. Storage-schemas.conf looks as follows:
+    #!/bin/bash
 
-**How to install Graphite**
+    if [ "$(hostname | cut -d"." -f1)" == 'graphite' ]; then
 
-* Puppet module with a manifest file
-* Installed alongside with Grafana
+        mkdir -p /opt/graphite/
+        mkdir -p /opt/graphite/bin
+
+        cp /vagrant/conf/carbon-cache.py /opt/graphite/bin
+
+    fi
+    
+Graphite's apache configuration also needs a little tweak in order to work properly (this can probably be fixed in the manifest file). I've added the changes manually. These lines should be declared before the VirtualHost
+
+::
+
+    <IfModule !wsgi_module.c>
+    LoadModule wsgi_module modules/mod_wsgi.so
+    </IfModule>
+    
+    WSGISocketPrefix /var/run/wsgi
+   
+And this should be declared inside the VirtualHost:
+
+::
+    WSGIScriptAlias / /opt/graphite/conf/graphite.wsgi
+
+Further on the puppet module doesn't create the necessary log files for Graphite either. Another tiny script has been used to fix this:
+
+::
+
+    #!/bin/bash
+    cd /opt/graphite/storage/log/webapp
+    touch access.log  exception.log  info.log
+    
+    chmod 775 *.log
+    
+Additionally the graphite.db doesn't have the correct owner or the correct chmod settings. This should be fixed by doing:
+
+::
+
+    cd /opt/graphite/storage
+
+    chown nobody:nobody graphite.db*
+    chmod -R 775 graphite.db*
+
+Also there are two files in Graphite that are very important when it comes to graphing data. These files are storage-schemas.conf and storage-aggregation.conf. These files tells Graphite how graphs are stored and for how long they are stored. 
+Both are located in /opt/graphite/conf/, the storage-schemas.conf consists of the following entries:
 
 ::
 
     [statsd]
     pattern = ^stats.*
     retentions = 10s:1d,1m:7d,10m:1y
+
+Stats is the namespace used for all metrics, gauges, counters and timers that comes from Logstash and Statsd. The retention specified means that all 10 second data are stored for 1 day, 1 minute data are stored for 7 days, and 10 minute data are stored for 1 year. These values can easily be adjusted to your own liking. The storage-aggregation.conf consists of:
+
+::
+
+    [min]
+    pattern = \.min$
+    xFilesFactor = 0.1
+    aggregationMethod = min
+
+    [max]
+    pattern = \.max$
+    xFilesFactor = 0.1
+    aggregationMethod = max
+
+    [count]
+    pattern = \.count$
+    xFilesFactor = 0
+    aggregationMethod = sum
+
+    [lower]
+    pattern = \.lower(_\d+)?$
+    xFilesFactor = 0.1
+    aggregationMethod = min
+
+    [upper]
+    pattern = \.upper(_\d+)?$
+    xFilesFactor = 0.1
+    aggregationMethod = max
+
+    [sum]
+    pattern = \.sum$
+    xFilesFactor = 0
+    aggregationMethod = sum
+
+    [gauges]
+    pattern = ^.*\.gauges\..*
+    xFilesFactor = 0
+    aggregationMethod = last
+
+    [default_average]
+    pattern = .*
+    xFilesFactor = 0.5
+    aggregationMethod = average
+    
+
+**Graphite summary**
+
+* Installed with a Puppet module and a `Graphite manifest file <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/puppet/manifests/graphite.pp>`_
+* Installed alongside with `Grafana <https://github.com/norcams/winch/blob/stable/icehouse-centos6-monitoring/docs/monitoring_openstack.rst#grafana>`_ 
+* Gets data from Logstash and Statsd
+* Graphite Apache settings are specified in the puppet manifest file
+* Runs at port 2003
+* Some settings should be fixed in order to avoid manual installation steps (perhaps use another puppet module?)
+
+
    
-Stats is the namespace used for all metrics, gauges, counters and timers that comes from Logstash and Statsd. The retention specified means that
-all 10 second data are stored for 1 day, 1 minute data are stored for 7 days, and 10 minute data are stored for 1 year. These values can easily
-be adjusted but.
+
 
 
 Grafana
 -------
+
 
 
 
