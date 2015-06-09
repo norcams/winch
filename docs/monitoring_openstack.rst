@@ -477,3 +477,19 @@ Then provide necessary details as Keystone API url and OpenStack admin-tenant de
 * Needs a puppet `module <https://github.com/rochaporto/puppet-dashing>`_
 * Currently way to manual installation
 * Provides neat dashboards so that users / admins can get a quick overview over current resource usage
+
+
+Ceilometer Graphite publiser script
+-----------------------------------
+
+To graph instance data from OpenStack there was written a publisher script that collects data from Ceilometer and sends this to Graphite.
+I've used the installation instructions at `Spilgames <http://engineering.spilgames.com/using-ceilometer-graphite/>`_ and this works perfectly.
+
+Be sure not to copy their version of the pipeline.yaml, but rather edit your own.
+
+**Publisher script summary** 
+
+* Manual installation (perhaps it should be installed with a script?)
+* Tested on Icehouse (should work on Juno as well)
+* Graphs instance data from all instances running
+
